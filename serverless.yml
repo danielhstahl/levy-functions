@@ -65,14 +65,14 @@ functions:
     events:
       - http:
           path: call/fangoost
-          method: get
+          method: post
           cors: true
   fangoostput:
     handler: handler.fangoostput
     events:
       - http:
           path: put/fangoost
-          method: get
+          method: post
           cors: true
 
   carrmadanput:
@@ -80,7 +80,7 @@ functions:
     events:
       - http:
           path: put/carrmadan
-          method: get
+          method: post
           cors: true
 
   carrmadancall:
@@ -88,7 +88,7 @@ functions:
     events:
       - http:
           path: call/carrmadan
-          method: get
+          method: post
           cors: true
 
   fstsput:
@@ -96,28 +96,28 @@ functions:
     events:
       - http:
           path: put/fsts
-          method: get
+          method: post
           cors: true
   fstscall:
     handler: handler.fstscall
     events:
       - http:
           path: call/fsts
-          method: get
+          method: post
           cors: true
   VaR:
     handler: handler.VaR
     events:
       - http:
           path: density/var
-          method: get
+          method: post
           cors: true
   density:
     handler: handler.density
     events:
       - http:
           path: density/raw
-          method: get
+          method: post
           cors: true
       
 

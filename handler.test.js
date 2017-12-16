@@ -10,7 +10,7 @@ it('correctly calls fangoostcall', (done)=>{
     console.log(event)
     handler.fangoostcall(event, {}, (err, val)=>{
         const parsedVal=JSON.parse(val.body)
-        expect(Array.isArray(parsedVal.values)).toEqual(true)
+        expect(Array.isArray(parsedVal)).toEqual(true)
         done()
     })
 })
@@ -20,7 +20,7 @@ it('correctly calls fangoostput', (done)=>{
     })
     handler.fangoostput(event, {}, (err, val)=>{
         const parsedVal=JSON.parse(val.body)
-        expect(Array.isArray(parsedVal.values)).toEqual(true)
+        expect(Array.isArray(parsedVal)).toEqual(true)
         done()
     })
 })
@@ -28,7 +28,7 @@ it('correctly calls carrmadanput', (done)=>{
     const event=createEvent({})
     handler.carrmadanput(event, {}, (err, val)=>{
         const parsedVal=JSON.parse(val.body)
-        expect(Array.isArray(parsedVal.values)).toEqual(true)
+        expect(Array.isArray(parsedVal)).toEqual(true)
         done()
     })
 })
@@ -36,7 +36,7 @@ it('correctly calls carrmadancall', (done)=>{
     const event=createEvent({})
     handler.carrmadancall(event, {}, (err, val)=>{
         const parsedVal=JSON.parse(val.body)
-        expect(Array.isArray(parsedVal.values)).toEqual(true)
+        expect(Array.isArray(parsedVal)).toEqual(true)
         done()
     })
 })
@@ -44,7 +44,7 @@ it('correctly calls fstsput', (done)=>{
     const event=createEvent({})
     handler.fstsput(event, {}, (err, val)=>{
         const parsedVal=JSON.parse(val.body)
-        expect(Array.isArray(parsedVal.values)).toEqual(true)
+        expect(Array.isArray(parsedVal)).toEqual(true)
         done()
     })
 })
@@ -52,7 +52,7 @@ it('correctly calls fstscall', (done)=>{
     const event=createEvent({})
     handler.fstscall(event, {}, (err, val)=>{
         const parsedVal=JSON.parse(val.body)
-        expect(Array.isArray(parsedVal.values)).toEqual(true)
+        expect(Array.isArray(parsedVal)).toEqual(true)
         done()
     })
 })
@@ -69,7 +69,7 @@ it('correctly calls density', (done)=>{
     const event=createEvent({})
     handler.density(event, {}, (err, val)=>{
         const parsedVal=JSON.parse(val.body)
-        expect(Array.isArray(parsedVal.values)).toEqual(true)
+        expect(Array.isArray(parsedVal)).toEqual(true)
         done()
     })
 })

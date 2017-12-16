@@ -100,24 +100,24 @@ option_variables get_option_var(const rapidjson::Document& parms){
     return local_option;
 }
 
-template<typename Array>
-void print_array(const Array& arr){
-    auto n=arr.size();
+template<typename Array1, typename Array2>
+void json_print_options(const Array1& arr1, const Array2& arr2){
+    auto n=arr1.size();
     std::cout<<"[";
     for(int i=0; i<n-1;++i){
-        std::cout<<arr[i]<<",";
+        std::cout<<"{\"value\":"<<arr1[i]<<",\"atPoint\":"<<arr2[i]<<"},";
     }
-    std::cout<<arr[n-1]<<"]";
+    std::cout<<"{\"value\":"<<arr1[n-1]<<",\"atPoint\":"<<arr2[n-1]<<"}]";
 }
 
-template<typename Array1, typename Array2>
+/*template<typename Array1, typename Array2>
 void json_print_options(const Array1& prices, const Array2& atPoints){
     std::cout<<"{\"values\":";
     print_array(prices);
     std::cout<<", \"atPoints\":";
     print_array(atPoints);
     std::cout<<"}"<<std::endl;
-}
+}*/
 
 void json_print_var(double var, double es){
     std::cout<<"{\"VaR\":"<<var<<",\"ES\":"<<es<<"}"<<std::endl;

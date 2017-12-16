@@ -4,17 +4,7 @@ function cloneAndCheckout {
 	cd $1
 	cd ..
 }
-function editMake {
 
-	sed -i "1s/^/STATIC=-static-libstdc++\n/" makefile 
-}
-function compile {
-	cd $1
-	editMake
-	make 
-	cp $1 ../bin
-	cd ..
-}
 rm -rf bin
 mkdir bin
 
@@ -29,7 +19,7 @@ cloneAndCheckout TupleUtilities
 cloneAndCheckout GaussNewton 
 
 git clone https://github.com/miloyip/rapidjson
-
+make 
 rm -rf FunctionalUtilities
 rm -rf CharacteristicFunctions
 rm -rf FangOost

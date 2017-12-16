@@ -8,7 +8,7 @@ endif
 
 levyfunctions:main.o
 	$(GCCVAL) -std=c++14 -O3  -pthread main.o $(INCLUDES) -o levyfunctions -fopenmp -static-libstdc++
-main.o: main.cpp parse_json.h
+main.o: main.cpp parse_json.h get_cf.h
 	$(GCCVAL) -std=c++14 -O3  -pthread -c main.cpp  $(INCLUDES) -fopenmp 
 clean:
 	-rm *.o test levyfunctions

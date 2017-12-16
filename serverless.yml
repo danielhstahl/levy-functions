@@ -57,31 +57,70 @@ provider:
 package:
   include:
    - bin/**
-   - index.js
+   - handler.js
 
 functions:
-  fangoost:
-    handler: index.fangoost
+  fangoostcall:
+    handler: handler.fangoostcall
     events:
       - http:
-          path: fangoost
+          path: call/fangoost
           method: get
           cors: true
-  carrmadan:
-    handler: index.carrmadan
+  fangoostput:
+    handler: handler.fangoostput
     events:
       - http:
-          path: carrmadan
+          path: put/fangoost
           method: get
           cors: true
 
-  fsts:
-    handler: index.fsts
+  carrmadanput:
+    handler: handler.carrmadanput
     events:
       - http:
-          path: fsts
+          path: put/carrmadan
           method: get
           cors: true
+
+  carrmadancall:
+    handler: handler.carrmadancall
+    events:
+      - http:
+          path: call/carrmadan
+          method: get
+          cors: true
+
+  fstsput:
+    handler: handler.fstsput
+    events:
+      - http:
+          path: put/fsts
+          method: get
+          cors: true
+  fstscall:
+    handler: handler.fstscall
+    events:
+      - http:
+          path: call/fsts
+          method: get
+          cors: true
+  VaR:
+    handler: handler.VaR
+    events:
+      - http:
+          path: density/var
+          method: get
+          cors: true
+  density:
+    handler: handler.density
+    events:
+      - http:
+          path: density/raw
+          method: get
+          cors: true
+      
+
 
 
 #    The following are a few example events you can configure

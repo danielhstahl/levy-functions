@@ -1,16 +1,71 @@
-'use strict';
+'use strict'
+const spawn = require('child_process').spawn;
 
-module.exports.hello = (event, context, callback) => {
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Go Serverless v1.0! Your function executed successfully!',
-      input: event,
-    }),
-  };
+process.env['PATH']=`${process.env['PATH']}:${process.env['LAMBDA_TASK_ROOT']}`
+const isParseble=val=>{
+  try{
+      val=parseFloat(val)
+  }catch(err){
+      return val
+  }
+  return val
+}
+const parseToFloat=obj=>{
+  return Object.keys(obj).reduce((prev, curr)=>{
+      prev[curr]=isParseble(obj[curr])
+      return prev
+  },{})
+}
+const done = cb=>(err, res) => cb(null, {
+  statusCode: err ? '400' : '200',
+  body: err ? err.message : res,
+  headers: {
+      "Access-Control-Allow-Origin" : "*", // Required for CORS support to work
+      "Access-Control-Allow-Credentials" : true, // Required for cookies, authorization headers with HTTPS 
+      'Content-Type': 'application/json',
+  },
+});
 
-  callback(null, response);
+const spawnBinary=(functionalityIndicator, parms, done)=>{
+  const model=spawn('./bin/levyfunctions', [functionalityIndicator, parms?JSON.stringify(parms):"{}"])
+  let modelOutput='';
+  let modelErr='';
+  model.stdout.on('data', data=>{
+    modelOutput+=data;
+  })
+  model.stderr.on('data', data=>{
+      modelErr+=data;
+  })
+  model.on('close', code=>{
+      if(modelErr){
+          return done(new Error(modelErr), "");
+      }
+      return done(null, modelOutput);
+  })
+}
 
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
+
+module.exports.fangoostcall = (event, context, callback) => {
+  spawnBinary(3, event.queryStringParameters, done(callback))
+};
+module.exports.fangoostput = (event, context, callback) => {
+  spawnBinary(2, event.queryStringParameters, done(callback))
+};
+module.exports.carrmadanput = (event, context, callback) => {
+  spawnBinary(0, event.queryStringParameters, done(callback))
+};
+module.exports.carrmadancall = (event, context, callback) => {
+  spawnBinary(1, event.queryStringParameters, done(callback))
+};
+module.exports.fstsput = (event, context, callback) => {
+  spawnBinary(4, event.queryStringParameters, done(callback))
+};
+module.exports.fstscall = (event, context, callback) => {
+  spawnBinary(5, event.queryStringParameters, done(callback))
+};
+module.exports.VaR = (event, context, callback) => {
+  spawnBinary(6, event.queryStringParameters, done(callback))
+};
+module.exports.density = (event, context, callback) => {
+  spawnBinary(7, event.queryStringParameters, done(callback))
 };

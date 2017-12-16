@@ -3,7 +3,7 @@
 #include "CFDistUtilities.h"
 #include "get_cf.h"
 #include "parse_json.h"
-//key 0 means 
+
 const int carrmadanput=0;
 const int carrmadancall=1;
 const int fangoostput=2;
@@ -120,7 +120,7 @@ void get_var(const CF& cf, const ParsedJ& parsedJson, int numU, double xMax){
 }
 template<typename CF>
 void get_density(const CF& cf, int numU, double xMax){
-    int numX=1024;
+    int numX=128;
     json_print_options(
         fangoost::computeInv(
             numX, numU, -xMax, xMax, cf
@@ -131,7 +131,6 @@ void get_density(const CF& cf, int numU, double xMax){
 
 int main(int argc, char* argv[]){
     if(argc>2){
-        //std::cout<<argv[2]<<std::endl;
         auto parsedJson=parse_char(argv[2]);
         auto options=get_option_var(parsedJson);
         
@@ -150,10 +149,12 @@ int main(int argc, char* argv[]){
             options.rho
         );
         double discount=exp(-options.r*options.T);
+        /**NOTE that this is a big assumption about the
+         * domain for these distributions.
+         * Be careful!*/
         double xMax=sqrt(options.T)*5.0;
         int numU=pow(2, options.numU);
         int key=std::stoi(argv[1]);
-        //std::cout<<"key: "<<key<<std::endl;
         switch(key){
             case carrmadanput: {
                 carr_madan_put(

@@ -112,7 +112,7 @@ void print_array(const Array& arr){
 
 template<typename Array1, typename Array2>
 void json_print_options(const Array1& prices, const Array2& atPoints){
-    std::cout<<"{\"prices\":";
+    std::cout<<"{\"values\":";
     print_array(prices);
     std::cout<<", \"atPoints\":";
     print_array(atPoints);

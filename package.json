@@ -1,0 +1,30 @@
+{
+  "name": "levy-functions",
+  "version": "1.0.0",
+  "description": "Lambda functions for cgmy process",
+  "main": "handler.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phillyfan1138/levy-functions.git"
+  },
+  "keywords": [
+    "Lambda",
+    "AWS",
+    "CGMY"
+  ],
+  "author": "Daniel Stahl",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/phillyfan1138/levy-functions/issues"
+  },
+  "homepage": "https://github.com/phillyfan1138/levy-functions#readme",
+  "devDependencies": {
+    "jest": "^21.2.1"
+  }
+}

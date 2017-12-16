@@ -1,4 +1,4 @@
-INCLUDES=-I ./rapidjson/include/rapidjson 
+INCLUDES=-I ./rapidjson/include/rapidjson -I ./cfdistutilities -I ./CharacteristicFunctions -I ./FangOost -I ./FFTOptionPricing -I ./FunctionalUtilities -I ./RungeKutta -I ./GaussNewton -I ./TupleUtilities -I ./AutoDiff
 GCCVAL=g++
 
 UNAME_S := $(shell uname -s)

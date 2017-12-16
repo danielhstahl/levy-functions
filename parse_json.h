@@ -3,9 +3,9 @@
 #include "document.h" //rapidjson
 #include "writer.h" //rapidjson
 #include "stringbuffer.h" //rapidjson
-
-struct option_var{
-    int numU=64;
+#include <deque>
+struct option_variables{
+    int numU=6;//gets raised to power of 2: 2^numU
     double r=.03;
     double T=.25;
     double S0=50;
@@ -19,15 +19,43 @@ struct option_var{
     double adaV=.2;
     double rho=-.5;
 };
+struct dist_variables{
+    double quantile=.01;
+};
+struct discrete_k_variables{
+    std::deque<double> k;
+};
 template<typename T>
 T between_values(const T& val, const T& lower, const T& upper){
     return val<lower?lower:(val>upper?upper:val);
 }
 const double maxLarge=1000000.0;
-option_var get_option_var(char* json){
-    option_var local_option;
+rapidjson::Document parse_char(char* json){
     rapidjson::Document parms;
-	parms.Parse(json);
+    parms.Parse(json);
+    return parms;
+}
+
+discrete_k_variables get_k_var(const rapidjson::Document& parms){
+    discrete_k_variables local_k;
+    if(parms.FindMember("k")!=parms.MemberEnd()){
+        for (auto& v : parms["k"].GetArray()) {
+            local_k.k.emplace_back(v.GetDouble());
+        }
+    }
+    return local_k;
+}
+dist_variables get_dist_variables(const rapidjson::Document& parms){
+    dist_variables local_dist;
+    if(parms.FindMember("quantile")!=parms.MemberEnd()){
+        local_dist.quantile=between_values(parms["quantile"].GetDouble(), 0.0, 1.0);
+    }
+    return local_dist;
+}
+
+
+option_variables get_option_var(const rapidjson::Document& parms){
+    option_variables local_option;
     if(parms.FindMember("numU")!=parms.MemberEnd()){
         local_option.numU=between_values(parms["numU"].GetInt(), 16, 1024);
     }
@@ -71,3 +99,27 @@ option_var get_option_var(char* json){
     }
     return local_option;
 }
+
+template<typename Array>
+void print_array(const Array& arr){
+    auto n=arr.size();
+    std::cout<<"[";
+    for(int i=0; i<n-1;++i){
+        std::cout<<arr[i]<<",";
+    }
+    std::cout<<arr[n-1]<<"]";
+}
+
+template<typename Array1, typename Array2>
+void json_print_options(const Array1& prices, const Array2& atPoints){
+    std::cout<<"{\"prices\":";
+    print_array(prices);
+    std::cout<<", \"atPoints\":";
+    print_array(atPoints);
+    std::cout<<"}"<<std::endl;
+}
+
+void json_print_var(double var, double es){
+    std::cout<<"{\"VaR\":"<<var<<",\"ES\":"<<es<<"}"<<std::endl;
+}
+

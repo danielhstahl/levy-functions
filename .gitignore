@@ -7,3 +7,16 @@ jspm_packages
 *.gcno
 *test
 *rapidjson
+*.vscode
+*cfdistutilities
+*CharacteristicFunctions
+*FangOost
+*FFTOptionPricing
+*FunctionalUtilities
+*RungeKutta
+*AutoDiff
+*TupleUtilities
+*GaussNewton
+*.gcda
+levyfunctions
+*.o

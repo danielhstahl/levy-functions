@@ -7,11 +7,11 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 levyfunctions:main.o
-	$(GCCVAL) -std=c++14 -O3  -pthread --coverage main.o $(INCLUDES) -o levyfunctions -fopenmp
+	$(GCCVAL) -std=c++14 -O3  -pthread main.o $(INCLUDES) -o levyfunctions -fopenmp -static-libstdc++
 main.o: main.cpp parse_json.h
-	$(GCCVAL) -std=c++14 -O3  -pthread --coverage -c main.cpp  $(INCLUDES) -fopenmp 
+	$(GCCVAL) -std=c++14 -O3  -pthread -c main.cpp  $(INCLUDES) -fopenmp 
 clean:
-	-rm *.o test
+	-rm *.o test levyfunctions
 
 test: test.cpp parse_json.h
 	g++ -std=c++14 -pthread test.cpp $(INCLUDES) -o test -fopenmp

@@ -28,12 +28,17 @@ cloneAndCheckout AutoDiff
 cloneAndCheckout TupleUtilities 
 cloneAndCheckout GaussNewton 
 
-#git clone https://github.com/miloyip/rapidjson
+git clone https://github.com/miloyip/rapidjson
 
-#rm -rf FunctionalUtilities
-#rm -rf CharacteristicFunctions
-#rm -rf FangOost
-#rm -rf cfdistutilities
-#rm -rf FFTOptionPricing
-#rm -rf rapidjson
+rm -rf FunctionalUtilities
+rm -rf CharacteristicFunctions
+rm -rf FangOost
+rm -rf cfdistutilities
+rm -rf FFTOptionPricing
+rm -rf rapidjson
+rm -rf RungeKutta
+rm -rf TupleUtilities
+rm -rf AutoDiff
+rm -rf GaussNewton
+cp levyfunctions ./bin
 #serverless deploy -v

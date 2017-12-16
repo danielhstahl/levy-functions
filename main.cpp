@@ -41,9 +41,9 @@ void carr_madan_call(const CF& cf, int numU, double discount, double S0, double 
         ada, S0, numU
     ));
 }
-template<typename CF, typename ParsedJ>
-void fsts_call(const CF& cf, const ParsedJ& parsedJson, int numU, double discount, double xMax){
-    auto K=get_k_var(parsedJson).k[0];//only one
+template<typename CF>
+void fsts_call(const CF& cf, int numU, double discount, double K, double xMax){
+    //auto K=S0;//get_k_var(parsedJson).k[0];//only one
     json_print_options(optionprice::FSTS(
         numU, 
         xMax, 
@@ -61,9 +61,8 @@ void fsts_call(const CF& cf, const ParsedJ& parsedJson, int numU, double discoun
         -xMax, xMax, K, numU
     ));
 }
-template<typename CF, typename ParsedJ>
-void fsts_put(const CF& cf, const ParsedJ& parsedJson, int numU, double discount, double xMax){
-    auto K=get_k_var(parsedJson).k[0];//only one
+template<typename CF>
+void fsts_put(const CF& cf, int numU, double discount, double K, double xMax){
     json_print_options(optionprice::FSTS(
         numU,  
         xMax,
@@ -168,22 +167,22 @@ int main(int argc, char* argv[]){
                 carr_madan_call(
                     cgmyCF, numU, 
                     discount, options.S0,
-                     xMax
+                    xMax
                 ); 
                 break;
             }
             case fstscall: {
                 fsts_call(
-                    cgmyCF, parsedJson, 
-                    numU, discount,
+                    cgmyCF, numU, 
+                    discount, options.S0,
                     xMax
                 );
                 break;
             }
             case fstsput: {
                 fsts_put(
-                    cgmyCF, parsedJson, 
-                    numU, discount,
+                    cgmyCF, numU, 
+                    discount, options.S0,
                     xMax
                 );
                 break;
@@ -192,16 +191,16 @@ int main(int argc, char* argv[]){
                 fangoost_call(
                     cgmyCF, parsedJson, 
                     numU, discount, 
-                    options.S0,
-                     xMax);
+                    options.S0, xMax
+                );
                 break;
             }
             case fangoostput: {
                 fangoost_put(
                     cgmyCF, parsedJson, 
                     numU, discount,
-                    options.S0,
-                     xMax);
+                    options.S0, xMax
+                );
                 break;
             }
             case VaR: {

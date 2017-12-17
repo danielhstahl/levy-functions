@@ -27,7 +27,7 @@ const done = cb=>(err, res) => cb(null, {
 });
 
 const spawnBinary=(functionalityIndicator, parms, done)=>{
-  const model=spawn('./bin/levyfunctions', [functionalityIndicator, parms?JSON.stringify(parms):"{}"])
+  const model=spawn('./bin/levyfunctions', [functionalityIndicator, parms?parms:"{}"])
   let modelOutput='';
   let modelErr='';
   model.stdout.on('data', data=>{
@@ -46,7 +46,6 @@ const spawnBinary=(functionalityIndicator, parms, done)=>{
 
 
 module.exports.fangoostcall = (event, context, callback) => {
-  console.log(event)
   spawnBinary(3, event.body, done(callback))
 };
 module.exports.fangoostput = (event, context, callback) => {

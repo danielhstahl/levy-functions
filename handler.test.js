@@ -1,6 +1,6 @@
 const handler=require('./handler')
 const createEvent=data=>({
-    body:data
+    body:JSON.stringify(data)
 })
 
 it('correctly calls fangoostcall', (done)=>{

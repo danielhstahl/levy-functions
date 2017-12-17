@@ -57,7 +57,7 @@ dist_variables get_dist_variables(const rapidjson::Document& parms){
 option_variables get_option_var(const rapidjson::Document& parms){
     option_variables local_option;
     if(parms.FindMember("numU")!=parms.MemberEnd()){
-        local_option.numU=between_values(parms["numU"].GetInt(), 16, 1024);
+        local_option.numU=between_values(parms["numU"].GetInt(), 5, 10);
     }
     if(parms.FindMember("r")!=parms.MemberEnd()){
         local_option.r=between_values(parms["r"].GetDouble(), 0.0, 1.0);

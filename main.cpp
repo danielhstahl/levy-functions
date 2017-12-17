@@ -81,7 +81,6 @@ void fsts_put(const CF& cf, int numU, double discount, double K, double T, doubl
     ), optionprice::getFSTSUnderlying(
         -xMax, xMax, K, numU
     ));
-
 }
 
 template<typename CF, typename ParsedJ>

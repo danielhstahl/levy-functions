@@ -47,26 +47,26 @@ const spawnBinary=(functionalityIndicator, parms, done)=>{
 
 module.exports.fangoostcall = (event, context, callback) => {
   console.log(event)
-  spawnBinary(3, event, done(callback))
+  spawnBinary(3, event.body, done(callback))
 };
 module.exports.fangoostput = (event, context, callback) => {
-  spawnBinary(2, event, done(callback))
+  spawnBinary(2, event.body, done(callback))
 };
 module.exports.carrmadanput = (event, context, callback) => {
-  spawnBinary(0, event, done(callback))
+  spawnBinary(0, event.body, done(callback))
 };
 module.exports.carrmadancall = (event, context, callback) => {
-  spawnBinary(1, event, done(callback))
+  spawnBinary(1, event.body, done(callback))
 };
 module.exports.fstsput = (event, context, callback) => {
-  spawnBinary(4, event, done(callback))
+  spawnBinary(4, event.body, done(callback))
 };
 module.exports.fstscall = (event, context, callback) => {
-  spawnBinary(5, event, done(callback))
+  spawnBinary(5, event.body, done(callback))
 };
 module.exports.VaR = (event, context, callback) => {
-  spawnBinary(6, event, done(callback))
+  spawnBinary(6, event.body, done(callback))
 };
 module.exports.density = (event, context, callback) => {
-  spawnBinary(7, event, done(callback))
+  spawnBinary(7, event.body, done(callback))
 };

@@ -1,6 +1,6 @@
 const handler=require('./handler')
 const createEvent=data=>({
-    queryStringParameters:data
+    body:data
 })
 
 it('correctly calls fangoostcall', (done)=>{

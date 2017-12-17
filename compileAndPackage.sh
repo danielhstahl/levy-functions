@@ -16,7 +16,9 @@ cloneAndCheckout FFTOptionPricing
 cloneAndCheckout RungeKutta 
 cloneAndCheckout AutoDiff 
 cloneAndCheckout TupleUtilities 
+cloneAndCheckout BSImpliedVolatility 
 cloneAndCheckout GaussNewton 
+cloneAndCheckout HullWhite 
 
 git clone https://github.com/miloyip/rapidjson
 make 

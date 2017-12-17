@@ -15,8 +15,10 @@ jspm_packages
 *FunctionalUtilities
 *RungeKutta
 *AutoDiff
+*BSImpliedVolatility
 *TupleUtilities
 *GaussNewton
+*HullWhite
 *.gcda
 levyfunctions
 *.o

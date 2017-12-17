@@ -100,8 +100,17 @@ option_variables get_option_var(const rapidjson::Document& parms){
     return local_option;
 }
 
+template<typename Array1, typename Array2, typename Array3>
+void json_print_options(const Array1& arr1, const Array2& arr2, const Array3& arr3){
+    auto n=arr1.size();
+    std::cout<<"[";
+    for(int i=0; i<n-1;++i){
+        std::cout<<"{\"value\":"<<arr1[i]<<",\"atPoint\":"<<arr2[i]<<",\"iv\":"<<arr3[i]<<"},";
+    }
+    std::cout<<"{\"value\":"<<arr1[n-1]<<",\"atPoint\":"<<arr2[n-1]<<",\"iv\":"<<arr3[n-1]<<"}]";
+}
 template<typename Array1, typename Array2>
-void json_print_options(const Array1& arr1, const Array2& arr2){
+void json_print_density(const Array1& arr1, const Array2& arr2){
     auto n=arr1.size();
     std::cout<<"[";
     for(int i=0; i<n-1;++i){

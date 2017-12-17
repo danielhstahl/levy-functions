@@ -1,6 +1,7 @@
 #include "FunctionalUtilities.h"
 #include "OptionPricing.h"
 #include "CFDistUtilities.h"
+#include "BSImpliedVolatility.h"
 #include "get_cf.h"
 #include "parse_json.h"
 
@@ -13,12 +14,10 @@ const int fstscall=5;
 const int VaR=6;
 const int density=7;
 
-
-
 template<typename CF>
-void carr_madan_put(const CF& cf, int numU, double discount, double S0, double xMax){
+void carr_madan_put(const CF& cf, int numU, double discount, double S0, double T, double xMax){
     auto ada=M_PI/xMax;//.25;
-    json_print_options(optionprice::CarrMadanPut(
+    json_print_density(optionprice::CarrMadanPut(
         numU,  
         ada,
         S0, 
@@ -29,22 +28,23 @@ void carr_madan_put(const CF& cf, int numU, double discount, double S0, double x
     ));
 }
 template<typename CF>
-void carr_madan_call(const CF& cf, int numU, double discount, double S0, double xMax){
+void carr_madan_call(const CF& cf, int numU, double discount, double S0, double T, double xMax){
     auto ada=M_PI/xMax;//.25;
-    json_print_options(optionprice::CarrMadanCall(
+    auto prices=optionprice::CarrMadanCall(
         numU,  
         ada,
         S0, 
         discount, 
         cf
-    ), optionprice::getCarrMadanStrikes(
+    );
+    auto strikes=optionprice::getCarrMadanStrikes(
         ada, S0, numU
-    ));
+    );
+    json_print_options(prices, strikes, IV::getAllIVByStrike(strikes, prices, S0, discount, T, .5));
 }
 template<typename CF>
-void fsts_call(const CF& cf, int numU, double discount, double K, double xMax){
-    //auto K=S0;//get_k_var(parsedJson).k[0];//only one
-    json_print_options(optionprice::FSTS(
+void fsts_call(const CF& cf, int numU, double discount, double K, double T, double xMax){
+    auto prices=optionprice::FSTS(
         numU, 
         xMax, 
         [&](const auto& x){
@@ -57,13 +57,15 @@ void fsts_call(const CF& cf, int numU, double discount, double K, double xMax){
             return assetValue>K?assetValue-K:0.0;
         },
         cf
-    ), optionprice::getFSTSUnderlying(
+    );
+    auto assets=optionprice::getFSTSUnderlying(
         -xMax, xMax, K, numU
-    ));
+    );
+    json_print_options(prices, assets, IV::getAllIVByAsset(assets, prices, K, discount, T, .5));
 }
 template<typename CF>
-void fsts_put(const CF& cf, int numU, double discount, double K, double xMax){
-    json_print_options(optionprice::FSTS(
+void fsts_put(const CF& cf, int numU, double discount, double K, double T, double xMax){
+    json_print_density(optionprice::FSTS(
         numU,  
         xMax,
         [&](const auto& x){
@@ -79,27 +81,30 @@ void fsts_put(const CF& cf, int numU, double discount, double K, double xMax){
     ), optionprice::getFSTSUnderlying(
         -xMax, xMax, K, numU
     ));
+
 }
 
 template<typename CF, typename ParsedJ>
-void fangoost_call(const CF& cf, const ParsedJ& parsedJson, int numU, double discount, double S0, double xMax){
+void fangoost_call(const CF& cf, const ParsedJ& parsedJson, int numU, double discount, double S0, double T, double xMax){
 
     auto strikes=get_k_var(parsedJson).k;
     strikes.push_front(exp(xMax)*S0);
     strikes.push_back(exp(-xMax)*S0);
-    json_print_options(optionprice::FangOostCall(
+    auto prices=optionprice::FangOostCall(
         S0, strikes,
         numU,  
         discount,
         cf
-    ), strikes);
+    );
+    json_print_options(prices, strikes, IV::getAllIVByStrike(strikes, prices, S0, discount, T, .5));
 }
+
 template<typename CF, typename ParsedJ>
-void fangoost_put(const CF& cf, const ParsedJ& parsedJson, int numU, double discount, double S0, double xMax){
+void fangoost_put(const CF& cf, const ParsedJ& parsedJson, int numU, double discount, double S0, double T, double xMax){
     auto strikes=get_k_var(parsedJson).k;
     strikes.push_front(exp(xMax)*S0);
     strikes.push_back(exp(-xMax)*S0);
-    json_print_options(optionprice::FangOostPut(
+    json_print_density(optionprice::FangOostPut(
         S0, strikes,
         numU,  
         discount,
@@ -120,7 +125,7 @@ void get_var(const CF& cf, const ParsedJ& parsedJson, int numU, double xMax){
 template<typename CF>
 void get_density(const CF& cf, int numU, double xMax){
     int numX=128;
-    json_print_options(
+    json_print_density(
         fangoost::computeInv(
             numX, numU, -xMax, xMax, cf
         ), 
@@ -159,7 +164,7 @@ int main(int argc, char* argv[]){
                 carr_madan_put(
                     cgmyCF, numU, 
                     discount, options.S0,
-                     xMax
+                    options.T, xMax
                 ); 
                 break;
             }
@@ -167,7 +172,7 @@ int main(int argc, char* argv[]){
                 carr_madan_call(
                     cgmyCF, numU, 
                     discount, options.S0,
-                    xMax
+                    options.T, xMax
                 ); 
                 break;
             }
@@ -175,7 +180,7 @@ int main(int argc, char* argv[]){
                 fsts_call(
                     cgmyCF, numU, 
                     discount, options.S0,
-                    xMax
+                    options.T, xMax
                 );
                 break;
             }
@@ -183,7 +188,7 @@ int main(int argc, char* argv[]){
                 fsts_put(
                     cgmyCF, numU, 
                     discount, options.S0,
-                    xMax
+                    options.T, xMax
                 );
                 break;
             }
@@ -191,7 +196,7 @@ int main(int argc, char* argv[]){
                 fangoost_call(
                     cgmyCF, parsedJson, 
                     numU, discount, 
-                    options.S0, xMax
+                    options.S0, options.T, xMax
                 );
                 break;
             }
@@ -199,7 +204,7 @@ int main(int argc, char* argv[]){
                 fangoost_put(
                     cgmyCF, parsedJson, 
                     numU, discount,
-                    options.S0, xMax
+                    options.S0, options.T, xMax
                 );
                 break;
             }

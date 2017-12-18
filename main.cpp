@@ -15,8 +15,8 @@ const int VaR=6;
 const int density=7;
 
 template<typename CF>
-void carr_madan_put(const CF& cf, int numU, double discount, double S0, double T, double xMax){
-    auto ada=M_PI/xMax;//.25;
+void carr_madan_put(const CF& cf, int numU, double discount, double S0){
+    auto ada=.25;
     json_print_density(optionprice::CarrMadanPut(
         numU,  
         ada,
@@ -28,8 +28,8 @@ void carr_madan_put(const CF& cf, int numU, double discount, double S0, double T
     ));
 }
 template<typename CF>
-void carr_madan_call(const CF& cf, int numU, double discount, double S0, double T, double xMax){
-    auto ada=M_PI/xMax;//.25;
+void carr_madan_call(const CF& cf, int numU, double discount, double S0, double T){
+    auto ada=.25;
     auto prices=optionprice::CarrMadanCall(
         numU,  
         ada,
@@ -64,7 +64,7 @@ void fsts_call(const CF& cf, int numU, double discount, double K, double T, doub
     json_print_options(prices, assets, IV::getAllIVByAsset(assets, prices, K, discount, T, .5));
 }
 template<typename CF>
-void fsts_put(const CF& cf, int numU, double discount, double K, double T, double xMax){
+void fsts_put(const CF& cf, int numU, double discount, double K, double xMax){
     json_print_density(optionprice::FSTS(
         numU,  
         xMax,
@@ -99,7 +99,7 @@ void fangoost_call(const CF& cf, const ParsedJ& parsedJson, int numU, double dis
 }
 
 template<typename CF, typename ParsedJ>
-void fangoost_put(const CF& cf, const ParsedJ& parsedJson, int numU, double discount, double S0, double T, double xMax){
+void fangoost_put(const CF& cf, const ParsedJ& parsedJson, int numU, double discount, double S0,  double xMax){
     auto strikes=get_k_var(parsedJson).k;
     strikes.push_front(exp(xMax)*S0);
     strikes.push_back(exp(-xMax)*S0);
@@ -162,8 +162,7 @@ int main(int argc, char* argv[]){
             case carrmadanput: {
                 carr_madan_put(
                     cgmyCF, numU, 
-                    discount, options.S0,
-                    options.T, xMax
+                    discount, options.S0
                 ); 
                 break;
             }
@@ -171,7 +170,7 @@ int main(int argc, char* argv[]){
                 carr_madan_call(
                     cgmyCF, numU, 
                     discount, options.S0,
-                    options.T, xMax
+                    options.T
                 ); 
                 break;
             }
@@ -187,7 +186,7 @@ int main(int argc, char* argv[]){
                 fsts_put(
                     cgmyCF, numU, 
                     discount, options.S0,
-                    options.T, xMax
+                    xMax
                 );
                 break;
             }
@@ -203,7 +202,7 @@ int main(int argc, char* argv[]){
                 fangoost_put(
                     cgmyCF, parsedJson, 
                     numU, discount,
-                    options.S0, options.T, xMax
+                    options.S0, xMax
                 );
                 break;
             }

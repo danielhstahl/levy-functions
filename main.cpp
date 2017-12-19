@@ -155,7 +155,7 @@ int main(int argc, char* argv[]){
         /**NOTE that this is a big assumption about the
          * domain for these distributions.
          * Be careful!*/
-        double xMax=sqrt(options.T)*5.0;
+        double xMax=sqrt(options.T)*7.0;
         int numU=pow(2, options.numU);
         int key=std::stoi(argv[1]);
         switch(key){

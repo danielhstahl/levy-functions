@@ -131,6 +131,9 @@ void get_density(const CF& cf, int numU, double xMax){
         fangoost::computeXRange(numX, -xMax, xMax)
     );
 }
+auto get_cgmy_vol(double sigma, double c, double y, double m, double g, double t){
+    return sqrt(t*(sigma*sigma+c*tgamma(2.0-y)*(1.0/pow(m, 2.0-y)+1.0/pow(g, 2.0-y))));
+}
 
 int main(int argc, char* argv[]){
     if(argc>2){
@@ -155,7 +158,7 @@ int main(int argc, char* argv[]){
         /**NOTE that this is a big assumption about the
          * domain for these distributions.
          * Be careful!*/
-        double xMax=sqrt(options.T*options.v0+options.C)*5.0;
+        double xMax=get_cgmy_vol(options.sigma, options.C, options.Y, options.M, options.G, options.T)*3.0;
         int numU=pow(2, options.numU);
         int key=std::stoi(argv[1]);
         switch(key){

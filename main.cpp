@@ -15,8 +15,9 @@ const int VaR=6;
 const int density=7;
 
 template<typename CF>
-void carr_madan_put(const CF& cf, int numU, double discount, double S0){
-    auto ada=.25;
+void carr_madan_put(const CF& cf, int numU, double discount, double S0, double xMax){
+    //auto ada=.25;
+    auto ada=M_PI/xMax;
     json_print_density(optionprice::CarrMadanPut(
         numU,  
         ada,
@@ -28,8 +29,9 @@ void carr_madan_put(const CF& cf, int numU, double discount, double S0){
     ));
 }
 template<typename CF>
-void carr_madan_call(const CF& cf, int numU, double discount, double S0, double T){
-    auto ada=.25;
+void carr_madan_call(const CF& cf, int numU, double discount, double S0, double T, double xMax){
+    //auto ada=.25;
+    auto ada=M_PI/xMax;
     auto prices=optionprice::CarrMadanCall(
         numU,  
         ada,
@@ -158,14 +160,16 @@ int main(int argc, char* argv[]){
         /**NOTE that this is a big assumption about the
          * domain for these distributions.
          * Be careful!*/
-        double xMax=get_cgmy_vol(options.sigma, options.C, options.Y, options.M, options.G, options.T)*3.0;
+        double xMaxDensity=get_cgmy_vol(options.sigma, options.C, options.Y, options.M, options.G, options.T)*5.0;
+        double xMaxOptions=xMaxDensity*2.0;
         int numU=pow(2, options.numU);
         int key=std::stoi(argv[1]);
         switch(key){
             case carrmadanput: {
                 carr_madan_put(
                     cgmyCF, numU, 
-                    discount, options.S0
+                    discount, options.S0,
+                    xMaxOptions
                 ); 
                 break;
             }
@@ -173,7 +177,8 @@ int main(int argc, char* argv[]){
                 carr_madan_call(
                     cgmyCF, numU, 
                     discount, options.S0,
-                    options.T
+                    options.T,
+                    xMaxOptions
                 ); 
                 break;
             }
@@ -181,7 +186,7 @@ int main(int argc, char* argv[]){
                 fsts_call(
                     cgmyCF, numU, 
                     discount, options.S0,
-                    options.T, xMax
+                    options.T, xMaxOptions
                 );
                 break;
             }
@@ -189,7 +194,7 @@ int main(int argc, char* argv[]){
                 fsts_put(
                     cgmyCF, numU, 
                     discount, options.S0,
-                    xMax
+                    xMaxOptions
                 );
                 break;
             }
@@ -197,7 +202,7 @@ int main(int argc, char* argv[]){
                 fangoost_call(
                     cgmyCF, parsedJson, 
                     numU, discount, 
-                    options.S0, options.T, xMax
+                    options.S0, options.T, xMaxOptions
                 );
                 break;
             }
@@ -205,21 +210,21 @@ int main(int argc, char* argv[]){
                 fangoost_put(
                     cgmyCF, parsedJson, 
                     numU, discount,
-                    options.S0, xMax
+                    options.S0, xMaxOptions
                 );
                 break;
             }
             case VaR: {
                 get_var(
                     cgmyCF, parsedJson, 
-                    numU, xMax
+                    numU, xMaxDensity
                 );
                 break;
             }
             case density: {
                 get_density(
                     cgmyCF, numU, 
-                     xMax
+                    xMaxDensity
                 );
                 break;
             }

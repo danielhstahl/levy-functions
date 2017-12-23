@@ -32,7 +32,6 @@ template<typename CF>
 void carr_madan_call(const CF& cf, int numU, double discount, double S0, double T){
     auto ada=.25;
     //auto ada=M_PI/xMax;
-    std::cout<<ada<<std::endl;
     auto prices=optionprice::CarrMadanCall(
         numU,  
         ada,

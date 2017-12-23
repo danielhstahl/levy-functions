@@ -15,9 +15,9 @@ const int VaR=6;
 const int density=7;
 
 template<typename CF>
-void carr_madan_put(const CF& cf, int numU, double discount, double S0, double xMax){
-    //auto ada=.25;
-    auto ada=M_PI/xMax;
+void carr_madan_put(const CF& cf, int numU, double discount, double S0){
+    auto ada=.25;
+    //auto ada=M_PI/xMax;
     json_print_density(optionprice::CarrMadanPut(
         numU,  
         ada,
@@ -29,9 +29,10 @@ void carr_madan_put(const CF& cf, int numU, double discount, double S0, double x
     ));
 }
 template<typename CF>
-void carr_madan_call(const CF& cf, int numU, double discount, double S0, double T, double xMax){
-    //auto ada=.25;
-    auto ada=M_PI/xMax;
+void carr_madan_call(const CF& cf, int numU, double discount, double S0, double T){
+    auto ada=.25;
+    //auto ada=M_PI/xMax;
+    std::cout<<ada<<std::endl;
     auto prices=optionprice::CarrMadanCall(
         numU,  
         ada,
@@ -141,7 +142,6 @@ int main(int argc, char* argv[]){
     if(argc>2){
         auto parsedJson=parse_char(argv[2]);
         auto options=get_option_var(parsedJson);
-        
         auto cgmyCF=cf(
             options.r,
             options.sigma,
@@ -168,8 +168,7 @@ int main(int argc, char* argv[]){
             case carrmadanput: {
                 carr_madan_put(
                     cgmyCF, numU, 
-                    discount, options.S0,
-                    xMaxOptions
+                    discount, options.S0
                 ); 
                 break;
             }
@@ -177,8 +176,7 @@ int main(int argc, char* argv[]){
                 carr_madan_call(
                     cgmyCF, numU, 
                     discount, options.S0,
-                    options.T,
-                    xMaxOptions
+                    options.T
                 ); 
                 break;
             }

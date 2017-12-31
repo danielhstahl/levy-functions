@@ -17,7 +17,6 @@ const int density=7;
 template<typename CF>
 void carr_madan_put(const CF& cf, int numU, double discount, double S0){
     auto ada=.25;
-    //auto ada=M_PI/xMax;
     json_print_density(optionprice::CarrMadanPut(
         numU,  
         ada,
@@ -31,7 +30,6 @@ void carr_madan_put(const CF& cf, int numU, double discount, double S0){
 template<typename CF>
 void carr_madan_call(const CF& cf, int numU, double discount, double S0, double T){
     auto ada=.25;
-    //auto ada=M_PI/xMax;
     auto prices=optionprice::CarrMadanCall(
         numU,  
         ada,

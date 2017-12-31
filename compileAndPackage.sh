@@ -32,5 +32,7 @@ rm -rf RungeKutta
 rm -rf TupleUtilities
 rm -rf AutoDiff
 rm -rf GaussNewton
+rm -rf HullWhite
+rm -rf BSImpliedVolatility
 cp levyfunctions ./bin
 #serverless deploy -v

@@ -60,16 +60,16 @@ option_variables get_option_var(const rapidjson::Document& parms){
         local_option.numU=between_values(parms["numU"].GetInt(), 5, 10);
     }
     if(parms.FindMember("r")!=parms.MemberEnd()){
-        local_option.r=between_values(parms["r"].GetDouble(), 0.0, 1.0);
+        local_option.r=between_values(parms["r"].GetDouble(), 0.0, maxLarge);
     }
     if(parms.FindMember("T")!=parms.MemberEnd()){
-        local_option.T=between_values(parms["T"].GetDouble(), 0.0, 25.0);
+        local_option.T=between_values(parms["T"].GetDouble(), 0.0, maxLarge);
     }
     if(parms.FindMember("S0")!=parms.MemberEnd()){
         local_option.S0=between_values(parms["S0"].GetDouble(), 0.0, maxLarge);
     }
     if(parms.FindMember("sigma")!=parms.MemberEnd()){
-        local_option.sigma=between_values(parms["sigma"].GetDouble(), 0.0, 5.0);
+        local_option.sigma=between_values(parms["sigma"].GetDouble(), 0.0, maxLarge);
     }
     if(parms.FindMember("C")!=parms.MemberEnd()){
         auto result=
@@ -86,13 +86,13 @@ option_variables get_option_var(const rapidjson::Document& parms){
         local_option.Y=between_values(parms["Y"].GetDouble(), 0.0, 2.0);
     }
     if(parms.FindMember("speed")!=parms.MemberEnd()){
-        local_option.speed=between_values(parms["speed"].GetDouble(), 0.0, 1.5);
+        local_option.speed=between_values(parms["speed"].GetDouble(), 0.0, maxLarge);
     }
     if(parms.FindMember("v0")!=parms.MemberEnd()){
-        local_option.v0=between_values(parms["v0"].GetDouble(), 0.0, 2.0);
+        local_option.v0=between_values(parms["v0"].GetDouble(), 0.0, maxLarge);
     }
     if(parms.FindMember("adaV")!=parms.MemberEnd()){
-        local_option.adaV=between_values(parms["adaV"].GetDouble(), 0.0, 2.0);
+        local_option.adaV=between_values(parms["adaV"].GetDouble(), 0.0, maxLarge);
     }
     if(parms.FindMember("rho")!=parms.MemberEnd()){
         local_option.rho=between_values(parms["rho"].GetDouble(), -1.0, 1.0);

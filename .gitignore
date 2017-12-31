@@ -22,3 +22,4 @@ jspm_packages
 *.gcda
 levyfunctions
 *.o
+*.DS_Store

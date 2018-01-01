@@ -58,7 +58,7 @@ void fsts_call(const CF& cf, int numU, double discount, double K, double T, doub
         },
         cf
     );
-    auto assets=optionprice::getFSTSUnderlying(
+    auto assets=optionprice::getStrikeUnderlying(
         -xMax, xMax, K, numU
     );
     json_print_options(prices, assets, IV::getAllIVByAsset(assets, prices, K, discount, T, .5));
@@ -78,7 +78,7 @@ void fsts_put(const CF& cf, int numU, double discount, double K, double xMax){
             return assetValue<K?K-assetValue:0.0;
         },
         cf
-    ), optionprice::getFSTSUnderlying(
+    ), optionprice::getStrikeUnderlying(
         -xMax, xMax, K, numU
     ));
 }

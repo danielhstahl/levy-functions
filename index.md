@@ -39,6 +39,7 @@ This endpoint returns call option prices for an underlying that follows an exten
 
 # Call
 
+## Option Prices
 ```bash
 curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/fangoost"
 ```
@@ -96,9 +97,66 @@ Parameter | Description
 --------- | -----------
 ALGORITHM | The option pricing algorithm to use.  Options are "fangoost", "carrmadan", and "fsts".  
 
+## Sensitivities
+
+```bash
+curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/fangoost"
+```
+
+```javascript
+const body={
+    numU:6,/*gets raised to power of 2: 2^numU*/
+    r:.03,
+    T:.25,
+    S0:50,
+    sigma:.2,
+    C:1.0,
+    G:1.4,
+    M:2.5,
+    Y:.6,
+    speed:.4,
+    v0:1.05,
+    adaV:.2,
+    rho:-.5,
+    k:[1.0, 1.5],
+    quantile:.01
+}
+fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/delta/fangoost', {
+    method:'post',
+    body
+}).then(response=>response.json())
+```
+
+> The above command returns JSON structured like this:
+
+```json
+[
+  {
+    "atPoint": 1.0,
+    "value": 5.0
+  },
+  {
+    "atPoint": 1.5,
+    "value": 4.5
+  }
+]
+```
+
+Retrieves option delta and asset/strike prices
+
+### HTTP Request
+
+`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/delta/<ALGORITHM>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+ALGORITHM | The option pricing algorithm to use.  Options are "fangoost", "carrmadan", and "fsts". 
 
 # Put
 
+## Option Prices
 ```bash
 curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/fangoost"
 ```
@@ -142,11 +200,67 @@ fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/fangoost',
 ]
 ```
 
-Retrieves put prices, asset/strike prices, and implied volatilities
+Retrieves put prices and asset/strike prices.
 
 ### HTTP Request
 
 `POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/<ALGORITHM>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+ALGORITHM | The option pricing algorithm to use.  Options are "fangoost", "carrmadan", and "fsts".  
+
+## Sensitivities
+```bash
+curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/delta/fangoost"
+```
+
+```javascript
+const body={
+    numU:6,/*gets raised to power of 2: 2^numU*/
+    r:.03,
+    T:.25,
+    S0:50,
+    sigma:.2,
+    C:1.0,
+    G:1.4,
+    M:2.5,
+    Y:.6,
+    speed:.4,
+    v0:1.05,
+    adaV:.2,
+    rho:-.5,
+    k:[1.0, 1.5],
+    quantile:.01
+}
+fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/delta/fangoost', {
+    method:'post',
+    body
+}).then(response=>response.json())
+```
+
+> The above command returns JSON structured like this:
+
+```json
+[
+  {
+    "atPoint": 1.0,
+    "value": 5.0
+  },
+  {
+    "atPoint": 1.5,
+    "value": 4.5
+  }
+]
+```
+
+Retrieves option delta and asset/strike prices.
+
+### HTTP Request
+
+`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/delta/<ALGORITHM>`
 
 ### URL Parameters
 

@@ -100,7 +100,7 @@ ALGORITHM | The option pricing algorithm to use.  Options are "fangoost", "carrm
 ## Sensitivities
 
 ```bash
-curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/fangoost"
+curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/delta/fangoost"
 ```
 
 ```javascript

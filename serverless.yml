@@ -67,11 +67,25 @@ functions:
           path: call/fangoost
           method: post
           cors: true
+  fangoostcalldelta:
+    handler: handler.fangoostcalldelta
+    events:
+      - http:
+          path: call/fangoost/delta
+          method: post
+          cors: true
   fangoostput:
     handler: handler.fangoostput
     events:
       - http:
           path: put/fangoost
+          method: post
+          cors: true
+  fangoostputdelta:
+    handler: handler.fangoostputdelta
+    events:
+      - http:
+          path: put/fangoost/delta
           method: post
           cors: true
 
@@ -103,6 +117,20 @@ functions:
     events:
       - http:
           path: call/fsts
+          method: post
+          cors: true
+  fstsputdelta:
+    handler: handler.fstsputdelta
+    events:
+      - http:
+          path: put/fsts/delta
+          method: post
+          cors: true
+  fstscalldelta:
+    handler: handler.fstscalldelta
+    events:
+      - http:
+          path: call/fsts/delta
           method: post
           cors: true
   VaR:

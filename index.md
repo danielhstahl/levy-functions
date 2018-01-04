@@ -97,30 +97,13 @@ Parameter | Description
 --------- | -----------
 ALGORITHM | The option pricing algorithm to use.  Options are "fangoost", "carrmadan", and "fsts".  
 
-## Sensitivities
+## Delta
 
 ```bash
 curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/delta/fangoost"
 ```
 
 ```javascript
-const body={
-    numU:6,/*gets raised to power of 2: 2^numU*/
-    r:.03,
-    T:.25,
-    S0:50,
-    sigma:.2,
-    C:1.0,
-    G:1.4,
-    M:2.5,
-    Y:.6,
-    speed:.4,
-    v0:1.05,
-    adaV:.2,
-    rho:-.5,
-    k:[1.0, 1.5],
-    quantile:.01
-}
 fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/delta/fangoost', {
     method:'post',
     body
@@ -153,6 +136,87 @@ Retrieves option delta and asset/strike prices
 Parameter | Description
 --------- | -----------
 ALGORITHM | The option pricing algorithm to use.  Options are "fangoost" and "fsts". 
+
+## Theta
+
+```bash
+curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/theta/fangoost"
+```
+
+```javascript
+fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/theta/fangoost', {
+    method:'post',
+    body
+}).then(response=>response.json())
+```
+
+> The above command returns JSON structured like this:
+
+```json
+[
+  {
+    "atPoint": 1.0,
+    "value": 5.0
+  },
+  {
+    "atPoint": 1.5,
+    "value": 4.5
+  }
+]
+```
+
+Retrieves option theta and asset/strike prices.  This only works if time is not stochastic!
+
+### HTTP Request
+
+`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/theta/<ALGORITHM>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+ALGORITHM | The option pricing algorithm to use.  Options are "fangoost" and "fsts". 
+
+## Gamma
+
+```bash
+curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/gamma/fangoost"
+```
+
+```javascript
+fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/gamma/fangoost', {
+    method:'post',
+    body
+}).then(response=>response.json())
+```
+
+> The above command returns JSON structured like this:
+
+```json
+[
+  {
+    "atPoint": 1.0,
+    "value": 5.0
+  },
+  {
+    "atPoint": 1.5,
+    "value": 4.5
+  }
+]
+```
+
+Retrieves option gamma and asset/strike prices
+
+### HTTP Request
+
+`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/theta/<ALGORITHM>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+ALGORITHM | The option pricing algorithm to use.  Options are "fangoost" and "fsts". 
+
 
 # Put
 
@@ -212,29 +276,13 @@ Parameter | Description
 --------- | -----------
 ALGORITHM | The option pricing algorithm to use.  Options are "fangoost", "carrmadan", and "fsts".  
 
-## Sensitivities
+## Delta
 ```bash
 curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/delta/fangoost"
 ```
 
 ```javascript
-const body={
-    numU:6,/*gets raised to power of 2: 2^numU*/
-    r:.03,
-    T:.25,
-    S0:50,
-    sigma:.2,
-    C:1.0,
-    G:1.4,
-    M:2.5,
-    Y:.6,
-    speed:.4,
-    v0:1.05,
-    adaV:.2,
-    rho:-.5,
-    k:[1.0, 1.5],
-    quantile:.01
-}
+
 fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/delta/fangoost', {
     method:'post',
     body
@@ -267,6 +315,86 @@ Retrieves option delta and asset/strike prices.
 Parameter | Description
 --------- | -----------
 ALGORITHM | The option pricing algorithm to use.  Options are "fangoost" and "fsts".  
+
+## Theta
+
+```bash
+curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/theta/fangoost"
+```
+
+```javascript
+fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/theta/fangoost', {
+    method:'post',
+    body
+}).then(response=>response.json())
+```
+
+> The above command returns JSON structured like this:
+
+```json
+[
+  {
+    "atPoint": 1.0,
+    "value": 5.0
+  },
+  {
+    "atPoint": 1.5,
+    "value": 4.5
+  }
+]
+```
+
+Retrieves option theta and asset/strike prices.  This only works if time is not stochastic!
+
+### HTTP Request
+
+`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/theta/<ALGORITHM>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+ALGORITHM | The option pricing algorithm to use.  Options are "fangoost" and "fsts". 
+
+## Gamma
+
+```bash
+curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/gamma/fangoost"
+```
+
+```javascript
+fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/gamma/fangoost', {
+    method:'post',
+    body
+}).then(response=>response.json())
+```
+
+> The above command returns JSON structured like this:
+
+```json
+[
+  {
+    "atPoint": 1.0,
+    "value": 5.0
+  },
+  {
+    "atPoint": 1.5,
+    "value": 4.5
+  }
+]
+```
+
+Retrieves option gamma and asset/strike prices
+
+### HTTP Request
+
+`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/theta/<ALGORITHM>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+ALGORITHM | The option pricing algorithm to use.  Options are "fangoost" and "fsts". 
 
 # Density
 

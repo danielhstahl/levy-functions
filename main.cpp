@@ -5,19 +5,26 @@
 #include "get_cf.h"
 #include "parse_json.h"
 
-const int carrmadanput=0;
-const int carrmadancall=1;
-const int fangoostput=2;
-const int fangoostputdelta=3;
-const int fangoostcall=4;
-const int fangoostcalldelta=5;
-const int fstsput=6;
-const int fstsputdelta=7;
-const int fstscall=8;
-const int fstscalldelta=9;
-
-const int VaR=10;
-const int density=11;
+constexpr int carrmadanput=0;
+constexpr int carrmadancall=1;
+constexpr int fangoostput=2;
+constexpr int fangoostputdelta=3;
+constexpr int fangoostputtheta=4;
+constexpr int fangoostputgamma=5;
+constexpr int fangoostcall=6;
+constexpr int fangoostcalldelta=7;
+constexpr int fangoostcalltheta=8;
+constexpr int fangoostcallgamma=9;
+constexpr int fstsput=10;
+constexpr int fstsputdelta=11;
+constexpr int fstsputtheta=12;
+constexpr int fstsputgamma=13;
+constexpr int fstscall=14;
+constexpr int fstscalldelta=15;
+constexpr int fstscalltheta=16;
+constexpr int fstscallgamma=17;
+constexpr int VaR=18;
+constexpr int density=19;
 
 template<typename CF>
 void carr_madan_put(const CF& cf, int numU,  double S0, double r, double T){
@@ -47,12 +54,6 @@ void carr_madan_call(const CF& cf, int numU,  double S0, double r, double T){
     );
     json_print_options(prices, strikes, IV::getAllIVByStrike(strikes, prices, S0, exp(-r*T), T, .5));
 }
-/**auto payoff=[&](const auto& assetValue){
-        return assetValue>K?assetValue-K:0.0;
-    };
-    auto getAssetPrice=[&](const auto& logAsset){
-        return K*exp(logAsset);
-    };*/
 template<typename CF>
 void fsts_call(const CF& cf, int numU,double K, double r, double T, double xMax){
     auto prices=optionprice::FSTSPrice(
@@ -75,6 +76,44 @@ void fsts_call(const CF& cf, int numU,double K, double r, double T, double xMax)
 template<typename CF>
 void fsts_call_delta(const CF& cf, int numU, double K, double r, double T, double xMax){
     auto prices=optionprice::FSTSDelta(
+        numU, 
+        xMax, 
+        r, T,
+        [&](const auto& logAsset){
+            return K*exp(logAsset);
+        },
+        [&](const auto& assetValue){
+            return assetValue>K?assetValue-K:0.0;
+        },
+        cf
+    );
+    auto assets=optionprice::getStrikeUnderlying(
+        -xMax, xMax, K, numU
+    );
+    json_print_density(prices, assets);
+}
+template<typename CF>
+void fsts_call_theta(const CF& cf, int numU, double K, double r, double T, double xMax){
+    auto prices=optionprice::FSTSTheta(
+        numU, 
+        xMax, 
+        r, T,
+        [&](const auto& logAsset){
+            return K*exp(logAsset);
+        },
+        [&](const auto& assetValue){
+            return assetValue>K?assetValue-K:0.0;
+        },
+        cf
+    );
+    auto assets=optionprice::getStrikeUnderlying(
+        -xMax, xMax, K, numU
+    );
+    json_print_density(prices, assets);
+}
+template<typename CF>
+void fsts_call_gamma(const CF& cf, int numU, double K, double r, double T, double xMax){
+    auto prices=optionprice::FSTSGamma(
         numU, 
         xMax, 
         r, T,
@@ -125,6 +164,40 @@ void fsts_put_delta(const CF& cf, int numU, double K, double r, double T, double
         -xMax, xMax, K, numU
     ));
 }
+template<typename CF>
+void fsts_put_theta(const CF& cf, int numU, double K, double r, double T, double xMax){
+    json_print_density(optionprice::FSTSTheta(
+        numU,  
+        xMax,
+        r, T,
+        [&](const auto& logAsset){
+            return K*exp(logAsset);
+        },
+        [&](const auto& assetValue){
+            return assetValue>K?assetValue-K:0.0;
+        },
+        cf
+    ), optionprice::getStrikeUnderlying(
+        -xMax, xMax, K, numU
+    ));
+}
+template<typename CF>
+void fsts_put_gamma(const CF& cf, int numU, double K, double r, double T, double xMax){
+    json_print_density(optionprice::FSTSGamma(
+        numU,  
+        xMax,
+        r, T,
+        [&](const auto& logAsset){
+            return K*exp(logAsset);
+        },
+        [&](const auto& assetValue){
+            return assetValue>K?assetValue-K:0.0;
+        },
+        cf
+    ), optionprice::getStrikeUnderlying(
+        -xMax, xMax, K, numU
+    ));
+}
 
 template<typename CF, typename ParsedJ>
 void fangoost_call(const CF& cf, const ParsedJ& parsedJson, int numU, double S0, double r, double T, double xMax){
@@ -155,6 +228,38 @@ void fangoost_call_delta(const CF& cf, const ParsedJ& parsedJson, int numU, doub
         strikes
     );
 }
+template<typename CF, typename ParsedJ>
+void fangoost_call_theta(const CF& cf, const ParsedJ& parsedJson, int numU, double S0, double r, double T, double xMax){
+
+    auto strikes=get_k_var(parsedJson).k;
+    strikes.push_front(exp(xMax)*S0);
+    strikes.push_back(exp(-xMax)*S0);
+    json_print_density(
+        optionprice::FangOostCallTheta(
+            S0, strikes,
+            r, T,
+            numU,  
+            cf
+        ), 
+        strikes
+    );
+}
+template<typename CF, typename ParsedJ>
+void fangoost_call_gamma(const CF& cf, const ParsedJ& parsedJson, int numU, double S0, double r, double T, double xMax){
+
+    auto strikes=get_k_var(parsedJson).k;
+    strikes.push_front(exp(xMax)*S0);
+    strikes.push_back(exp(-xMax)*S0);
+    json_print_density(
+        optionprice::FangOostCallGamma(
+            S0, strikes,
+            r, T,
+            numU,  
+            cf
+        ), 
+        strikes
+    );
+}
 
 template<typename CF, typename ParsedJ>
 void fangoost_put(const CF& cf, const ParsedJ& parsedJson, int numU, double S0,  double r, double T, double xMax){
@@ -174,6 +279,30 @@ void fangoost_put_delta(const CF& cf, const ParsedJ& parsedJson, int numU, doubl
     strikes.push_front(exp(xMax)*S0);
     strikes.push_back(exp(-xMax)*S0);
     json_print_density(optionprice::FangOostPutDelta(
+        S0, strikes,
+        r, T, 
+        numU,
+        cf
+    ), strikes);
+}
+template<typename CF, typename ParsedJ>
+void fangoost_put_theta(const CF& cf, const ParsedJ& parsedJson, int numU, double S0, double r, double T, double xMax){
+    auto strikes=get_k_var(parsedJson).k;
+    strikes.push_front(exp(xMax)*S0);
+    strikes.push_back(exp(-xMax)*S0);
+    json_print_density(optionprice::FangOostPutTheta(
+        S0, strikes,
+        r, T, 
+        numU,
+        cf
+    ), strikes);
+}
+template<typename CF, typename ParsedJ>
+void fangoost_put_gamma(const CF& cf, const ParsedJ& parsedJson, int numU, double S0, double r, double T, double xMax){
+    auto strikes=get_k_var(parsedJson).k;
+    strikes.push_front(exp(xMax)*S0);
+    strikes.push_back(exp(-xMax)*S0);
+    json_print_density(optionprice::FangOostPutGamma(
         S0, strikes,
         r, T, 
         numU,
@@ -267,6 +396,24 @@ int main(int argc, char* argv[]){
                 );
                 break;
             }
+            case fstscalltheta: {
+                fsts_call_theta(
+                    cgmyCF, numU, 
+                    options.S0,
+                    options.r, options.T,
+                    xMaxOptions
+                );
+                break;
+            }
+            case fstscallgamma: {
+                fsts_call_gamma(
+                    cgmyCF, numU, 
+                    options.S0,
+                    options.r, options.T,
+                    xMaxOptions
+                );
+                break;
+            }
             case fstsput: {
                 fsts_put(
                     cgmyCF, numU, 
@@ -278,6 +425,24 @@ int main(int argc, char* argv[]){
             }
             case fstsputdelta: {
                 fsts_put_delta(
+                    cgmyCF, numU, 
+                    options.S0,
+                    options.r, options.T,
+                    xMaxOptions
+                );
+                break;
+            }
+            case fstsputtheta: {
+                fsts_put_theta(
+                    cgmyCF, numU, 
+                    options.S0,
+                    options.r, options.T,
+                    xMaxOptions
+                );
+                break;
+            }
+            case fstsputgamma: {
+                fsts_put_gamma(
                     cgmyCF, numU, 
                     options.S0,
                     options.r, options.T,
@@ -303,6 +468,24 @@ int main(int argc, char* argv[]){
                 );
                 break;
             }
+            case fangoostcalltheta: {
+                fangoost_call_theta(
+                    cgmyCF, parsedJson, 
+                    numU, 
+                    options.S0, options.r,
+                    options.T, xMaxOptions
+                );
+                break;
+            }
+            case fangoostcallgamma: {
+                fangoost_call_gamma(
+                    cgmyCF, parsedJson, 
+                    numU, 
+                    options.S0, options.r,
+                    options.T, xMaxOptions
+                );
+                break;
+            }
             case fangoostput: {
                 fangoost_put(
                     cgmyCF, parsedJson, 
@@ -315,6 +498,26 @@ int main(int argc, char* argv[]){
             }
             case fangoostputdelta: {
                 fangoost_put_delta(
+                    cgmyCF, parsedJson, 
+                    numU,
+                    options.S0, 
+                    options.r,
+                    options.T, xMaxOptions
+                );
+                break;
+            }
+            case fangoostputtheta: {
+                fangoost_put_theta(
+                    cgmyCF, parsedJson, 
+                    numU,
+                    options.S0, 
+                    options.r,
+                    options.T, xMaxOptions
+                );
+                break;
+            }
+            case fangoostputgamma: {
+                fangoost_put_gamma(
                     cgmyCF, parsedJson, 
                     numU,
                     options.S0, 

@@ -1,19 +1,28 @@
 'use strict'
 const spawn = require('child_process').spawn
-const keys={
-  carrmadanput:0,
-  carrmadancall:1,
-  fangoostput:2,
-  fangoostputdelta:3,
-  fangoostcall:4,
-  fangoostcalldelta:5,
-  fstsput:6,
-  fstsputdelta:7,
-  fstscall:8,
-  fstscalldelta:9,
-  VaR:10,
-  density:11
-}
+const keys=[
+  'carrmadanput',
+  'carrmadancall',
+  'fangoostput',
+  'fangoostputdelta',
+  'fangoostputtheta',
+  'fangoostputgamma',
+  'fangoostcall',
+  'fangoostcalldelta',
+  'fangoostcalltheta',
+  'fangoostcallgamma',
+  'fstsput',
+  'fstsputdelta',
+  'fstsputtheta',
+  'fstsputgamma',
+  'fstscall',
+  'fstscalldelta',
+  'fstscalltheta',
+  'fstscallgamma',
+  'VaR',
+  'density'
+]
+
 
 process.env['PATH']=`${process.env['PATH']}:${process.env['LAMBDA_TASK_ROOT']}`
 
@@ -44,8 +53,9 @@ const spawnBinary=(functionalityIndicator, parms, done)=>{
     return done(null, modelOutput)
   })
 }
-Object.keys(keys).forEach(key=>{
+keys.forEach((key, index)=>{
   module.exports[key]=(event, context, callback) => {
-    spawnBinary(keys[key], event.body, done(callback))
+    spawnBinary(index, event.body, done(callback))
   }
 })
+module.exports.keys=keys

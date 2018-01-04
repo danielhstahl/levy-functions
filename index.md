@@ -152,7 +152,7 @@ Retrieves option delta and asset/strike prices
 
 Parameter | Description
 --------- | -----------
-ALGORITHM | The option pricing algorithm to use.  Options are "fangoost", "carrmadan", and "fsts". 
+ALGORITHM | The option pricing algorithm to use.  Options are "fangoost" and "fsts". 
 
 # Put
 
@@ -266,7 +266,7 @@ Retrieves option delta and asset/strike prices.
 
 Parameter | Description
 --------- | -----------
-ALGORITHM | The option pricing algorithm to use.  Options are "fangoost", "carrmadan", and "fsts".  
+ALGORITHM | The option pricing algorithm to use.  Options are "fangoost" and "fsts".  
 
 # Density
 

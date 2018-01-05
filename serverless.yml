@@ -74,14 +74,14 @@ functions:
           path: call/delta/fangoost
           method: post
           cors: true
-  fangoostcalldelta:
+  fangoostcalltheta:
     handler: handler.fangoostcalltheta
     events:
       - http:
           path: call/theta/fangoost
           method: post
           cors: true
-  fangoostcalldelta:
+  fangoostcallgamma:
     handler: handler.fangoostcallgamma
     events:
       - http:

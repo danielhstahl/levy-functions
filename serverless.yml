@@ -64,7 +64,7 @@ functions:
     handler: handler.fangoostcall
     events:
       - http:
-          path: call/fangoost
+          path: call/price/fangoost
           method: post
           cors: true
   fangoostcalldelta:
@@ -92,7 +92,7 @@ functions:
     handler: handler.fangoostput
     events:
       - http:
-          path: put/fangoost
+          path: put/price/fangoost
           method: post
           cors: true
   fangoostputdelta:
@@ -121,7 +121,7 @@ functions:
     handler: handler.carrmadanput
     events:
       - http:
-          path: put/carrmadan
+          path: put/price/carrmadan
           method: post
           cors: true
 
@@ -129,7 +129,7 @@ functions:
     handler: handler.carrmadancall
     events:
       - http:
-          path: call/carrmadan
+          path: call/price/carrmadan
           method: post
           cors: true
 
@@ -137,14 +137,14 @@ functions:
     handler: handler.fstsput
     events:
       - http:
-          path: put/fsts
+          path: put/price/fsts
           method: post
           cors: true
   fstscall:
     handler: handler.fstscall
     events:
       - http:
-          path: call/fsts
+          path: call/price/fsts
           method: post
           cors: true
   fstsputdelta:

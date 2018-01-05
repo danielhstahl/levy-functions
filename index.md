@@ -41,7 +41,7 @@ This endpoint returns call option prices for an underlying that follows an exten
 
 ## Option Prices
 ```bash
-curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/fangoost"
+curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/price/fangoost"
 ```
 
 ```javascript
@@ -62,7 +62,7 @@ const body={
     k:[1.0, 1.5],
     quantile:.01
 }
-fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/fangoost', {
+fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/price/fangoost', {
     method:'post',
     body
 }).then(response=>response.json())
@@ -89,7 +89,7 @@ Retrieves call prices, asset/strike prices, and implied volatilities
 
 ### HTTP Request
 
-`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/<ALGORITHM>`
+`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/price/<ALGORITHM>`
 
 ### URL Parameters
 
@@ -222,7 +222,7 @@ ALGORITHM | The option pricing algorithm to use.  Options are "fangoost" and "fs
 
 ## Option Prices
 ```bash
-curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/fangoost"
+curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/price/fangoost"
 ```
 
 ```javascript
@@ -243,7 +243,7 @@ const body={
     k:[1.0, 1.5],
     quantile:.01
 }
-fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/fangoost', {
+fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/price/fangoost', {
     method:'post',
     body
 }).then(response=>response.json())
@@ -268,7 +268,7 @@ Retrieves put prices and asset/strike prices.
 
 ### HTTP Request
 
-`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/<ALGORITHM>`
+`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/price/<ALGORITHM>`
 
 ### URL Parameters
 

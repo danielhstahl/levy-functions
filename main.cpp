@@ -140,7 +140,7 @@ void fsts_put(const CF& cf, int numU, double K, double r, double T, double xMax)
             return K*exp(logAsset);
         },
         [&](const auto& assetValue){
-            return assetValue>K?assetValue-K:0.0;
+            return assetValue<K?K-assetValue:0.0;
         },
         cf
     ), optionprice::getStrikeUnderlying(
@@ -157,7 +157,7 @@ void fsts_put_delta(const CF& cf, int numU, double K, double r, double T, double
             return K*exp(logAsset);
         },
         [&](const auto& assetValue){
-            return assetValue>K?assetValue-K:0.0;
+            return assetValue<K?K-assetValue:0.0;
         },
         cf
     ), optionprice::getStrikeUnderlying(
@@ -174,7 +174,7 @@ void fsts_put_theta(const CF& cf, int numU, double K, double r, double T, double
             return K*exp(logAsset);
         },
         [&](const auto& assetValue){
-            return assetValue>K?assetValue-K:0.0;
+            return assetValue<K?K-assetValue:0.0;
         },
         cf
     ), optionprice::getStrikeUnderlying(
@@ -191,7 +191,7 @@ void fsts_put_gamma(const CF& cf, int numU, double K, double r, double T, double
             return K*exp(logAsset);
         },
         [&](const auto& assetValue){
-            return assetValue>K?assetValue-K:0.0;
+            return assetValue<K?K-assetValue:0.0;
         },
         cf
     ), optionprice::getStrikeUnderlying(

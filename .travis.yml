@@ -1,33 +1,21 @@
 sudo: true
-
-matrix:
-  include:
-    - language: nodejs
-      node_js:
-      - "stable"
-      cache:
-        directories:
-        - node_modules
-      script:
-        - npm install
-        - npm test -- --coverage
-    - language: cpp
-      os: linux
-      dist: trusty #xenial
-      env:
-         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
-      before_install:
-        - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-        - sudo apt-get -y update
-        - sudo apt-get -y install gcc-5 g++-5
-        - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 60 --slave /usr/bin/g++ g++ /usr/bin/g++-5
-        - g++ -v
-        - eval "${MATRIX_EVAL}"
-        - cd ..
-        - cd nelder_mead
-      script:
-        - make
-        - ./test
-
-#after_success:
-#  - bash <(curl -s https://codecov.io/bash) 
+language: node_js
+node_js:
+  - "stable"
+env:
+  - CXX=g++-7
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-7
+env:
+  - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+before_install:
+  - eval "${MATRIX_EVAL}"
+  - ./compileAndPackage.sh
+script:
+  - make test 
+  - ./test
+  - npm test

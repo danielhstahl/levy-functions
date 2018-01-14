@@ -203,5 +203,26 @@ functions:
           path: density/raw
           method: post
           cors: true
+  fullmodel:
+    handler: handler.fullmodel
+    events:
+      - http:
+          path: calibration/full
+          method: post
+          cors: true
+  hestonmodel:
+    handler: handler.hestonmodel
+    events:
+      - http:
+          path: calibration/heston
+          method: post
+          cors: true
+  bsmodel:
+    handler: handler.bsmodel
+    events:
+      - http:
+          path: calibration/bs
+          method: post
+          cors: true
       
 

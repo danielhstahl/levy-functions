@@ -10,6 +10,7 @@ rm -rf TupleUtilities
 rm -rf AutoDiff
 rm -rf GaussNewton
 rm -rf HullWhite
+rm -rf nelder_mead
 rm -rf BSImpliedVolatility
 function cloneAndCheckout {
 	git clone https://github.com/phillyfan1138/$1
@@ -36,7 +37,19 @@ cloneAndCheckout HullWhite
 git clone https://github.com/miloyip/rapidjson
 make calculator
 make calibrator
-
+rm -rf FunctionalUtilities
+rm -rf CharacteristicFunctions
+rm -rf FangOost
+rm -rf cfdistutilities
+rm -rf FFTOptionPricing
+rm -rf rapidjson
+rm -rf RungeKutta
+rm -rf TupleUtilities
+rm -rf AutoDiff
+rm -rf GaussNewton
+rm -rf HullWhite
+rm -rf BSImpliedVolatility
+rm -rf nelder_mead
 cp calculator ./bin
 cp calibrator ./bin
 #serverless deploy -v

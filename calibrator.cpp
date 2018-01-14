@@ -98,7 +98,8 @@ int main(int argc, char* argv[]){
                         std::vector<double>({.2, 2, 2, .4, .2, .3, .2, .2}), //guess
                         prices, get_k_var(parsedJson),
                         options.S0, options.r, options.T, xMax, numU
-                    )
+                    ),
+                    prices.size()
                 );
                 break;
             }
@@ -119,7 +120,8 @@ int main(int argc, char* argv[]){
                         std::vector<double>({.2, .2, .2, .2}), //guess
                         prices, get_k_var(parsedJson),
                         options.S0, options.r, options.T, xMax, numU
-                    )
+                    ),
+                    prices.size()
                 );
                 break;
             }
@@ -140,7 +142,8 @@ int main(int argc, char* argv[]){
                         std::vector<double>({.2}), //guess
                         prices, get_k_var(parsedJson),
                         options.S0, options.r, options.T, xMax, numU
-                    )
+                    ),
+                    prices.size()
                 );
                 break;
             }

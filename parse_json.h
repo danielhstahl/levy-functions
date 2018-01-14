@@ -3,6 +3,7 @@
 #include "document.h" //rapidjson
 #include "writer.h" //rapidjson
 #include "stringbuffer.h" //rapidjson
+#include "nelder_mead.h"
 #include <deque>
 struct option_variables{
     int numU=6;//gets raised to power of 2: 2^numU
@@ -20,9 +21,6 @@ struct option_variables{
     double rho=-.5;
 };
 
-/*struct discrete_k_variables{
-    std::deque<double> k;
-};*/
 template<typename T>
 T between_values(const T& val, const T& lower, const T& upper){
     return val<lower?lower:(val>upper?upper:val);
@@ -143,24 +141,18 @@ void json_print_density(const Array1& arr1, const Array2& arr2){
     std::cout<<"{\"value\":"<<arr1[n-1]<<",\"atPoint\":"<<arr2[n-1]<<"}]";
 }
 
-template<typename Array1, typename Array2>
-void json_print_calibrated_params(Array1&& paramNames, Array2&& params){
+template<typename Array1, typename TupleOfArrayAndValue>
+void json_print_calibrated_params(Array1&& paramNames, TupleOfArrayAndValue&& optimResults, int totalOptions){
+    auto params=std::get<nelder_mead::optparms>(optimResults);
+    auto fnVal=std::get<nelder_mead::fnval>(optimResults);
     auto n=paramNames.size();
     std::cout<<"{";
-    for(int i=0; i<n-1;++i){
+    for(int i=0; i<n;++i){
         std::cout<<"\""<<paramNames[i]<<"\":"<<params[i]<<",";
     }
-    std::cout<<"\""<<paramNames[n-1]<<"\":"<<params[n-1]<<"}";
+    std::cout<<"\"mse\":"<<sqrt(fnVal/totalOptions)<<"}";
 }
 
-/*template<typename Array1, typename Array2>
-void json_print_options(const Array1& prices, const Array2& atPoints){
-    std::cout<<"{\"values\":";
-    print_array(prices);
-    std::cout<<", \"atPoints\":";
-    print_array(atPoints);
-    std::cout<<"}"<<std::endl;
-}*/
 
 void json_print_var(double var, double es){
     std::cout<<"{\"VaR\":"<<var<<",\"ES\":"<<es<<"}"<<std::endl;

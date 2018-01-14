@@ -527,6 +527,7 @@ fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/calibrati
   "speed":0.23,
   "adaV":0.23,
   "rho":0.23,
+  "mse":0.4
 }
 ```
 

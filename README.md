@@ -1,3 +1,11 @@
+| [Linux][lin-link]  | 
+| :---------------:  | 
+| ![lin-badge]       | 
+
+[lin-badge]: https://travis-ci.org/phillyfan1138/levy-functions.svg?branch=master "Travis build status"
+[lin-link]:  https://travis-ci.org/phillyfan1138/levy-functions "Travis build status"
+
+
 ## levy-functions
 
 These are a set of lambda functions for pricing options when assets follow an extended CGMY process with stochastic time clock correlated with the diffusion portion of the asset process.  See http://engineering.nyu.edu/files/jfetchgepaper.pdf and https://pdfs.semanticscholar.org/67cd/b553e2624c79a960ff79d0dfe6e6833690a7.pdf.

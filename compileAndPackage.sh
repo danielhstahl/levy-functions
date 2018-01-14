@@ -10,6 +10,7 @@ rm -rf TupleUtilities
 rm -rf AutoDiff
 rm -rf GaussNewton
 rm -rf HullWhite
+rm -rf nelder_mead
 rm -rf BSImpliedVolatility
 function cloneAndCheckout {
 	git clone https://github.com/phillyfan1138/$1
@@ -21,6 +22,7 @@ rm -rf bin
 mkdir bin
 
 cloneAndCheckout FunctionalUtilities 
+cloneAndCheckout nelder_mead 
 cloneAndCheckout CharacteristicFunctions 
 cloneAndCheckout FangOost 
 cloneAndCheckout cfdistutilities 
@@ -33,7 +35,8 @@ cloneAndCheckout GaussNewton
 cloneAndCheckout HullWhite 
 
 git clone https://github.com/miloyip/rapidjson
-make 
+make calculator
+make calibrator
 rm -rf FunctionalUtilities
 rm -rf CharacteristicFunctions
 rm -rf FangOost
@@ -46,5 +49,7 @@ rm -rf AutoDiff
 rm -rf GaussNewton
 rm -rf HullWhite
 rm -rf BSImpliedVolatility
-cp levyfunctions ./bin
+rm -rf nelder_mead
+cp calculator ./bin
+cp calibrator ./bin
 #serverless deploy -v

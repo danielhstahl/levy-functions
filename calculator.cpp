@@ -199,9 +199,9 @@ void fsts_put_gamma(const CF& cf, int numU, double K, double r, double T, double
     ));
 }
 
-template<typename CF, typename ParsedJ>
-void fangoost_put(const CF& cf, const ParsedJ& parsedJson, int numU, double S0, double r, double T, double xMax){
-    auto strikes=get_k_var(parsedJson).k;
+template<typename CF, typename Array>
+void fangoost_put(const CF& cf, Array&& strikes, int numU, double S0, double r, double T, double xMax){
+    //auto strikes=get_k_var(parsedJson).k;
     strikes.push_front(exp(xMax)*S0);
     strikes.push_back(exp(-xMax)*S0);
     auto prices=optionprice::FangOostPutPrice(
@@ -212,10 +212,8 @@ void fangoost_put(const CF& cf, const ParsedJ& parsedJson, int numU, double S0, 
     );
     json_print_options(prices, strikes, IV::getAllIVByStrikePut(strikes, prices, S0, exp(-r*T), T, .5));
 }
-template<typename CF, typename ParsedJ>
-void fangoost_call_delta(const CF& cf, const ParsedJ& parsedJson, int numU, double S0, double r, double T, double xMax){
-
-    auto strikes=get_k_var(parsedJson).k;
+template<typename CF, typename Array>
+void fangoost_call_delta(const CF& cf, Array&& strikes, int numU, double S0, double r, double T, double xMax){
     strikes.push_front(exp(xMax)*S0);
     strikes.push_back(exp(-xMax)*S0);
     json_print_density(
@@ -228,10 +226,9 @@ void fangoost_call_delta(const CF& cf, const ParsedJ& parsedJson, int numU, doub
         strikes
     );
 }
-template<typename CF, typename ParsedJ>
-void fangoost_call_theta(const CF& cf, const ParsedJ& parsedJson, int numU, double S0, double r, double T, double xMax){
 
-    auto strikes=get_k_var(parsedJson).k;
+template<typename CF, typename Array>
+void fangoost_call_theta(const CF& cf, Array&& strikes, int numU, double S0, double r, double T, double xMax){
     strikes.push_front(exp(xMax)*S0);
     strikes.push_back(exp(-xMax)*S0);
     json_print_density(
@@ -244,10 +241,8 @@ void fangoost_call_theta(const CF& cf, const ParsedJ& parsedJson, int numU, doub
         strikes
     );
 }
-template<typename CF, typename ParsedJ>
-void fangoost_call_gamma(const CF& cf, const ParsedJ& parsedJson, int numU, double S0, double r, double T, double xMax){
-
-    auto strikes=get_k_var(parsedJson).k;
+template<typename CF, typename Array>
+void fangoost_call_gamma(const CF& cf, Array&& strikes, int numU, double S0, double r, double T, double xMax){
     strikes.push_front(exp(xMax)*S0);
     strikes.push_back(exp(-xMax)*S0);
     json_print_density(
@@ -261,9 +256,8 @@ void fangoost_call_gamma(const CF& cf, const ParsedJ& parsedJson, int numU, doub
     );
 }
 
-template<typename CF, typename ParsedJ>
-void fangoost_call(const CF& cf, const ParsedJ& parsedJson, int numU, double S0,  double r, double T, double xMax){
-    auto strikes=get_k_var(parsedJson).k;
+template<typename CF, typename Array>
+void fangoost_call(const CF& cf, Array&& strikes, int numU, double S0,  double r, double T, double xMax){
     strikes.push_front(exp(xMax)*S0);
     strikes.push_back(exp(-xMax)*S0);
     json_print_density(optionprice::FangOostCallPrice(
@@ -273,9 +267,8 @@ void fangoost_call(const CF& cf, const ParsedJ& parsedJson, int numU, double S0,
         cf
     ), strikes);
 }
-template<typename CF, typename ParsedJ>
-void fangoost_put_delta(const CF& cf, const ParsedJ& parsedJson, int numU, double S0, double r, double T, double xMax){
-    auto strikes=get_k_var(parsedJson).k;
+template<typename CF, typename Array>
+void fangoost_put_delta(const CF& cf, Array&& strikes, int numU, double S0, double r, double T, double xMax){
     strikes.push_front(exp(xMax)*S0);
     strikes.push_back(exp(-xMax)*S0);
     json_print_density(optionprice::FangOostPutDelta(
@@ -285,9 +278,8 @@ void fangoost_put_delta(const CF& cf, const ParsedJ& parsedJson, int numU, doubl
         cf
     ), strikes);
 }
-template<typename CF, typename ParsedJ>
-void fangoost_put_theta(const CF& cf, const ParsedJ& parsedJson, int numU, double S0, double r, double T, double xMax){
-    auto strikes=get_k_var(parsedJson).k;
+template<typename CF, typename Array>
+void fangoost_put_theta(const CF& cf, Array&& strikes, int numU, double S0, double r, double T, double xMax){
     strikes.push_front(exp(xMax)*S0);
     strikes.push_back(exp(-xMax)*S0);
     json_print_density(optionprice::FangOostPutTheta(
@@ -297,9 +289,8 @@ void fangoost_put_theta(const CF& cf, const ParsedJ& parsedJson, int numU, doubl
         cf
     ), strikes);
 }
-template<typename CF, typename ParsedJ>
-void fangoost_put_gamma(const CF& cf, const ParsedJ& parsedJson, int numU, double S0, double r, double T, double xMax){
-    auto strikes=get_k_var(parsedJson).k;
+template<typename CF, typename Array>
+void fangoost_put_gamma(const CF& cf, Array&& strikes, int numU, double S0, double r, double T, double xMax){
     strikes.push_front(exp(xMax)*S0);
     strikes.push_back(exp(-xMax)*S0);
     json_print_density(optionprice::FangOostPutGamma(
@@ -309,14 +300,13 @@ void fangoost_put_gamma(const CF& cf, const ParsedJ& parsedJson, int numU, doubl
         cf
     ), strikes);
 }
-template<typename CF, typename ParsedJ>
-void get_var(const CF& cf, const ParsedJ& parsedJson, int numU, double xMax){
-    auto dist_var=get_dist_variables(parsedJson);
+template<typename CF>
+void get_var(const CF& cf, double quantile, int numU, double xMax){
     auto prec=.0000001;
-    auto var=cfdistutilities::computeVaR(dist_var.quantile, prec, -xMax, xMax, numU, cf);
+    auto var=cfdistutilities::computeVaR(quantile, prec, -xMax, xMax, numU, cf);
     auto ES=cfdistutilities::computeES(
-        dist_var.quantile,
-        -xMax, xMax, var, numU, cf, true
+        quantile, -xMax, xMax, 
+        var, numU, cf, true
     );
     json_print_var(var, ES);
 }
@@ -340,15 +330,16 @@ int main(int argc, char* argv[]){
         auto options=get_option_var(parsedJson);
         auto cgmyCF=cf(
             options.r,
-            options.sigma,
             options.T,
             options.S0,
+            options.v0
+        )(
             options.C,
             options.G,
             options.M,
             options.Y,
+            options.sigma,
             options.speed,
-            options.v0,
             options.adaV,
             options.rho
         );
@@ -452,7 +443,7 @@ int main(int argc, char* argv[]){
             }
             case fangoostcall: {
                 fangoost_call(
-                    cgmyCF, parsedJson, 
+                    cgmyCF, get_k_var(parsedJson), 
                     numU, 
                     options.S0, options.r,
                     options.T, xMaxOptions
@@ -461,7 +452,7 @@ int main(int argc, char* argv[]){
             }
             case fangoostcalldelta: {
                 fangoost_call_delta(
-                    cgmyCF, parsedJson, 
+                    cgmyCF, get_k_var(parsedJson), 
                     numU, 
                     options.S0, options.r,
                     options.T, xMaxOptions
@@ -470,7 +461,7 @@ int main(int argc, char* argv[]){
             }
             case fangoostcalltheta: {
                 fangoost_call_theta(
-                    cgmyCF, parsedJson, 
+                    cgmyCF, get_k_var(parsedJson), 
                     numU, 
                     options.S0, options.r,
                     options.T, xMaxOptions
@@ -479,7 +470,7 @@ int main(int argc, char* argv[]){
             }
             case fangoostcallgamma: {
                 fangoost_call_gamma(
-                    cgmyCF, parsedJson, 
+                    cgmyCF, get_k_var(parsedJson), 
                     numU, 
                     options.S0, options.r,
                     options.T, xMaxOptions
@@ -488,7 +479,7 @@ int main(int argc, char* argv[]){
             }
             case fangoostput: {
                 fangoost_put(
-                    cgmyCF, parsedJson, 
+                    cgmyCF, get_k_var(parsedJson), 
                     numU,
                     options.S0, 
                     options.r,
@@ -498,7 +489,7 @@ int main(int argc, char* argv[]){
             }
             case fangoostputdelta: {
                 fangoost_put_delta(
-                    cgmyCF, parsedJson, 
+                    cgmyCF, get_k_var(parsedJson), 
                     numU,
                     options.S0, 
                     options.r,
@@ -508,7 +499,7 @@ int main(int argc, char* argv[]){
             }
             case fangoostputtheta: {
                 fangoost_put_theta(
-                    cgmyCF, parsedJson, 
+                    cgmyCF, get_k_var(parsedJson), 
                     numU,
                     options.S0, 
                     options.r,
@@ -518,7 +509,7 @@ int main(int argc, char* argv[]){
             }
             case fangoostputgamma: {
                 fangoost_put_gamma(
-                    cgmyCF, parsedJson, 
+                    cgmyCF, get_k_var(parsedJson), 
                     numU,
                     options.S0, 
                     options.r,
@@ -528,7 +519,7 @@ int main(int argc, char* argv[]){
             }
             case VaR: {
                 get_var(
-                    cgmyCF, parsedJson, 
+                    cgmyCF, get_quantile(parsedJson), 
                     numU, xMaxDensity
                 );
                 break;

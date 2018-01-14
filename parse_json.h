@@ -19,12 +19,10 @@ struct option_variables{
     double adaV=.2;
     double rho=-.5;
 };
-struct dist_variables{
-    double quantile=.01;
-};
-struct discrete_k_variables{
+
+/*struct discrete_k_variables{
     std::deque<double> k;
-};
+};*/
 template<typename T>
 T between_values(const T& val, const T& lower, const T& upper){
     return val<lower?lower:(val>upper?upper:val);
@@ -36,21 +34,47 @@ rapidjson::Document parse_char(char* json){
     return parms;
 }
 
-discrete_k_variables get_k_var(const rapidjson::Document& parms){
-    discrete_k_variables local_k;
+std::deque<double> get_k_var(const rapidjson::Document& parms){
+    std::deque<double> local_k;
     if(parms.FindMember("k")!=parms.MemberEnd()){
         for (auto& v : parms["k"].GetArray()) {
-            local_k.k.emplace_back(v.GetDouble());
+            local_k.emplace_back(v.GetDouble());
         }
     }
     return local_k;
 }
-dist_variables get_dist_variables(const rapidjson::Document& parms){
-    dist_variables local_dist;
-    if(parms.FindMember("quantile")!=parms.MemberEnd()){
-        local_dist.quantile=between_values(parms["quantile"].GetDouble(), 0.0, 1.0);
+std::vector<double> get_prices_var(const rapidjson::Document& parms){
+    std::vector<double> local_prices;
+    if(parms.FindMember("prices")!=parms.MemberEnd()){
+        for (auto& v : parms["prices"].GetArray()) {
+            local_prices.emplace_back(v.GetDouble());
+        }
     }
-    return local_dist;
+    return local_prices;
+}
+/*
+std::vector<double> get_option_information(const rapidjson::Document& parms){
+    std::unordered_map<std::string, std::vector<double> > option_info({
+        {"prices", std::vector<double>({})},
+        {"strikes", std::vector<double>({})},
+        {"maturitities", std::vector<double>({})},
+    });
+    if(parms.FindMember("option_info")!=parms.MemberEnd()){
+        for (auto& v : parms["option_info"].GetArray()) {
+            option_info["prices"].emplace_back(v["price"].GetDouble());
+            option_info["strikes"].emplace_back(v["strike"].GetDouble());
+            option_info["maturities"].emplace_back(v["maturity"].GetDouble());
+        }
+    }
+    return option_info;
+}*/
+
+double get_quantile(const rapidjson::Document& parms){
+    double local_quantile;
+    if(parms.FindMember("quantile")!=parms.MemberEnd()){
+        local_quantile=between_values(parms["quantile"].GetDouble(), 0.0, 1.0);
+    }
+    return local_quantile;
 }
 
 
@@ -83,7 +107,7 @@ option_variables get_option_var(const rapidjson::Document& parms){
         local_option.M=between_values(parms["M"].GetDouble(), 0.0, maxLarge);
     }
     if(parms.FindMember("Y")!=parms.MemberEnd()){
-        local_option.Y=between_values(parms["Y"].GetDouble(), 0.0, 2.0);
+        local_option.Y=between_values(parms["Y"].GetDouble(), -2.0, 2.0);
     }
     if(parms.FindMember("speed")!=parms.MemberEnd()){
         local_option.speed=between_values(parms["speed"].GetDouble(), 0.0, maxLarge);
@@ -117,6 +141,16 @@ void json_print_density(const Array1& arr1, const Array2& arr2){
         std::cout<<"{\"value\":"<<arr1[i]<<",\"atPoint\":"<<arr2[i]<<"},";
     }
     std::cout<<"{\"value\":"<<arr1[n-1]<<",\"atPoint\":"<<arr2[n-1]<<"}]";
+}
+
+template<typename Array1, typename Array2>
+void json_print_calibrated_params(Array1&& paramNames, Array2&& params){
+    auto n=paramNames.size();
+    std::cout<<"{";
+    for(int i=0; i<n-1;++i){
+        std::cout<<"\""<<paramNames[i]<<"\":"<<params[i]<<",";
+    }
+    std::cout<<"\""<<paramNames[n-1]<<"\":"<<params[n-1]<<"}";
 }
 
 /*template<typename Array1, typename Array2>

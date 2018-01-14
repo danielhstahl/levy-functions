@@ -1,6 +1,6 @@
 'use strict'
 const spawn = require('child_process').spawn
-const keys=[
+const calculatorKeys=[
   'carrmadanput',
   'carrmadancall',
   'fangoostput',
@@ -22,6 +22,11 @@ const keys=[
   'VaR',
   'density'
 ]
+const calibratorKeys=[
+  'fullmodel',
+  'hestonmodel',
+  'bsmodel'
+]
 
 
 process.env['PATH']=`${process.env['PATH']}:${process.env['LAMBDA_TASK_ROOT']}`
@@ -36,8 +41,8 @@ const done = cb=>(err, res) => cb(null, {
   }
 })
 
-const spawnBinary=(functionalityIndicator, parms, done)=>{
-  const model=spawn('./bin/levyfunctions', [functionalityIndicator, parms?parms:"{}"])
+const spawnBinary=binary=>(functionalityIndicator, parms, done)=>{
+  const model=spawn(`./bin/${binary}`, [functionalityIndicator, parms?parms:"{}"])
   let modelOutput=''
   let modelErr=''
   model.stdout.on('data', data=>{
@@ -53,9 +58,17 @@ const spawnBinary=(functionalityIndicator, parms, done)=>{
     return done(null, modelOutput)
   })
 }
-keys.forEach((key, index)=>{
+const calculatorSpawn=spawnBinary('calculator')
+const calibratorSpawn=spawnBinary('calibrator')
+calculatorKeys.forEach((key, index)=>{
   module.exports[key]=(event, context, callback) => {
-    spawnBinary(index, event.body, done(callback))
+    calculatorSpawn(index, event.body, done(callback))
   }
 })
-module.exports.keys=keys
+calibratorKeys.forEach((key, index)=>{
+  module.exports[key]=(event, context, callback) => {
+    calibratorSpawn(index, event.body, done(callback))
+  }
+})
+module.exports.calculatorKeys=calculatorKeys
+module.exports.calibratorKeys=calibratorKeys

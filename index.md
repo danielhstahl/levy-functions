@@ -491,3 +491,53 @@ Retrieves value at risk and expected shortfall for the CGMY process.
 ### HTTP Request
 
 `POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/density/var`
+
+
+# Calibration
+
+## Call
+```bash
+curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/calibration/full"
+```
+
+```javascript
+const body={
+    numU:6,/*gets raised to power of 2: 2^numU*/
+    r:.03,
+    T:.25,
+    S0:50,
+    k:[1.0, 1.5],
+    prices:[3.0, 1.4]
+}
+fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/calibration/full', {
+    method:'post',
+    body
+}).then(response=>response.json())
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+  "C": 1.0,
+  "G": 5.0,
+  "M":0.23,
+  "Y":0.23,
+  "sigma":0.23,
+  "speed":0.23,
+  "adaV":0.23,
+  "rho":0.23,
+}
+```
+
+Retrieves parameters that minimize L2 error.
+
+### HTTP Request
+
+`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/calibration/<MODEL>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+MODEL     | The model to parameterize.  Options are "full", "heston", and "bs".

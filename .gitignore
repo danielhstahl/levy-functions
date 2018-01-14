@@ -10,6 +10,7 @@ jspm_packages
 *.vscode
 *cfdistutilities
 *CharacteristicFunctions
+*nelder_mead
 *FangOost
 *FFTOptionPricing
 *FunctionalUtilities
@@ -23,3 +24,5 @@ jspm_packages
 levyfunctions
 *.o
 *.DS_Store
+calculator
+calibrator

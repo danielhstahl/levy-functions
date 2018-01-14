@@ -1,1 +1,0 @@
-./levyfunctions 1  "$(< example.json)"

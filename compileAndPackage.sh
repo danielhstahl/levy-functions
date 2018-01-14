@@ -21,6 +21,7 @@ rm -rf bin
 mkdir bin
 
 cloneAndCheckout FunctionalUtilities 
+cloneAndCheckout nelder_mead 
 cloneAndCheckout CharacteristicFunctions 
 cloneAndCheckout FangOost 
 cloneAndCheckout cfdistutilities 
@@ -33,18 +34,9 @@ cloneAndCheckout GaussNewton
 cloneAndCheckout HullWhite 
 
 git clone https://github.com/miloyip/rapidjson
-make 
-rm -rf FunctionalUtilities
-rm -rf CharacteristicFunctions
-rm -rf FangOost
-rm -rf cfdistutilities
-rm -rf FFTOptionPricing
-rm -rf rapidjson
-rm -rf RungeKutta
-rm -rf TupleUtilities
-rm -rf AutoDiff
-rm -rf GaussNewton
-rm -rf HullWhite
-rm -rf BSImpliedVolatility
-cp levyfunctions ./bin
+make calculator
+make calibrator
+
+cp calculator ./bin
+cp calibrator ./bin
 #serverless deploy -v

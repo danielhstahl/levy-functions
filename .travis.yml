@@ -15,6 +15,4 @@ before_install:
   - eval CC=gcc-5 && CXX=g++-5
   - ./compileAndPackage.sh
 script:
-  - make test 
-  - ./test
   - npm test

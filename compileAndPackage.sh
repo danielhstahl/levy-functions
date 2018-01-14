@@ -37,6 +37,8 @@ cloneAndCheckout HullWhite
 git clone https://github.com/miloyip/rapidjson
 make calculator
 make calibrator
+make test
+./test
 rm -rf FunctionalUtilities
 rm -rf CharacteristicFunctions
 rm -rf FangOost

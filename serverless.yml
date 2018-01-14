@@ -207,21 +207,21 @@ functions:
     handler: handler.fullmodel
     events:
       - http:
-          path: calibration/full
+          path: call/calibration/full
           method: post
           cors: true
   hestonmodel:
     handler: handler.hestonmodel
     events:
       - http:
-          path: calibration/heston
+          path: call/calibration/heston
           method: post
           cors: true
   bsmodel:
     handler: handler.bsmodel
     events:
       - http:
-          path: calibration/bs
+          path: call/calibration/bs
           method: post
           cors: true
       

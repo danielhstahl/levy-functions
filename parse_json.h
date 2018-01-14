@@ -3,6 +3,7 @@
 #include "document.h" //rapidjson
 #include "writer.h" //rapidjson
 #include "stringbuffer.h" //rapidjson
+#include "nelder_mead.h"
 #include <deque>
 struct option_variables{
     int numU=6;//gets raised to power of 2: 2^numU
@@ -143,14 +144,16 @@ void json_print_density(const Array1& arr1, const Array2& arr2){
     std::cout<<"{\"value\":"<<arr1[n-1]<<",\"atPoint\":"<<arr2[n-1]<<"}]";
 }
 
-template<typename Array1, typename Array2>
-void json_print_calibrated_params(Array1&& paramNames, Array2&& params){
+template<typename Array1, typename TupleOfArrayAndValue>
+void json_print_calibrated_params(Array1&& paramNames, TupleOfArrayAndValue&& optimResults){
+    auto params=std::get<nelder_mead::optparms>(optimResults);
+    auto fnVal=std::get<nelder_mead::fnval>(optimResults);
     auto n=paramNames.size();
     std::cout<<"{";
-    for(int i=0; i<n-1;++i){
+    for(int i=0; i<n;++i){
         std::cout<<"\""<<paramNames[i]<<"\":"<<params[i]<<",";
     }
-    std::cout<<"\""<<paramNames[n-1]<<"\":"<<params[n-1]<<"}";
+    std::cout<<"\"mse\":"<<sqrt(fnVal)<<"}";
 }
 
 /*template<typename Array1, typename Array2>

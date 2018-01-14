@@ -153,14 +153,6 @@ void json_print_calibrated_params(Array1&& paramNames, TupleOfArrayAndValue&& op
     std::cout<<"\"mse\":"<<sqrt(fnVal/totalOptions)<<"}";
 }
 
-/*template<typename Array1, typename Array2>
-void json_print_options(const Array1& prices, const Array2& atPoints){
-    std::cout<<"{\"values\":";
-    print_array(prices);
-    std::cout<<", \"atPoints\":";
-    print_array(atPoints);
-    std::cout<<"}"<<std::endl;
-}*/
 
 void json_print_var(double var, double es){
     std::cout<<"{\"VaR\":"<<var<<",\"ES\":"<<es<<"}"<<std::endl;

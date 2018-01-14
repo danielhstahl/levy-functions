@@ -13,5 +13,5 @@ TEST_CASE("parses option with some input", "parse_json"){
 }
 TEST_CASE("parses k with some input", "parse_json"){
     auto parsedJson=parse_char((char*)"{\"k\":[0.04, 0.05]}");
-    REQUIRE(get_k_var(parsedJson).k[0]==.04);
+    REQUIRE(get_k_var(parsedJson)[0]==.04);
 }

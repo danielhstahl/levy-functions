@@ -20,4 +20,4 @@ clean:
 	-rm *.o test calculator calibrator
 
 test: test.cpp parse_json.h
-	g++ -std=c++14 -pthread test.cpp $(INCLUDES) -o test -fopenmp
+	$(GCCVAL) -std=c++14 -pthread test.cpp $(INCLUDES) -o test -fopenmp

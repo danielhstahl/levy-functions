@@ -74,18 +74,16 @@ fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/price/fan
 [
   {
     "atPoint": 1.0,
-    "value": 5.0,
-    "iv":0.23
+    "value": 5.0
   },
   {
     "atPoint": 1.5,
-    "value": 4.5,
-    "iv":0.2
+    "value": 4.5
   }
 ]
 ```
 
-Retrieves call prices, asset/strike prices, and implied volatilities
+Retrieves call prices and asset/strike prices.
 
 ### HTTP Request
 
@@ -255,16 +253,18 @@ fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/price/fang
 [
   {
     "atPoint": 1.0,
-    "value": 5.0
+    "value": 5.0,
+    "iv":0.23
   },
   {
     "atPoint": 1.5,
-    "value": 4.5
+    "value": 4.5,
+    "iv":0.2
   }
 ]
 ```
 
-Retrieves put prices and asset/strike prices.
+Retrieves put prices, asset/strike prices, and implied volatilities.
 
 ### HTTP Request
 

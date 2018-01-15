@@ -66,7 +66,7 @@ int main(int argc, char* argv[]){
                         [](const auto& args){ //C has to be positive.  Sigma has to be positive
                             return args[0]<0||args[4]<0||args[5]<0||args[6]<0||args[7]<-1||args[7]>1;
                         },
-                        std::vector<double>({.2, 2, 2, .4, .2, .3, .2, .2}), //guess
+                        std::vector<double>({.2, 2, 2, .4, .2, .3, .2, -.2}), //guess
                         prices, get_k_var(parsedJson),
                         options.S0, options.r, options.T, xMax, numU
                     ), 
@@ -88,7 +88,7 @@ int main(int argc, char* argv[]){
                         [](const auto& args){ //
                             return args[0]<0||args[1]<0||args[2]<0||args[3]<-1||args[3]>1;
                         },
-                        std::vector<double>({.2, .2, .2, .2}), //guess
+                        std::vector<double>({.2, .2, .2, -.2}), //guess
                         prices, get_k_var(parsedJson),
                         options.S0, options.r, options.T, xMax, numU
                     ),

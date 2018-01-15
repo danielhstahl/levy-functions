@@ -29,7 +29,7 @@ it('correctly calls calibrator handler for full model', (done)=>{
         expect(parsedVal.rho).toBeDefined()
         done()
     })
-}, 10000) //takes a while, so 10 seconds
+}, 40000) //takes a while, so 20 seconds
 it('correctly calls calibrator handler for heston model', (done)=>{
     const event=createEvent(calibratorParams)
     handler.hestonmodel(event, {}, (err, val)=>{
@@ -40,7 +40,7 @@ it('correctly calls calibrator handler for heston model', (done)=>{
         expect(parsedVal.rho).toBeDefined()
         done()
     })
-}, 10000) //takes a while, so 10 seconds
+}, 40000) //takes a while, so 20 seconds
 it('correctly calls calibrator handler for bs model', (done)=>{
     const event=createEvent(calibratorParams)
     handler.bsmodel(event, {}, (err, val)=>{
@@ -48,7 +48,7 @@ it('correctly calls calibrator handler for bs model', (done)=>{
         expect(parsedVal.sigma).toBeDefined()
         done()
     })
-}, 10000) //takes a while, so 10 seconds
+}, 40000) //takes a while, so 20 seconds
 it('correctly calls VaR', (done)=>{
     const event=createEvent({})
     handler.VaR(event, {}, (err, val)=>{

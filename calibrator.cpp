@@ -41,8 +41,7 @@ int main(int argc, char* argv[]){
         auto cgmyCFHOC=cf(
             options.r,
             options.T,
-            options.S0,
-            options.v0
+            options.S0
         );
         auto prices=get_prices_var(parsedJson);
         /**NOTE that this is a big assumption about the
@@ -54,19 +53,19 @@ int main(int argc, char* argv[]){
         switch(key){
             case fullmodel:{
                 json_print_calibrated_params(
-                    std::vector<std::string>({"C", "G", "M", "Y", "sigma", "speed", "adaV", "rho"}), 
+                    std::vector<std::string>({"C", "G", "M", "Y", "sigma", "v0", "speed", "adaV", "rho"}), 
                     genericCallCalibrator(
                         [&](const auto& args){
                             return cgmyCFHOC(
                                 args[0], args[1], args[2], //c, g, m
-                                args[3], args[4], args[5], //y, sigma, speed
-                                args[6], args[7] //adaV, rho
+                                args[3], args[4], args[5],//y, sigma, v0
+                                args[6], args[7], args[8] //speed, adaV, rho
                             );
                         },                    
                         [](const auto& args){ //C has to be positive.  Sigma has to be positive
-                            return args[0]<0||args[4]<0||args[5]<0||args[6]<0||args[7]<-1||args[7]>1;
+                            return args[0]<0||args[4]<0||args[6]<0||args[7]<0||args[8]<-1||args[8]>0||args[5]<.5||args[5]>1.5;//rho can technically be between -1 and 1 but I have a strong prior that its negative
                         },
-                        std::vector<double>({.2, 2, 2, .4, .2, .3, .2, -.2}), //guess
+                        std::vector<double>({.2, 2, 2, .4, .2, 1.0, .3, .2, -.2}), //guess
                         prices, get_k_var(parsedJson),
                         options.S0, options.r, options.T, xMax, numU
                     ), 
@@ -76,19 +75,19 @@ int main(int argc, char* argv[]){
             }
             case hestonmodel:{
                 json_print_calibrated_params(
-                    std::vector<std::string>({"sigma", "speed", "adaV", "rho"}), 
+                    std::vector<std::string>({"sigma", "v0", "speed", "adaV", "rho"}), 
                     genericCallCalibrator(
                         [&](const auto& args){
                             return cgmyCFHOC(
                                 0, 2.0, 2.0, .5, 
-                                args[0], args[1], //sigma, speed
-                                args[2], args[3] //adaV, rho
+                                args[0], args[1], args[2],//sigma, v0, speed
+                                args[3], args[4] //adaV, rho
                             );
                         },                    
                         [](const auto& args){ //
-                            return args[0]<0||args[1]<0||args[2]<0||args[3]<-1||args[3]>1;
+                            return args[0]<0||args[2]<0||args[3]<0||args[4]<-1||args[4]>0||args[1]<.5||args[1]>1.5;//rho can technically be between -1 and 1 but I have a strong prior that its negative
                         },
-                        std::vector<double>({.2, .2, .2, -.2}), //guess
+                        std::vector<double>({.2, .04, .2, .2, -.2}), //guess
                         prices, get_k_var(parsedJson),
                         options.S0, options.r, options.T, xMax, numU
                     ),
@@ -103,7 +102,7 @@ int main(int argc, char* argv[]){
                         [&](const auto& args){
                             return cgmyCFHOC(
                                 0, 2.0, 2.0, .5, 
-                                args[0], .5, //sigma
+                                args[0], 1.0, .5, //sigma
                                 0.0, .5 
                             );
                         },                    

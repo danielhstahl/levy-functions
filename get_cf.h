@@ -3,8 +3,7 @@
 auto cf(
     double r,
     double T, 
-    double S0,
-    double v0
+    double S0
 ){
     //trivially copyable...this is the SV3 of the following paper:
     //https://pdfs.semanticscholar.org/67cd/b553e2624c79a960ff79d0dfe6e6833690a7.pdf 
@@ -14,6 +13,7 @@ auto cf(
         double M,
         double Y,
         double sigma,
+        double v0,
         double speed,
         double adaV,
         double rho

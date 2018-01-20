@@ -331,14 +331,14 @@ int main(int argc, char* argv[]){
         auto cgmyCF=cf(
             options.r,
             options.T,
-            options.S0,
-            options.v0
+            options.S0
         )(
             options.C,
             options.G,
             options.M,
             options.Y,
             options.sigma,
+            options.v0,
             options.speed,
             options.adaV,
             options.rho

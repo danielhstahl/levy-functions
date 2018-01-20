@@ -1,1 +1,1 @@
-./calculator 1  "$(< exampleCalculator.json)"
+./calculator 6  "$(< exampleCalculator.json)"

@@ -12,6 +12,8 @@ rm -rf GaussNewton
 rm -rf HullWhite
 rm -rf nelder_mead
 rm -rf BSImpliedVolatility
+rm -rf cuckoo_search
+rm -rf MonteCarlo
 function cloneAndCheckout {
 	git clone https://github.com/phillyfan1138/$1
 	cd $1
@@ -23,6 +25,8 @@ mkdir bin
 
 cloneAndCheckout FunctionalUtilities 
 cloneAndCheckout nelder_mead 
+cloneAndCheckout cuckoo_search
+cloneAndCheckout MonteCarlo
 cloneAndCheckout CharacteristicFunctions 
 cloneAndCheckout FangOost 
 cloneAndCheckout cfdistutilities 
@@ -52,6 +56,8 @@ rm -rf GaussNewton
 rm -rf HullWhite
 rm -rf BSImpliedVolatility
 rm -rf nelder_mead
+rm -rf cuckoo_search
+rm -rf MonteCarlo
 cp calculator ./bin
 cp calibrator ./bin
 #serverless deploy -v

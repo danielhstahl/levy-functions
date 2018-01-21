@@ -24,5 +24,7 @@ jspm_packages
 levyfunctions
 *.o
 *.DS_Store
+*MonteCarlo
+*cuckoo_search
 calculator
 calibrator

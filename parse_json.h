@@ -3,7 +3,6 @@
 #include "document.h" //rapidjson
 #include "writer.h" //rapidjson
 #include "stringbuffer.h" //rapidjson
-#include "neldermead.h"
 #include <deque>
 struct option_variables{
     int numU=6;//gets raised to power of 2: 2^numU
@@ -141,10 +140,10 @@ void json_print_density(const Array1& arr1, const Array2& arr2){
     std::cout<<"{\"value\":"<<arr1[n-1]<<",\"atPoint\":"<<arr2[n-1]<<"}]";
 }
 
-template<typename Array1, typename TupleOfArrayAndValue>
+template<int optparms, int fnval, typename Array1, typename TupleOfArrayAndValue>
 void json_print_calibrated_params(Array1&& paramNames, TupleOfArrayAndValue&& optimResults, int totalOptions){
-    auto params=std::get<neldermead::optparms>(optimResults);
-    auto fnVal=std::get<neldermead::fnval>(optimResults);
+    auto params=std::get<optparms>(optimResults);
+    auto fnVal=std::get<fnval>(optimResults);
     auto n=paramNames.size();
     std::cout<<"{";
     for(int i=0; i<n;++i){

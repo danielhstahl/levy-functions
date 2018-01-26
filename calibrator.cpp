@@ -101,7 +101,7 @@ int main(int argc, char* argv[]){
         double xMax=10.0;//this should be plenty large
         int numU=pow(2, options.numU);
         int key=std::stoi(argv[1]);
-        auto started = std::chrono::high_resolution_clock::now();
+        //auto started = std::chrono::high_resolution_clock::now();
         switch(key){
             case fullmodel:{
                 /*json_print_calibrated_params<neldermead::optparms, neldermead::fnval>(
@@ -219,7 +219,7 @@ int main(int argc, char* argv[]){
                 break;
             }
         }
-        /*auto done = std::chrono::high_resolution_clock::now();
-        std::cout << "Speed: "<<std::chrono::duration_cast<std::chrono::milliseconds>(done-started).count()<<std::endl;*/
+        //auto done = std::chrono::high_resolution_clock::now();
+        //std::cout << "Speed: "<<std::chrono::duration_cast<std::chrono::milliseconds>(done-started).count()<<std::endl;
     }
 }

@@ -4,6 +4,8 @@
 #include "writer.h" //rapidjson
 #include "stringbuffer.h" //rapidjson
 #include <deque>
+#include <unordered_map>
+
 struct option_variables{
     int numU=6;//gets raised to power of 2: 2^numU
     double r=.03;
@@ -49,22 +51,6 @@ std::vector<double> get_prices_var(const rapidjson::Document& parms){
     }
     return local_prices;
 }
-/*
-std::vector<double> get_option_information(const rapidjson::Document& parms){
-    std::unordered_map<std::string, std::vector<double> > option_info({
-        {"prices", std::vector<double>({})},
-        {"strikes", std::vector<double>({})},
-        {"maturitities", std::vector<double>({})},
-    });
-    if(parms.FindMember("option_info")!=parms.MemberEnd()){
-        for (auto& v : parms["option_info"].GetArray()) {
-            option_info["prices"].emplace_back(v["price"].GetDouble());
-            option_info["strikes"].emplace_back(v["strike"].GetDouble());
-            option_info["maturities"].emplace_back(v["maturity"].GetDouble());
-        }
-    }
-    return option_info;
-}*/
 
 double get_quantile(const rapidjson::Document& parms){
     double local_quantile;
@@ -74,8 +60,7 @@ double get_quantile(const rapidjson::Document& parms){
     return local_quantile;
 }
 
-
-option_variables get_option_var(const rapidjson::Document& parms){
+option_variables get_static_vars(const rapidjson::Document& parms){
     option_variables local_option;
     if(parms.FindMember("numU")!=parms.MemberEnd()){
         local_option.numU=between_values(parms["numU"].GetInt(), 5, 10);
@@ -89,6 +74,53 @@ option_variables get_option_var(const rapidjson::Document& parms){
     if(parms.FindMember("S0")!=parms.MemberEnd()){
         local_option.S0=between_values(parms["S0"].GetDouble(), 0.0, maxLarge);
     }
+    return std::move(local_option);
+}
+
+template<typename JsonParm>
+int updateIndex(const JsonParm& parms, const std::string& key, int index, std::unordered_map<std::string, int>* mapKeyToIndex){
+    if(parms.HasMember(key.c_str())){
+        mapKeyToIndex->insert(std::make_pair(key, index));
+        return index+1;
+    }
+    return index;
+    
+}
+
+template< typename JsonVariable>
+std::unordered_map<std::string, int> constructKeyToIndex(JsonVariable&& variableVar){
+    std::unordered_map<std::string, int> mapKeyToIndex;
+    int index=0;
+    index=updateIndex(variableVar, "C", index, &mapKeyToIndex);
+    index=updateIndex(variableVar, "G", index, &mapKeyToIndex);
+    index=updateIndex(variableVar, "M", index, &mapKeyToIndex);
+    index=updateIndex(variableVar, "Y", index, &mapKeyToIndex);
+    index=updateIndex(variableVar, "sigma", index, &mapKeyToIndex);
+    index=updateIndex(variableVar, "v0", index, &mapKeyToIndex);
+    index=updateIndex(variableVar, "speed", index, &mapKeyToIndex);
+    index=updateIndex(variableVar, "adaV", index, &mapKeyToIndex);
+    index=updateIndex(variableVar, "rho", index, &mapKeyToIndex);
+    return mapKeyToIndex;
+}
+
+
+template<typename JsonStatic>
+double getArgOrConstant(
+    const std::string& key, 
+    const std::vector<double>& args, 
+    JsonStatic&& staticVar,
+    const std::unordered_map<std::string, int>& mapKeyToIndex
+){
+    return 
+        staticVar.FindMember(key.c_str())!=staticVar.MemberEnd()?
+        staticVar[key.c_str()].GetDouble():
+        args[mapKeyToIndex.at(key)];
+}
+
+
+option_variables get_option_var(const rapidjson::Document& parms){
+    
+    option_variables local_option=get_static_vars(parms);
     if(parms.FindMember("sigma")!=parms.MemberEnd()){
         local_option.sigma=between_values(parms["sigma"].GetDouble(), 0.0, maxLarge);
     }
@@ -141,13 +173,15 @@ void json_print_density(const Array1& arr1, const Array2& arr2){
 }
 
 template<int optparms, int fnval, typename Array1, typename TupleOfArrayAndValue>
-void json_print_calibrated_params(Array1&& paramNames, TupleOfArrayAndValue&& optimResults, int totalOptions){
+void json_print_calibrated_params(const Array1& paramNames, TupleOfArrayAndValue&& optimResults, int totalOptions){
     auto params=std::get<optparms>(optimResults);
     auto fnVal=std::get<fnval>(optimResults);
-    auto n=paramNames.size();
+    //auto n=paramNames.size();
+    int i=0;
     std::cout<<"{";
-    for(int i=0; i<n;++i){
-        std::cout<<"\""<<paramNames[i]<<"\":"<<params[i]<<",";
+    for( const auto& node : paramNames ) {
+        std::cout<<"\""<<node.first<<"\":"<<params[node.second]<<",";
+        ++i;
     }
     std::cout<<"\"mse\":"<<sqrt(fnVal/totalOptions)<<"}";
 }

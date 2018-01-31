@@ -81,7 +81,7 @@ auto genericCallCalibrator_cuckoo(
             ));
         }, 
         ul,
-        prices, strikes, 100, 42
+        prices, strikes, 100, std::chrono::system_clock::now().time_since_epoch().count() //seed
     );
 }
 
@@ -115,7 +115,7 @@ int main(int argc, char* argv[]){
                             );
                         },                    
                         [](const auto& args){ //C has to be positive.  Sigma has to be positive
-                            return args[0]<0||args[4]<0||args[6]<0||args[7]<0||args[8]<-1||args[8]>1||args[5]<.5||args[5]>1.5;//rho can technically be between -1 and 1 but I have a strong prior that its negative
+                            return args[0]<0||args[4]<0||args[6]<0||args[7]<0||args[8]<-1||args[8]>0||args[5]<.5||args[5]>1.5;//rho can technically be between -1 and 1 but I have a strong prior that its negative
                         },
                         std::vector<double>({.2, 2, 2, .4, .2, 1.0, .3, .2, -.2}), //guess
                         prices, get_k_var(parsedJson),

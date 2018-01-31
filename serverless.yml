@@ -209,25 +209,7 @@ functions:
     timeout: 60 # optional, in seconds, default is 6
     events:
       - http:
-          path: call/calibration/full
-          method: post
-          cors: true
-  hestonmodel:
-    handler: handler.hestonmodel
-    memorySize: 3008 # optional, in MB, default is 1024
-    timeout: 60 # optional, in seconds, default is 6
-    events:
-      - http:
-          path: call/calibration/heston
-          method: post
-          cors: true
-  bsmodel:
-    handler: handler.bsmodel
-    memorySize: 3008 # optional, in MB, default is 1024
-    timeout: 60 # optional, in seconds, default is 6
-    events:
-      - http:
-          path: call/calibration/bs
+          path: call/calibration
           method: post
           cors: true
       

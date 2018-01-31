@@ -69,7 +69,7 @@ auto genericCallCalibrator_cuckoo(
             ));
         }, 
         ul,
-        prices, strikes, 100, 42
+        prices, strikes, 100, std::chrono::system_clock::now().time_since_epoch().count()
     );
 }
 

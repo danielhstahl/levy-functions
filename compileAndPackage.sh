@@ -43,21 +43,7 @@ make calculator
 make calibrator
 make test
 ./test
-rm -rf FunctionalUtilities
-rm -rf CharacteristicFunctions
-rm -rf FangOost
-rm -rf cfdistutilities
-rm -rf FFTOptionPricing
-rm -rf rapidjson
-rm -rf RungeKutta
-rm -rf TupleUtilities
-rm -rf AutoDiff
-rm -rf GaussNewton
-rm -rf HullWhite
-rm -rf BSImpliedVolatility
-rm -rf nelder_mead
-rm -rf cuckoo_search
-rm -rf MonteCarlo
+
 cp calculator ./bin
 cp calibrator ./bin
 #serverless deploy -v

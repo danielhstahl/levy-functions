@@ -8,14 +8,13 @@
 #include "cuckoo.h"
 #include <chrono>
 
-const cuckoo::upper_lower<double> sigmaUL=cuckoo::upper_lower<double>(0.0, 1.0);
-const cuckoo::upper_lower<double> speedUL=cuckoo::upper_lower<double>(0.0, 1.0);
-const cuckoo::upper_lower<double> adaVUL=cuckoo::upper_lower<double>(0.0, 1.0);
-const cuckoo::upper_lower<double> rhoUL=cuckoo::upper_lower<double>(-1.0, 1.0);
+const std::array<std::string, 9> possibleParameters({
+    "C", "G", "M", "Y", "sigma", "v0", "speed", "adaV", "rho"
+});
 const std::unordered_map<std::string, cuckoo::upper_lower<double> > fullModelConstraints({
     {"C", cuckoo::upper_lower<double>(0.0, 2.0)}, //c
-    {"G", cuckoo::upper_lower<double>(0.0, 20)}, //g
-    {"M", cuckoo::upper_lower<double>(0.0, 20)}, //m
+    {"G", cuckoo::upper_lower<double>(0.0, 10)}, //g
+    {"M", cuckoo::upper_lower<double>(0.0, 10)}, //m
     {"Y", cuckoo::upper_lower<double>(-3.0, 2.0)}, //y
     {"sigma", cuckoo::upper_lower<double>(0.0, 1.0)}, //sigma
     {"v0", cuckoo::upper_lower<double>(0.2, 1.8)}, //v0
@@ -73,16 +72,7 @@ auto genericCallCalibrator_cuckoo(
     );
 }
 
-template<typename RpJson>
-std::vector<cuckoo::upper_lower<double> > getConstraints(const RpJson& json){
-    std::vector<cuckoo::upper_lower<double> > modelConstraints;
-    for (
-        auto itr = json.MemberBegin();itr != json.MemberEnd(); ++itr
-    ){
-        modelConstraints.push_back(fullModelConstraints.at(itr->name.GetString()));
-    }
-    return modelConstraints;
-}
+
 
 int main(int argc, char* argv[]){
     if(argc>1){
@@ -101,8 +91,8 @@ int main(int argc, char* argv[]){
         int numU=pow(2, options.numU);
         const auto& jsonVariable=parsedJson["variable"];
         const auto& jsonStatic=parsedJson["static"];
-        auto modelConstraints=getConstraints(jsonVariable);
-        const std::unordered_map<std::string, int> mapKeyToIndex=constructKeyToIndex(jsonVariable);
+        auto modelConstraints=getConstraints(jsonVariable, possibleParameters, fullModelConstraints);
+        const std::unordered_map<std::string, int> mapKeyToIndex=constructKeyToIndex(jsonVariable, possibleParameters);
 
         auto getArgOrConstantCurry=[&](const auto& key, const auto& args){
             return getArgOrConstant(key, args, jsonStatic, mapKeyToIndex);

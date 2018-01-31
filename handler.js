@@ -22,11 +22,21 @@ const calculatorKeys=[
   'VaR',
   'density'
 ]
-const calibratorKeys=[
-  'fullmodel',
-  'hestonmodel',
-  'bsmodel'
+const totalKeys=[
+  "C", 
+  "G",
+  "M",
+  "Y",
+  "v0",
+  "sigma",
+  "rho",
+  "adaV",
+  "speed"
 ]
+const calibratorRequiredKeys=body=>{
+  const totalKey=Object.assign({}, body.static, body.variable)
+  return totalKeys.find(key=>totalKey[key]===undefined)
+}
 
 
 process.env['PATH']=`${process.env['PATH']}:${process.env['LAMBDA_TASK_ROOT']}`
@@ -41,8 +51,8 @@ const done = cb=>(err, res) => cb(null, {
   }
 })
 
-const spawnBinary=binary=>(functionalityIndicator, parms, done)=>{
-  const model=spawn(`./bin/${binary}`, [functionalityIndicator, parms?parms:"{}"])
+const genericSpawn=(binary, options, done)=>{
+  const model=spawn(`./bin/${binary}`,options)
   let modelOutput=''
   let modelErr=''
   model.stdout.on('data', data=>{
@@ -58,17 +68,25 @@ const spawnBinary=binary=>(functionalityIndicator, parms, done)=>{
     return done(null, modelOutput)
   })
 }
+const getParametersOrObject=parameters=>parameters||"{}"
+const spawnBinary=binary=>(functionalityIndicator, parms, done)=>{
+  genericSpawn(binary, [functionalityIndicator,getParametersOrObject(parms)], done)
+}
+const spawnBinaryNoFunctionality=binary=>(parms, done)=>{
+  genericSpawn(binary, [getParametersOrObject(parms)], done)
+}
 const calculatorSpawn=spawnBinary('calculator')
-const calibratorSpawn=spawnBinary('calibrator')
+const calibratorSpawn=spawnBinaryNoFunctionality('calibrator')
 calculatorKeys.forEach((key, index)=>{
   module.exports[key]=(event, context, callback) => {
     calculatorSpawn(index, event.body, done(callback))
   }
 })
-calibratorKeys.forEach((key, index)=>{
-  module.exports[key]=(event, context, callback) => {
-    calibratorSpawn(index, event.body, done(callback))
+module.exports.fullmodel=(event, context, callback) => {
+  const keyResult=calibratorRequiredKeys(JSON.parse(event.body))
+  if(keyResult){
+    return done(callback)(new Error(`Requires additional keys!  Missing ${keyResult}`))
   }
-})
+  calibratorSpawn(event.body, done(callback))
+}
 module.exports.calculatorKeys=calculatorKeys
-module.exports.calibratorKeys=calibratorKeys

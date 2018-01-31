@@ -87,22 +87,27 @@ int updateIndex(const JsonParm& parms, const std::string& key, int index, std::u
     
 }
 
-template< typename JsonVariable>
-std::unordered_map<std::string, int> constructKeyToIndex(JsonVariable&& variableVar){
-    std::unordered_map<std::string, int> mapKeyToIndex;
-    int index=0;
-    index=updateIndex(variableVar, "C", index, &mapKeyToIndex);
-    index=updateIndex(variableVar, "G", index, &mapKeyToIndex);
-    index=updateIndex(variableVar, "M", index, &mapKeyToIndex);
-    index=updateIndex(variableVar, "Y", index, &mapKeyToIndex);
-    index=updateIndex(variableVar, "sigma", index, &mapKeyToIndex);
-    index=updateIndex(variableVar, "v0", index, &mapKeyToIndex);
-    index=updateIndex(variableVar, "speed", index, &mapKeyToIndex);
-    index=updateIndex(variableVar, "adaV", index, &mapKeyToIndex);
-    index=updateIndex(variableVar, "rho", index, &mapKeyToIndex);
-    return mapKeyToIndex;
+
+template<typename RpJson, typename Array1, typename Array2>
+std::vector<cuckoo::upper_lower<double> > getConstraints(const RpJson& json, const Array1& possibleParameters, const Array2& fullModelConstraints){
+    std::vector<cuckoo::upper_lower<double> > modelConstraints;
+    for(auto& v:possibleParameters){
+        if(json.HasMember(v.c_str())){
+            modelConstraints.push_back(fullModelConstraints.at(v));
+        }
+    }
+    return modelConstraints;
 }
 
+template< typename JsonVariable, typename Array>
+std::unordered_map<std::string, int> constructKeyToIndex(JsonVariable&& variableVar, const Array& possibleParameters ){
+    std::unordered_map<std::string, int> mapKeyToIndex;
+    int index=0;
+    for(auto& v:possibleParameters){
+        index=updateIndex(variableVar, v, index, &mapKeyToIndex);
+    }
+    return mapKeyToIndex;
+}
 
 template<typename JsonStatic>
 double getArgOrConstant(
@@ -127,7 +132,6 @@ option_variables get_option_var(const rapidjson::Document& parms){
     if(parms.FindMember("C")!=parms.MemberEnd()){
         auto result=
         local_option.C=between_values(parms["C"].GetDouble(), 0.0, maxLarge);
-
     }
     if(parms.FindMember("G")!=parms.MemberEnd()){
         local_option.G=between_values(parms["G"].GetDouble(), 0.0, maxLarge);

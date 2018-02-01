@@ -1,5 +1,5 @@
 const handler=require('./handler')
-const calibratorParams=require('./Examples/exampleCalibrator.json')
+const calibratorParams=require('../Examples/exampleCalibrator.json')
 const createEvent=data=>({
     body:JSON.stringify(data)
 })

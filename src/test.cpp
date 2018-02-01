@@ -33,19 +33,22 @@ TEST_CASE("does not create an index where it doesn't exists", "parse_json"){
 
 TEST_CASE("has empty map if no matches", "parse_json"){
     auto parsedJson=parse_char((char*)"{\"k\":5.0}");
-    auto mapKeyToIndex=constructKeyToIndex(parsedJson);
+    std::vector<std::string> possibleParameters({"C"});
+    auto mapKeyToIndex=constructKeyToIndex(parsedJson, possibleParameters);
     REQUIRE(mapKeyToIndex.size()==0);
 }
 TEST_CASE("has subset of map with some matches", "parse_json"){
     auto parsedJson=parse_char((char*)"{\"C\":5.0, \"Y\":3.0}");
-    auto mapKeyToIndex=constructKeyToIndex(parsedJson);
+    std::vector<std::string> possibleParameters({"C", "Y"});
+    auto mapKeyToIndex=constructKeyToIndex(parsedJson, possibleParameters);
     REQUIRE(mapKeyToIndex.at("C")==0);
     REQUIRE(mapKeyToIndex.at("Y")==1);
 }
 TEST_CASE("get double when exists", "parse_json"){
     auto staticJson=parse_char((char*)"{\"C\":5.0, \"Y\":3.0}");
     auto variableJson=parse_char((char*)"{\"sigma\":5.0, \"rho\":3.0}");
-    auto mapKeyToIndex=constructKeyToIndex(variableJson);
+    std::vector<std::string> possibleParameters({"C", "Y", "sigma", "rho"});
+    auto mapKeyToIndex=constructKeyToIndex(variableJson, possibleParameters);
     for(auto& v:mapKeyToIndex){
         std::cout<<v.first<<", "<<v.second<<std::endl;
     }

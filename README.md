@@ -20,9 +20,19 @@ These are a set of lambda functions for pricing options when assets follow an ex
 * FSTS algorithm for call  POST - https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/fsts
 * VaR and ES for the CGMY process  POST - https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/density/var
 * Density for the CGMY process  POST - https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/density/raw
+* Calibration for call prices  POST - https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/calibration
 
 ## example
+The [Examples](./Examples) folder contains example scripts.  Run after `./compileAndPackage`.
 
 The `example.json` file is a series of parameters for the Heston model using parameters from [Fang-Oosterlee](http://ta.twi.tudelft.nl/mf/users/oosterle/oosterlee/COS.pdf) page 16.  Reference price is 5.785155450.
 
-To use this file, run `test.sh`.  
+To use this file, run `test.sh` from within the examples directory.
+
+## lambda
+
+The lambda functions are defined in the [lambda](./lambda) folder.
+
+## c++
+
+The C++ code is in the [src](./src) folder.

@@ -90,12 +90,12 @@ int main(int argc, char* argv[]){
         double xMax=10.0;//this should be plenty large
         int numU=pow(2, options.numU);
         const auto& jsonVariable=parsedJson["variable"];
-        const auto& jsonStatic=parsedJson["static"];
+        //const auto& jsonStatic=parsedJson["static"];
         auto modelConstraints=getConstraints(jsonVariable, possibleParameters, fullModelConstraints);
         const std::unordered_map<std::string, int> mapKeyToIndex=constructKeyToIndex(jsonVariable, possibleParameters);
 
         auto getArgOrConstantCurry=[&](const auto& key, const auto& args){
-            return getArgOrConstant(key, args, jsonStatic, mapKeyToIndex);
+            return getArgOrConstant(key, args, parsedJson, mapKeyToIndex);
         };
         json_print_calibrated_params<cuckoo::optparms, cuckoo::fnval>(
             mapKeyToIndex, 

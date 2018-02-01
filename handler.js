@@ -34,7 +34,7 @@ const totalKeys=[
   "speed"
 ]
 const calibratorRequiredKeys=body=>{
-  const totalKey=Object.assign({}, body.static, body.variable)
+  const totalKey=Object.assign({}, body, body.variable)
   return totalKeys.find(key=>totalKey[key]===undefined)
 }
 

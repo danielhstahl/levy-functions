@@ -506,12 +506,10 @@ const body={
     r:.03,
     T:.25,
     S0:50,
-    static:{
-      C:0,
-      G:2.5,
-      M:4,
-      Y:0.4
-    },
+    C:0,
+    G:2.5,
+    M:4,
+    Y:0.4,
     variable:{
       sigma:.4,
       v0:.9,

@@ -1,5 +1,5 @@
 const handler=require('./handler')
-const calibratorParams=require('./exampleCalibrator.json')
+const calibratorParams=require('./Examples/exampleCalibrator.json')
 const createEvent=data=>({
     body:JSON.stringify(data)
 })
@@ -22,10 +22,6 @@ it('correctly calls calibrator handler for full model', (done)=>{
         console.log(val.body)
         const parsedVal=JSON.parse(val.body)
         expect(parsedVal.sigma).toBeDefined()
-        expect(parsedVal.C).toBeDefined()
-        expect(parsedVal.G).toBeDefined()
-        expect(parsedVal.M).toBeDefined()
-        expect(parsedVal.Y).toBeDefined()
         expect(parsedVal.speed).toBeDefined()
         expect(parsedVal.adaV).toBeDefined()
         expect(parsedVal.rho).toBeDefined()
@@ -38,11 +34,9 @@ it('correctly sends error  for full model', (done)=>{
         "r":0.003,
         "T":1,
         "S0":178.46,
-        "static":{
-            "sigma":0.4,
-            "v0":0.9,
-            "speed":0.5
-        },
+        "sigma":0.4,
+        "v0":0.9,
+        "speed":0.5,
         "variable":{
             "C":0,
             "G":2.5,

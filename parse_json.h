@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include "cuckoo.h"
 #include "document.h" //rapidjson
 #include "writer.h" //rapidjson
 #include "stringbuffer.h" //rapidjson

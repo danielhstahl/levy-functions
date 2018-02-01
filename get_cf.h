@@ -8,6 +8,7 @@ auto cf(
     //trivially copyable...this is the SV3 of the following paper:
     //https://pdfs.semanticscholar.org/67cd/b553e2624c79a960ff79d0dfe6e6833690a7.pdf 
     return [=](
+        
         double C, 
         double G,
         double M,

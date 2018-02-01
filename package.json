@@ -2,7 +2,7 @@
   "name": "levy-functions",
   "version": "1.0.0",
   "description": "Lambda functions for cgmy process",
-  "main": "handler.js",
+  "main": "index.js",
   "directories": {
     "test": "test"
   },
@@ -26,5 +26,10 @@
   "homepage": "https://github.com/phillyfan1138/levy-functions#readme",
   "devDependencies": {
     "jest": "^21.2.1"
+  },
+  "dependencies": {
+    "csvtojson": "^1.1.9",
+    "request": "^2.83.0",
+    "serverless-google-cloudfunctions": "^1.1.0"
   }
 }

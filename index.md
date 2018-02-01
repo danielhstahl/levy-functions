@@ -497,7 +497,7 @@ Retrieves value at risk and expected shortfall for the CGMY process.
 
 ## Call
 ```bash
-curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/calibration/full"
+curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/calibration"
 ```
 
 ```javascript
@@ -506,10 +506,21 @@ const body={
     r:.03,
     T:.25,
     S0:50,
+    C:0,
+    G:2.5,
+    M:4,
+    Y:0.4,
+    variable:{
+      sigma:.4,
+      v0:.9,
+      speed:.5,
+      adaV:.4,
+      rho:-.4
+    },
     k:[1.0, 1.5],
     prices:[3.0, 1.4]
 }
-fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/calibration/full', {
+fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/calibration', {
     method:'post',
     body
 }).then(response=>response.json())
@@ -519,10 +530,6 @@ fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/calibrati
 
 ```json
 {
-  "C": 1.0,
-  "G": 5.0,
-  "M":0.23,
-  "Y":0.23,
   "sigma":0.23,
   "speed":0.23,
   "adaV":0.23,
@@ -532,13 +539,3 @@ fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/calibrati
 ```
 
 Retrieves parameters that minimize L2 error.
-
-### HTTP Request
-
-`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/calibration/<MODEL>`
-
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-MODEL     | The model to parameterize.  Options are "full", "heston", and "bs".

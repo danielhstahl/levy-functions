@@ -1,0 +1,1 @@
+../bin/calculator 1  "$(< example.json)"

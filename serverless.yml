@@ -57,60 +57,60 @@ provider:
 package:
   include:
    - bin/**
-   - handler.js
+   - lambda/handler.js
 
 functions:
   fangoostcall:
-    handler: handler.fangoostcall
+    handler: lambda/handler.fangoostcall
     events:
       - http:
           path: call/price/fangoost
           method: post
           cors: true
   fangoostcalldelta:
-    handler: handler.fangoostcalldelta
+    handler: lambda/handler.fangoostcalldelta
     events:
       - http:
           path: call/delta/fangoost
           method: post
           cors: true
   fangoostcalltheta:
-    handler: handler.fangoostcalltheta
+    handler: lambda/handler.fangoostcalltheta
     events:
       - http:
           path: call/theta/fangoost
           method: post
           cors: true
   fangoostcallgamma:
-    handler: handler.fangoostcallgamma
+    handler: lambda/handler.fangoostcallgamma
     events:
       - http:
           path: call/gamma/fangoost
           method: post
           cors: true
   fangoostput:
-    handler: handler.fangoostput
+    handler: lambda/handler.fangoostput
     events:
       - http:
           path: put/price/fangoost
           method: post
           cors: true
   fangoostputdelta:
-    handler: handler.fangoostputdelta
+    handler: lambda/handler.fangoostputdelta
     events:
       - http:
           path: put/delta/fangoost
           method: post
           cors: true
   fangoostputtheta:
-    handler: handler.fangoostputtheta
+    handler: lambda/handler.fangoostputtheta
     events:
       - http:
           path: put/theta/fangoost
           method: post
           cors: true
   fangoostputgamma:
-    handler: handler.fangoostputgamma
+    handler: lambda/handler.fangoostputgamma
     events:
       - http:
           path: put/gamma/fangoost
@@ -118,7 +118,7 @@ functions:
           cors: true
 
   carrmadanput:
-    handler: handler.carrmadanput
+    handler: lambda/handler.carrmadanput
     events:
       - http:
           path: put/price/carrmadan
@@ -126,7 +126,7 @@ functions:
           cors: true
 
   carrmadancall:
-    handler: handler.carrmadancall
+    handler: lambda/handler.carrmadancall
     events:
       - http:
           path: call/price/carrmadan
@@ -134,100 +134,82 @@ functions:
           cors: true
 
   fstsput:
-    handler: handler.fstsput
+    handler: lambda/handler.fstsput
     events:
       - http:
           path: put/price/fsts
           method: post
           cors: true
   fstscall:
-    handler: handler.fstscall
+    handler: lambda/handler.fstscall
     events:
       - http:
           path: call/price/fsts
           method: post
           cors: true
   fstsputdelta:
-    handler: handler.fstsputdelta
+    handler: lambda/handler.fstsputdelta
     events:
       - http:
           path: put/delta/fsts
           method: post
           cors: true
   fstscalldelta:
-    handler: handler.fstscalldelta
+    handler: lambda/handler.fstscalldelta
     events:
       - http:
           path: call/delta/fsts
           method: post
           cors: true
   fstsputtheta:
-    handler: handler.fstsputtheta
+    handler: lambda/handler.fstsputtheta
     events:
       - http:
           path: put/theta/fsts
           method: post
           cors: true
   fstscalltheta:
-    handler: handler.fstscalltheta
+    handler: lambda/handler.fstscalltheta
     events:
       - http:
           path: call/theta/fsts
           method: post
           cors: true
   fstsputgamma:
-    handler: handler.fstsputgamma
+    handler: lambda/handler.fstsputgamma
     events:
       - http:
           path: put/gamma/fsts
           method: post
           cors: true
   fstscallgamma:
-    handler: handler.fstscallgamma
+    handler: lambda/handler.fstscallgamma
     events:
       - http:
           path: call/gamma/fsts
           method: post
           cors: true
   VaR:
-    handler: handler.VaR
+    handler: lambda/handler.VaR
     events:
       - http:
           path: density/var
           method: post
           cors: true
   density:
-    handler: handler.density
+    handler: lambda/handler.density
     events:
       - http:
           path: density/raw
           method: post
           cors: true
   fullmodel:
-    handler: handler.fullmodel
+    handler: lambda/handler.fullmodel
     memorySize: 3008 # optional, in MB, default is 1024
     timeout: 60 # optional, in seconds, default is 6
     events:
       - http:
-          path: call/calibration/full
-          method: post
-          cors: true
-  hestonmodel:
-    handler: handler.hestonmodel
-    memorySize: 3008 # optional, in MB, default is 1024
-    timeout: 60 # optional, in seconds, default is 6
-    events:
-      - http:
-          path: call/calibration/heston
-          method: post
-          cors: true
-  bsmodel:
-    handler: handler.bsmodel
-    memorySize: 3008 # optional, in MB, default is 1024
-    timeout: 60 # optional, in seconds, default is 6
-    events:
-      - http:
-          path: call/calibration/bs
+          path: call/calibration
           method: post
           cors: true
       

@@ -117,8 +117,9 @@ double getArgOrConstant(
     JsonStatic&& staticVar,
     const std::unordered_map<std::string, int>& mapKeyToIndex
 ){
+    auto indexElement=mapKeyToIndex.find(key);
     return 
-        staticVar.FindMember(key.c_str())!=staticVar.MemberEnd()?
+        indexElement == mapKeyToIndex.end()?
         staticVar[key.c_str()].GetDouble():
         args[mapKeyToIndex.at(key)];
 }

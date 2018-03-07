@@ -41,7 +41,7 @@ auto genericCallCalibrator_neldermead(
     int nMinus1=strikes.size()-1;
     return calibrateoptions::l2normNelderMeadVector(
         //these initial guesses may be a reasonable first guess but that this is highly dependent on the problem.   
-        guess, 
+        std::move(guess), 
         [&](const auto& localStrikes, const auto& args){
             return removeFirstAndLastElement(optionprice::FangOostCallPrice(
                 S0, localStrikes, r, T, numU, 
@@ -49,7 +49,7 @@ auto genericCallCalibrator_neldermead(
             ));
         }, 
         constraintFn,
-        prices, strikes
+        prices, std::move(strikes)
     );
 }
 template<typename CF, typename Array1, typename Array2, typename Array3>
@@ -68,7 +68,7 @@ auto genericCallCalibrator_cuckoo(
             ));
         }, 
         ul,
-        prices, strikes, 100, std::chrono::system_clock::now().time_since_epoch().count()
+        prices, std::move(strikes), 100, std::chrono::system_clock::now().time_since_epoch().count()
     );
 }
 

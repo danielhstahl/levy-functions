@@ -1,4 +1,4 @@
-INCLUDES=-I ./rapidjson/include/rapidjson -I ./cfdistutilities -I ./CharacteristicFunctions -I ./FangOost -I ./FFTOptionPricing -I ./FunctionalUtilities -I ./RungeKutta -I ./GaussNewton -I ./TupleUtilities -I ./AutoDiff  -I ./HullWhite -I ./BSImpliedVolatility -I ./nelder_mead -I ./cuckoo_search -I ./MonteCarlo
+INCLUDES=-I ../rapidjson/include/rapidjson -I ../cfdistutilities -I ../CharacteristicFunctions -I ../FangOost -I ../FFTOptionPricing -I ../FunctionalUtilities -I ../RungeKutta -I ../GaussNewton -I ../TupleUtilities -I ../AutoDiff  -I ../HullWhite -I ../BSImpliedVolatility -I ../nelder_mead -I ../cuckoo_search -I ../MonteCarlo
 GCCVAL=g++
 
 UNAME_S := $(shell uname -s)

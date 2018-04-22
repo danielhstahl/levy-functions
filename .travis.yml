@@ -39,5 +39,10 @@ after_deploy:
   - node ./scripts/mergeHandler
   - node ./scripts/mergeYml
   - cd releases
+  - cat serverless.yml
+  - ls
+  - cd v1 
+  - ls
+  - cd ..
   - sls deploy
 

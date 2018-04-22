@@ -26,10 +26,16 @@ let numV=0
 fs.remove('./releases', ()=>{
     get(options(url)).then(response=>{
         const releases=JSON.parse(response.body)
-        numV=releases.length+1
-        return mkdir('./releases').then(()=>Promise.all(
-            releases.map(getAssets)
-        ))
+        if(Array.isArray(releases)){
+            numV=releases.length+1
+            return mkdir('./releases').then(()=>Promise.all(
+                releases.map(getAssets)
+            ))
+        }
+        else{
+            numV=1
+            return Promise.resolve()
+        }
     })
     .then(()=>Promise.all([
         fs.copy('./serverless.yml', `./releases/v${numV}/serverless.yml`),

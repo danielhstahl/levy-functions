@@ -58,63 +58,62 @@ package:
   include:
    - bin/**
    - lambda/handler.js
-custom:
-  baseUrl: v1
+
 functions:
   fangoostcall:
     handler: lambda/handler.fangoostcall
     events:
       - http:
-          path: ${self:custom.baseUrl}/call/price/fangoost
+          path: version/call/price/fangoost
           method: post
           cors: true
   fangoostcalldelta:
     handler: lambda/handler.fangoostcalldelta
     events:
       - http:
-          path: ${self:custom.baseUrl}/call/delta/fangoost
+          path: version/call/delta/fangoost
           method: post
           cors: true
   fangoostcalltheta:
     handler: lambda/handler.fangoostcalltheta
     events:
       - http:
-          path: ${self:custom.baseUrl}/call/theta/fangoost
+          path: version/call/theta/fangoost
           method: post
           cors: true
   fangoostcallgamma:
     handler: lambda/handler.fangoostcallgamma
     events:
       - http:
-          path: ${self:custom.baseUrl}/call/gamma/fangoost
+          path: version/call/gamma/fangoost
           method: post
           cors: true
   fangoostput:
     handler: lambda/handler.fangoostput
     events:
       - http:
-          path: ${self:custom.baseUrl}/put/price/fangoost
+          path: version/put/price/fangoost
           method: post
           cors: true
   fangoostputdelta:
     handler: lambda/handler.fangoostputdelta
     events:
       - http:
-          path: ${self:custom.baseUrl}/put/delta/fangoost
+          path: version/put/delta/fangoost
           method: post
           cors: true
   fangoostputtheta:
     handler: lambda/handler.fangoostputtheta
     events:
       - http:
-          path: ${self:custom.baseUrl}/put/theta/fangoost
+          path: version/put/theta/fangoost
           method: post
           cors: true
   fangoostputgamma:
     handler: lambda/handler.fangoostputgamma
     events:
       - http:
-          path: ${self:custom.baseUrl}/put/gamma/fangoost
+          path: version/put/gamma/fangoost
           method: post
           cors: true
 
@@ -122,7 +121,7 @@ functions:
     handler: lambda/handler.carrmadanput
     events:
       - http:
-          path: ${self:custom.baseUrl}/put/price/carrmadan
+          path: version/put/price/carrmadan
           method: post
           cors: true
 
@@ -130,7 +129,7 @@ functions:
     handler: lambda/handler.carrmadancall
     events:
       - http:
-          path: ${self:custom.baseUrl}/call/price/carrmadan
+          path: version/call/price/carrmadan
           method: post
           cors: true
 
@@ -138,70 +137,70 @@ functions:
     handler: lambda/handler.fstsput
     events:
       - http:
-          path: ${self:custom.baseUrl}/put/price/fsts
+          path: version/put/price/fsts
           method: post
           cors: true
   fstscall:
     handler: lambda/handler.fstscall
     events:
       - http:
-          path: ${self:custom.baseUrl}/call/price/fsts
+          path: version/call/price/fsts
           method: post
           cors: true
   fstsputdelta:
     handler: lambda/handler.fstsputdelta
     events:
       - http:
-          path: ${self:custom.baseUrl}/put/delta/fsts
+          path: version/put/delta/fsts
           method: post
           cors: true
   fstscalldelta:
     handler: lambda/handler.fstscalldelta
     events:
       - http:
-          path: ${self:custom.baseUrl}/call/delta/fsts
+          path: version/call/delta/fsts
           method: post
           cors: true
   fstsputtheta:
     handler: lambda/handler.fstsputtheta
     events:
       - http:
-          path: ${self:custom.baseUrl}/put/theta/fsts
+          path: version/put/theta/fsts
           method: post
           cors: true
   fstscalltheta:
     handler: lambda/handler.fstscalltheta
     events:
       - http:
-          path: ${self:custom.baseUrl}/call/theta/fsts
+          path: version/call/theta/fsts
           method: post
           cors: true
   fstsputgamma:
     handler: lambda/handler.fstsputgamma
     events:
       - http:
-          path: ${self:custom.baseUrl}/put/gamma/fsts
+          path: version/put/gamma/fsts
           method: post
           cors: true
   fstscallgamma:
     handler: lambda/handler.fstscallgamma
     events:
       - http:
-          path: ${self:custom.baseUrl}/call/gamma/fsts
+          path: version/call/gamma/fsts
           method: post
           cors: true
   VaR:
     handler: lambda/handler.VaR
     events:
       - http:
-          path: ${self:custom.baseUrl}/density/var
+          path: version/density/var
           method: post
           cors: true
   density:
     handler: lambda/handler.density
     events:
       - http:
-          path: ${self:custom.baseUrl}/density/raw
+          path: version/density/raw
           method: post
           cors: true
   fullmodel:
@@ -210,7 +209,7 @@ functions:
     timeout: 60 # optional, in seconds, default is 6
     events:
       - http:
-          path: ${self:custom.baseUrl}/call/calibration
+          path: version/call/calibration
           method: post
           cors: true
       

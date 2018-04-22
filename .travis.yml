@@ -36,5 +36,8 @@ deploy:
     tags: true
 after_deploy:
   - npm install -g serverless
+  - node ./scripts/mergeHandler
+  - node ./scripts/mergeYml
+  - cd releases
   - sls deploy
 

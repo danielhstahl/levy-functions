@@ -4,7 +4,7 @@ const fs=require('fs-extra')
 const readFile = promisify(fs.readFile)
 const writeFile = promisify(fs.writeFile)
 const readDirectory=promisify(fs.readdir)
-
+const {exec}=require('child_process')
 const loadYml=data=>new Promise((resolve, reject)=>{
     yaml.safeLoadAll(data, asJson=>{
         resolve(asJson)
@@ -15,7 +15,7 @@ const updateYMLFunctions=fileName=>doc=>Object.keys(doc.functions).reduce((aggr,
     ...aggr, 
     [funcName+fileName]:{
         ...doc.functions[funcName],
-        handler:doc.functions[funcName].handler.replace('handler', `handler${fileName}`),
+        handler:doc.functions[funcName].handler.replace('lambda', fileName),
         events:doc.functions[funcName].events.map(event=>({
             ...event, 
             http:{
@@ -26,31 +26,38 @@ const updateYMLFunctions=fileName=>doc=>Object.keys(doc.functions).reduce((aggr,
     }
 }), {})
 
-const getYML=name=>readFile(`./releases/${name}/serverless.yml`, 'utf8') 
 
-const aggregateYMLJson=arrOfYMLJson=>arrOfYMLJson.reduce((aggr, doc)=>({...aggr, ...doc}), {})
-const convertJsonToServerlessYML=(rest, functions)=>ymlJson=>yaml.safeDump({
-    ...rest,
-    functions:{
-        ...functions,
-        ...ymlJson
+const getPackageInfo=folderNames=>({
+    service:'levy-functions',
+    provider:{
+        name:'aws',
+        runtime:'nodejs6.10'
+    },
+    package:{
+        include:folderNames
     }
 })
 
+const getYML=name=>readFile(`./releases/${name}/serverless.yml`, 'utf8') 
+const parseFunctions=folderNames=>({
+    fnc:Promise.all(
+        folderNames.map(name=>getYML(name).then(loadYml).then(updateYMLFunctions(name)))
+    ),
+    package:getPackageInfo(folderNames)
+})
+const aggregateYMLJson=({fnc, package})=>fnc.then(ymlObj=>ymlObj.reduce((aggr, doc)=>({...aggr, ...doc}), package))
+const convertJsonToServerlessYML=ymlJson=>yaml.safeDump(ymlJson)
+
 const writeToFile=ymlString=>writeFile('./releases/serverless.yml', ymlString)
 
-const getPreviousFunctions=folderNames=>Promise.all(
-        folderNames.map(name=>getYML(name).then(loadYml).then(updateYMLFunctions(name)))
-    ).then(aggregateYMLJson)
 
-readFile('./serverless.yml', 'utf8')
-    .then(loadYml)
-    .then(
-        ({functions, ...rest})=>readDirectory('./releases')
-        .then(getPreviousFunctions)
-        .then(convertJsonToServerlessYML(rest, functions))
-        .then(writeToFile)
-    ).catch(err=>{
+
+readDirectory('./releases')
+    .then(parseFunctions)
+    .then(aggregateYMLJson)
+    .then(convertJsonToServerlessYML)
+    .then(writeToFile)
+    .catch(err=>{
         console.log(err)
     })
 

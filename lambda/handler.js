@@ -50,9 +50,10 @@ const done = cb=>(err, res) => cb(null, {
     'Content-Type': 'application/json',
   }
 })
-
+const spawnHelper=(url, options)=>spawn(`./${url}${binary}`,options)
 const genericSpawn=(binary, options, done)=>{
-  const model=spawn(`./bin/${binary}`,options)
+  const binaryUrl=process.env.LAMBDA_TASK_ROOT?`./${binary}`:`./bin/${binary}`
+  const model=spawn(binaryUrl,options)
   let modelOutput=''
   let modelErr=''
   model.stdout.on('data', data=>{

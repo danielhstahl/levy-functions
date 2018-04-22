@@ -303,12 +303,13 @@ void fangoost_put_gamma(const CF& cf, Array&& strikes, int numU, double S0, doub
 template<typename CF>
 void get_var(const CF& cf, double quantile, int numU, double xMax){
     auto prec=.0000001;
-    auto var=cfdistutilities::computeVaR(quantile, prec, -xMax, xMax, numU, cf);
-    auto ES=cfdistutilities::computeES(
-        quantile, -xMax, xMax, 
-        var, numU, cf, true
+    auto extremeVals=cfdistutilities::computeES(
+        quantile, prec, -xMax, xMax, 
+        numU, cf
     );
-    json_print_var(var, ES);
+    auto VaR=std::get<cfdistutilities::VAR>(extremeVals);
+    auto ES=std::get<cfdistutilities::ES>(extremeVals);
+    json_print_var(VaR, ES);
 }
 template<typename CF>
 void get_density(const CF& cf, int numU, double xMax){

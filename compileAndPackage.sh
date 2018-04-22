@@ -66,5 +66,3 @@ rm -rf MonteCarlo
 cd ..
 cp ./src/calculator ./bin
 cp ./src/calibrator ./bin
-#zip -r bin.zip ./bin
-#serverless deploy -v

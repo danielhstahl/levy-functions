@@ -17,6 +17,8 @@ before_install:
 - g++ -v
 - eval CC=gcc-5 && CXX=g++-5
 - "./compileAndPackage.sh"
+- ls
+- ls -R ./bin
 script:
 - npm test
 
@@ -27,7 +29,7 @@ deploy:
   file_glob: true
   file: 
     - "./bin/*"
-    - "./lambda/*"
+    - "./lambda/handler.js"
   on:
     repo: phillyfan1138/levy-functions
     tags: true

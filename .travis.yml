@@ -21,6 +21,19 @@ before_install:
 script:
 - npm test
 
+
+before_deploy:
+- npm install -g serverless
+- node ./scripts/mergeHandler
+- node ./scripts/mergeYml
+- cd releases
+- cat serverless.yml
+- ls
+- cd v1 
+- ls
+- cd ..
+- serverless deploy -v
+
 deploy:
   provider: releases
   api_key:
@@ -34,15 +47,6 @@ deploy:
   on:
     repo: phillyfan1138/levy-functions
     tags: true
-after_deploy:
-  - npm install -g serverless
-  - node ./scripts/mergeHandler
-  - node ./scripts/mergeYml
-  - cd releases
-  - cat serverless.yml
-  - ls
-  - cd v1 
-  - ls
-  - cd ..
-  - sls deploy
+
+
 

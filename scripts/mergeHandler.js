@@ -17,24 +17,16 @@ const options=url=>({
 const pipeResponse=(url, tag_name, name)=>new Promise((resolve, reject)=>{
     request.get(options(url)).on('error', err=>reject(err)).pipe(fs.createWriteStream(`./releases/${tag_name}/${name}`)).on('finish', resolve)
 })
-/*
-const extractZip=tag_name=>()=>{
-    const path=`./${tag_name}.zip`
-    fs.createReadStream(path).pipe(unzip.Extract({ path: './releases' })).on('finish', ()=>{
-        fs.unlink(path, ()=>{})
-    })
-}*/
 
-//const getRelease=({zipball_url, tag_name})=>pipeResponse(zipball_url, tag_name).then(extractZip(tag_name))
 const getAssets=({assets, tag_name})=>mkdir(`./releases/${tag_name}`).then(()=>Promise.all(
-    assets.map(({url, name})=>pipeResponse(url, tag_name, name))
+    assets.map(({browser_download_url, name})=>pipeResponse(browser_download_url, tag_name, name))
 ))
-fs.remove('./releases/*', ()=>{
+fs.remove('./releases', ()=>{
     get(options(url)).then(response=>{
         const releases=JSON.parse(response.body)
-        return Promise.all(
+        return mkdir('./releases').then(()=>Promise.all(
             releases.map(getAssets)
-        )
+        ))
     }).catch(err=>{
         console.log(err)
     })

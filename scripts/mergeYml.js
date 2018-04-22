@@ -11,7 +11,20 @@ const loadYml=data=>new Promise((resolve, reject)=>{
     })
 })
 
-const updateYMLFunctions=fileName=>doc=>Object.keys(doc.functions).reduce((aggr, funcName)=>({...aggr, [funcName+fileName]:doc.functions[funcName]}), {})
+const updateYMLFunctions=fileName=>doc=>Object.keys(doc.functions).reduce((aggr, funcName)=>({
+    ...aggr, 
+    [funcName+fileName]:{
+        ...doc.functions[funcName],
+        handler:doc.functions[funcName].handler.replace('handler', `handler${fileName}`),
+        events:doc.functions[funcName].events.map(event=>({
+            ...event, 
+            http:{
+                ...event.http,
+                path:event.http.path.replace('version', fileName)
+            }
+        }))
+    }
+}), {})
 
 const getYML=name=>readFile(`./releases/${name}/serverless.yml`, 'utf8') 
 

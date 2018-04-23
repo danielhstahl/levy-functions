@@ -13,10 +13,9 @@ struct option_variables{
     double T=.25;
     double S0=50;
     double sigma=.2;
-    double C=1.0;
-    double G=1.4;
-    double M=2.5;
-    double Y=.6;
+    double lambda=1.0;
+    double muJ=1.4;
+    double sigJ=.3;
     double speed=.4;
     double v0=1.05;
     double adaV=.2;
@@ -34,6 +33,15 @@ rapidjson::Document parse_char(char* json){
     return parms;
 }
 
+std::vector<double> get_k_var_vector(const rapidjson::Document& parms){
+    std::vector<double> local_k;
+    if(parms.FindMember("k")!=parms.MemberEnd()){
+        for (auto& v : parms["k"].GetArray()) {
+            local_k.emplace_back(v.GetDouble());
+        }
+    }
+    return local_k;
+}
 std::deque<double> get_k_var(const rapidjson::Document& parms){
     std::deque<double> local_k;
     if(parms.FindMember("k")!=parms.MemberEnd()){
@@ -117,9 +125,8 @@ double getArgOrConstant(
     JsonStatic&& staticVar,
     const std::unordered_map<std::string, int>& mapKeyToIndex
 ){
-    auto indexElement=mapKeyToIndex.find(key);
     return 
-        indexElement == mapKeyToIndex.end()?
+        staticVar.FindMember(key.c_str())!=staticVar.MemberEnd()?
         staticVar[key.c_str()].GetDouble():
         args[mapKeyToIndex.at(key)];
 }
@@ -131,18 +138,15 @@ option_variables get_option_var(const rapidjson::Document& parms){
     if(parms.FindMember("sigma")!=parms.MemberEnd()){
         local_option.sigma=between_values(parms["sigma"].GetDouble(), 0.0, maxLarge);
     }
-    if(parms.FindMember("C")!=parms.MemberEnd()){
+    if(parms.FindMember("lambda")!=parms.MemberEnd()){
         auto result=
-        local_option.C=between_values(parms["C"].GetDouble(), 0.0, maxLarge);
+        local_option.lambda=between_values(parms["lambda"].GetDouble(), 0.0, maxLarge);
     }
-    if(parms.FindMember("G")!=parms.MemberEnd()){
-        local_option.G=between_values(parms["G"].GetDouble(), 0.0, maxLarge);
+    if(parms.FindMember("muJ")!=parms.MemberEnd()){
+        local_option.muJ=between_values(parms["muJ"].GetDouble(), 0.0, maxLarge);
     }
-    if(parms.FindMember("M")!=parms.MemberEnd()){
-        local_option.M=between_values(parms["M"].GetDouble(), 0.0, maxLarge);
-    }
-    if(parms.FindMember("Y")!=parms.MemberEnd()){
-        local_option.Y=between_values(parms["Y"].GetDouble(), -2.0, 2.0);
+    if(parms.FindMember("sigJ")!=parms.MemberEnd()){
+        local_option.sigJ=between_values(parms["sigJ"].GetDouble(), 0.0, maxLarge);
     }
     if(parms.FindMember("speed")!=parms.MemberEnd()){
         local_option.speed=between_values(parms["speed"].GetDouble(), 0.0, maxLarge);
@@ -189,7 +193,7 @@ void json_print_calibrated_params(const Array1& paramNames, TupleOfArrayAndValue
         std::cout<<"\""<<node.first<<"\":"<<params[node.second]<<",";
         ++i;
     }
-    std::cout<<"\"mse\":"<<sqrt(fnVal/totalOptions)<<"}";
+    std::cout<<"\"mse\":"<<fnVal<<"}";
 }
 
 

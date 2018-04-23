@@ -23,10 +23,9 @@ const calculatorKeys=[
   'density'
 ]
 const totalKeys=[
-  "C", 
-  "G",
-  "M",
-  "Y",
+  "lambda", 
+  "muJ",
+  "sigJ",
   "v0",
   "sigma",
   "rho",
@@ -50,9 +49,9 @@ const done = cb=>(err, res) => cb(null, {
     'Content-Type': 'application/json',
   }
 })
+
 const genericSpawn=(binary, options, done)=>{
-  const binaryUrl=process.env.LAMBDA_TASK_ROOT?`${__dirname}/${binary}`:`./bin/${binary}`
-  const model=spawn(binaryUrl,options)
+  const model=spawn(`./bin/${binary}`,options)
   let modelOutput=''
   let modelErr=''
   model.stdout.on('data', data=>{

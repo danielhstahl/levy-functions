@@ -205,7 +205,7 @@ functions:
           cors: true
   fullmodel:
     handler: lambda/handler.fullmodel
-    memorySize: 3008 # optional, in MB, default is 1024
+    memorySize: 1024 # optional, in MB, default is 1024
     timeout: 60 # optional, in seconds, default is 6
     events:
       - http:

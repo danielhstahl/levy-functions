@@ -27,8 +27,7 @@ before_deploy:
 - node ./scripts/mergeHandler
 - node ./scripts/mergeYml
 - cd releases
-- cat serverless.yml
-- sls deploy --force
+- sls deploy
 - cd ..
 
 deploy:

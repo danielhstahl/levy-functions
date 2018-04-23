@@ -1,18 +1,48 @@
 sudo: required
 language: node_js
 node_js:
-  - "stable"
-
+- stable
+cache:
+  directories:
+    - node_modules
 addons:
   apt:
     sources:
-      - ubuntu-toolchain-r-test
+    - ubuntu-toolchain-r-test
     packages:
-      - g++-5
+    - g++-5
 before_install:
-  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 60 --slave /usr/bin/g++ g++ /usr/bin/g++-5
-  - g++ -v
-  - eval CC=gcc-5 && CXX=g++-5
-  - ./compileAndPackage.sh
+- sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 60 --slave /usr/bin/g++
+  g++ /usr/bin/g++-5
+- g++ -v
+- eval CC=gcc-5 && CXX=g++-5
+#- sudo apt-get install zip gzip tar
+- "./compileAndPackage.sh"
 script:
-  - npm test
+- npm test
+
+
+before_deploy:
+- npm install -g serverless
+- node ./scripts/mergeHandler
+- node ./scripts/mergeYml
+- cd releases
+- sls deploy
+- cd ..
+
+deploy:
+  provider: releases
+  api_key:
+    secure: SPpN18d7GEkPOrVn8Amzw3oWipBr8ESPFzLxkLjLleiuZS3JZRxh1zxozScuHZQVPgi8upjcI+EWa1VAXQjiIZd6+ArlmdgdilDoVYe4SkT6CEtxAZIOEzjWM2Gw6MBIlMbBCdccprMNQyFoT/5GGFA9yZ5lWyHDkURP9Ylv7eawmPV+9oQWIFTo9PvivR9Lsd+N5CwUbUyRCJ5Y8LvNRLWXMheik30wTEIkvqwDgrinbLqJq6C7x5+YMonODkqlueYxwn2XGoy/MfdbgiOjjIv1hDjuUdmvxShT8EdZBtCALAdyp1auTYW0Vi2HYnYg1QNkX6kc5Ut6tu02N83fteTfq0NW2yUZd87S+1p2MFJoLG0RgmRuAkIEm7MTcRXaBGbBAvWvjh2uJlrhGpcXLcNLjiKowX2Yv1N64YrszWqz9M6/F7/NwDt/vbsqzg6Pl0SDpNa8ABe2DeR91MvtBUNZyUAPoC2fSntT+BRRul4zbnw7Z9/KqBvu5gNhSe6kq4+bxzRyhv2QUaljtwSZNIqf6uDLpK2Rc8IxctNbLRzqX9U6lXaZSCs8Uv5nHFtY359y8CdTXsUHcKpebIsdMLzx2/IJV4W7teGJZG5BgrwDsB0uPGGJK53zY+Vm8qp390eSldPtREkVmSXowZx9ygawNHMI5BiNwfXXoM7x/pU=
+  file_glob: true
+  file: 
+    - "./bin/calculator"
+    - "./bin/calibrator"
+    - "./lambda/handler.js"
+    - "./serverless.yml"
+  on:
+    repo: phillyfan1138/levy-functions
+    tags: true
+
+
+

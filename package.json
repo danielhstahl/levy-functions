@@ -1,13 +1,15 @@
 {
   "name": "levy-functions",
   "version": "1.0.0",
-  "description": "Lambda functions for cgmy process",
+  "description": "Lambda functions for Jump Diffusion process",
   "main": "index.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "mergeReleases": "node ./scripts/mergeHandler",
+    "release": "node ./scripts/mergeHandler && ./scripts/tagAndRelease.sh"
   },
   "repository": {
     "type": "git",
@@ -16,7 +18,7 @@
   "keywords": [
     "Lambda",
     "AWS",
-    "CGMY"
+    "Jump Diffusion"
   ],
   "author": "Daniel Stahl",
   "license": "MIT",
@@ -29,7 +31,10 @@
   },
   "dependencies": {
     "csvtojson": "^1.1.9",
-    "request": "^2.83.0",
-    "serverless-google-cloudfunctions": "^1.1.0"
+    "es6-promisify": "^6.0.0",
+    "fs-extra": "^5.0.0",
+    "js-yaml": "^3.11.0",
+    "request": "^2.85.0",
+    "unzip": "^0.1.11"
   }
 }

@@ -23,10 +23,9 @@ const calculatorKeys=[
   'density'
 ]
 const totalKeys=[
-  "C", 
-  "G",
-  "M",
-  "Y",
+  "lambda", 
+  "muJ",
+  "sigJ",
   "v0",
   "sigma",
   "rho",

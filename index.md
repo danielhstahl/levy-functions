@@ -41,7 +41,7 @@ This endpoint returns call option prices for an underlying that follows an exten
 
 ## Option Prices
 ```bash
-curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/price/fangoost"
+curl -X POST "https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/call/price/fangoost"
 ```
 
 ```javascript
@@ -62,7 +62,7 @@ const body={
     k:[1.0, 1.5],
     quantile:.01
 }
-fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/price/fangoost', {
+fetch('https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/call/price/fangoost', {
     method:'post',
     body
 }).then(response=>response.json())
@@ -87,7 +87,7 @@ Retrieves call prices and asset/strike prices.
 
 ### HTTP Request
 
-`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/price/<ALGORITHM>`
+`POST https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/call/price/<ALGORITHM>`
 
 ### URL Parameters
 
@@ -98,11 +98,11 @@ ALGORITHM | The option pricing algorithm to use.  Options are "fangoost", "carrm
 ## Delta
 
 ```bash
-curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/delta/fangoost"
+curl -X POST "https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/call/delta/fangoost"
 ```
 
 ```javascript
-fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/delta/fangoost', {
+fetch('https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/call/delta/fangoost', {
     method:'post',
     body
 }).then(response=>response.json())
@@ -127,7 +127,7 @@ Retrieves option delta and asset/strike prices
 
 ### HTTP Request
 
-`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/delta/<ALGORITHM>`
+`POST https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/call/delta/<ALGORITHM>`
 
 ### URL Parameters
 
@@ -138,11 +138,11 @@ ALGORITHM | The option pricing algorithm to use.  Options are "fangoost" and "fs
 ## Theta
 
 ```bash
-curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/theta/fangoost"
+curl -X POST "https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/call/theta/fangoost"
 ```
 
 ```javascript
-fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/theta/fangoost', {
+fetch('https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/call/theta/fangoost', {
     method:'post',
     body
 }).then(response=>response.json())
@@ -167,7 +167,7 @@ Retrieves option theta and asset/strike prices.  This only works if time is not 
 
 ### HTTP Request
 
-`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/theta/<ALGORITHM>`
+`POST https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/call/theta/<ALGORITHM>`
 
 ### URL Parameters
 
@@ -178,11 +178,11 @@ ALGORITHM | The option pricing algorithm to use.  Options are "fangoost" and "fs
 ## Gamma
 
 ```bash
-curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/gamma/fangoost"
+curl -X POST "https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/call/gamma/fangoost"
 ```
 
 ```javascript
-fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/gamma/fangoost', {
+fetch('https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/call/gamma/fangoost', {
     method:'post',
     body
 }).then(response=>response.json())
@@ -207,7 +207,7 @@ Retrieves option gamma and asset/strike prices
 
 ### HTTP Request
 
-`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/theta/<ALGORITHM>`
+`POST https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/call/theta/<ALGORITHM>`
 
 ### URL Parameters
 
@@ -220,7 +220,7 @@ ALGORITHM | The option pricing algorithm to use.  Options are "fangoost" and "fs
 
 ## Option Prices
 ```bash
-curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/price/fangoost"
+curl -X POST "https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/put/price/fangoost"
 ```
 
 ```javascript
@@ -241,7 +241,7 @@ const body={
     k:[1.0, 1.5],
     quantile:.01
 }
-fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/price/fangoost', {
+fetch('https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/put/price/fangoost', {
     method:'post',
     body
 }).then(response=>response.json())
@@ -268,7 +268,7 @@ Retrieves put prices, asset/strike prices, and implied volatilities.
 
 ### HTTP Request
 
-`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/price/<ALGORITHM>`
+`POST https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/put/price/<ALGORITHM>`
 
 ### URL Parameters
 
@@ -278,12 +278,12 @@ ALGORITHM | The option pricing algorithm to use.  Options are "fangoost", "carrm
 
 ## Delta
 ```bash
-curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/delta/fangoost"
+curl -X POST "https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/put/delta/fangoost"
 ```
 
 ```javascript
 
-fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/delta/fangoost', {
+fetch('https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/put/delta/fangoost', {
     method:'post',
     body
 }).then(response=>response.json())
@@ -308,7 +308,7 @@ Retrieves option delta and asset/strike prices.
 
 ### HTTP Request
 
-`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/delta/<ALGORITHM>`
+`POST https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/put/delta/<ALGORITHM>`
 
 ### URL Parameters
 
@@ -319,11 +319,11 @@ ALGORITHM | The option pricing algorithm to use.  Options are "fangoost" and "fs
 ## Theta
 
 ```bash
-curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/theta/fangoost"
+curl -X POST "https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/put/theta/fangoost"
 ```
 
 ```javascript
-fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/theta/fangoost', {
+fetch('https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/put/theta/fangoost', {
     method:'post',
     body
 }).then(response=>response.json())
@@ -348,7 +348,7 @@ Retrieves option theta and asset/strike prices.  This only works if time is not 
 
 ### HTTP Request
 
-`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/theta/<ALGORITHM>`
+`POST https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/put/theta/<ALGORITHM>`
 
 ### URL Parameters
 
@@ -359,11 +359,11 @@ ALGORITHM | The option pricing algorithm to use.  Options are "fangoost" and "fs
 ## Gamma
 
 ```bash
-curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/gamma/fangoost"
+curl -X POST "https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/put/gamma/fangoost"
 ```
 
 ```javascript
-fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/gamma/fangoost', {
+fetch('https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/put/gamma/fangoost', {
     method:'post',
     body
 }).then(response=>response.json())
@@ -388,7 +388,7 @@ Retrieves option gamma and asset/strike prices
 
 ### HTTP Request
 
-`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/put/theta/<ALGORITHM>`
+`POST https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/put/theta/<ALGORITHM>`
 
 ### URL Parameters
 
@@ -401,7 +401,7 @@ ALGORITHM | The option pricing algorithm to use.  Options are "fangoost" and "fs
 ## Raw
 
 ```bash
-curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/density/raw"
+curl -X POST "https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/density/raw"
 ```
 
 ```javascript
@@ -421,7 +421,7 @@ const body={
     rho:-.5,
     quantile:.01
 }
-fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/density/raw', {
+fetch('https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/density/raw', {
     method:'post',
     body
 }).then(response=>response.json())
@@ -446,12 +446,12 @@ Retrieves density of the CGMY process
 
 ### HTTP Request
 
-`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/density/raw`
+`POST https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/density/raw`
 
 ## VaR
 
 ```bash
-curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/density/raw"
+curl -X POST "https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/density/raw"
 ```
 
 ```javascript
@@ -471,7 +471,7 @@ const body={
     rho:-.5,
     quantile:.01
 }
-fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/density/var', {
+fetch('https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/density/var', {
     method:'post',
     body
 }).then(response=>response.json())
@@ -490,14 +490,14 @@ Retrieves value at risk and expected shortfall for the CGMY process.
 
 ### HTTP Request
 
-`POST https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/density/var`
+`POST https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/density/var`
 
 
 # Calibration
 
 ## Call
 ```bash
-curl -X POST "https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/calibration"
+curl -X POST "https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/call/calibration"
 ```
 
 ```javascript
@@ -520,7 +520,7 @@ const body={
     k:[1.0, 1.5],
     prices:[3.0, 1.4]
 }
-fetch('https://ni6jd9f0z4.execute-api.us-east-1.amazonaws.com/dev/call/calibration', {
+fetch('https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/call/calibration', {
     method:'post',
     body
 }).then(response=>response.json())

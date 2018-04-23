@@ -26,5 +26,6 @@ levyfunctions
 *.DS_Store
 *MonteCarlo
 *cuckoo_search
-calculator
-calibrator
+releases
+src/calculator
+src/calibrator

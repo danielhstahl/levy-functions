@@ -7,4 +7,4 @@ fi
 git add .
 git commit -m "release $1"
 git tag -a "$1" -m "updating to $1"
-git push --follow-tags origin master
+git push --follow-tags origin backV1

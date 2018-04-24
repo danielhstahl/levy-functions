@@ -1,25 +1,25 @@
 const handler=require('./handler')
 const calibratorParams=require('../Examples/exampleCalibrator.json')
-const createEvent=data=>({
-    body:JSON.stringify(data)
+const createEvent=(data, parameters)=>({
+    queryStringParameters:JSON.stringify(data),
+    pathParameters:parameters
 })
 it('correctly calls calculator handlers', ()=>{
     const event=createEvent({
         k:[40, 50, 60]
+    }, {
+        optionType:'call',
+        sensitivity:'price',
+        algorithm:'fangoost'
     })
-    return Promise.all(handler.calculatorKeys.filter(val=>val!=='VaR').map(key=>{
-        return new Promise((resolve, reject)=>{
-            handler[key](event, {}, (err, val)=>{
-                const parsedVal=JSON.parse(val.body)
-                resolve(expect(Array.isArray(parsedVal)).toEqual(true))
-            })
-        })
-    }))
+    return handler.calculator(event, {}, (err, val)=>{
+        const parsedVal=JSON.parse(val.body)
+        resolve(expect(Array.isArray(parsedVal)).toEqual(true))
+    })
 })
 it('correctly calls calibrator handler for full model', (done)=>{
     const event=createEvent(calibratorParams)
-    handler.fullmodel(event, {}, (err, val)=>{
-        console.log(val.body)
+    handler.calibrator(event, {}, (err, val)=>{
         const parsedVal=JSON.parse(val.body)
         expect(parsedVal.sigma).toBeDefined()
         expect(parsedVal.speed).toBeDefined()
@@ -47,16 +47,18 @@ it('correctly sends error  for full model', (done)=>{
         "prices":[85,78.7,51.5,35.38,28.3,25.2,22.27,19.45,14.77,12.75,11,9.35,6.9,2.55,1.88]
     }
     const event=createEvent(args)
-    handler.fullmodel(event, {}, (err, val)=>{
-        //expect(err).toEqual()
+    handler.calibrator(event, {}, (err, val)=>{
         expect(val.body).toEqual("Requires additional keys!  Missing rho")
         done()
     })
 }, 40000) //takes a while, so 20 seconds
 
 it('correctly calls VaR', (done)=>{
-    const event=createEvent({})
-    handler.VaR(event, {}, (err, val)=>{
+    const event=createEvent({}, {
+        optionType:'density',
+        sensitivity:'raw'
+    })
+    handler.calculator(event, {}, (err, val)=>{
         const parsedVal=JSON.parse(val.body)
         expect(parsedVal.VaR).toBeDefined()
         expect(parsedVal.ES).toBeDefined()

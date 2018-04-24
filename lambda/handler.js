@@ -97,12 +97,4 @@ module.exports.calibrator=(event, context, callback)=>{
   }
   calibratorSpawn(event.body, done(callback))
 }
-
-module.exports.fullmodel=(event, context, callback) => {
-  const keyResult=calibratorRequiredKeys(JSON.parse(event.body))
-  if(keyResult){
-    return done(callback)(new Error(`Requires additional keys!  Missing ${keyResult}`))
-  }
-  calibratorSpawn(event.body, done(callback))
-}
 module.exports.calculatorKeys=calculatorKeys

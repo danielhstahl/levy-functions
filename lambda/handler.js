@@ -1,27 +1,29 @@
 'use strict'
 const spawn = require('child_process').spawn
-const calculatorKeys=[
-  'carrmadanput',
-  'carrmadancall',
-  'fangoostput',
-  'fangoostputdelta',
-  'fangoostputtheta',
-  'fangoostputgamma',
-  'fangoostcall',
-  'fangoostcalldelta',
-  'fangoostcalltheta',
-  'fangoostcallgamma',
-  'fstsput',
-  'fstsputdelta',
-  'fstsputtheta',
-  'fstsputgamma',
-  'fstscall',
-  'fstscalldelta',
-  'fstscalltheta',
-  'fstscallgamma',
-  'VaR',
-  'density'
-]
+
+const calculatorKeys={
+  putpricecarrmadan:0,
+  callpricecarrmadan:1,
+  putpricefangoost:2,
+  putdeltafangoost:3,
+  putthetafangoost:4,
+  putgammafangoost:5,
+  callpricefangoost:6,
+  calldeltafangoost:7,
+  callthetafangoost:8,
+  callgammafangoost:9,
+  putpricefsts:10,
+  putdeltafsts:11,
+  putthetafsts:12,
+  putgammafsts:13,
+  callpricefsts:14,
+  calldeltafsts:15,
+  callthetafsts:16,
+  callgammafsts:17,
+  densityvar:18,
+  densityraw:19
+}
+
 const totalKeys=[
   "C", 
   "G",
@@ -82,9 +84,12 @@ const calibratorSpawn=spawnBinaryNoFunctionality('calibrator')
 
 module.exports.calculator=(event, context, callback)=>{
   const {optionType, sensitivity, algorithm}=event.pathParameters
-  const index=calculatorKeys[optionType+sensitivity+algorithm]
+  const key=algorithm?optionType+sensitivity+algorithm:optionType+sensitivity
+ 
+  const index=calculatorKeys[key]
   calculatorSpawn(index, event.queryStringParameters, done(callback))
 }
+
 module.exports.calibrator=(event, context, callback)=>{
   const keyResult=calibratorRequiredKeys(JSON.parse(event.body))
   if(keyResult){

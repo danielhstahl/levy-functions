@@ -60,157 +60,58 @@ package:
    - lambda/handler.js
 
 functions:
-  fangoostcall:
-    handler: lambda/handler.fangoostcall
+  calculator:
+    handler: lambda/handler.calculator
     events:
       - http:
-          path: version/call/price/fangoost
-          method: post
+          path: version/{optionType}/{sensitivity}/{algorithm}
+          method: get
+          request:
+            parameters:
+              querystrings:
+                numU: false
+                r: false 
+                T: false 
+                S0: false
+                sigma: false
+                C: false
+                G: false
+                M: false
+                Y: false
+                speed: false
+                v0: false
+                adaV: false
+                rho: false
+                k: false
+                quantile: false
+              paths:
+                optionType: true
+                sensitivity: true
+                algorithm: false
           cors: true
-  fangoostcalldelta:
-    handler: lambda/handler.fangoostcalldelta
-    events:
-      - http:
-          path: version/call/delta/fangoost
-          method: post
-          cors: true
-  fangoostcalltheta:
-    handler: lambda/handler.fangoostcalltheta
-    events:
-      - http:
-          path: version/call/theta/fangoost
-          method: post
-          cors: true
-  fangoostcallgamma:
-    handler: lambda/handler.fangoostcallgamma
-    events:
-      - http:
-          path: version/call/gamma/fangoost
-          method: post
-          cors: true
-  fangoostput:
-    handler: lambda/handler.fangoostput
-    events:
-      - http:
-          path: version/put/price/fangoost
-          method: post
-          cors: true
-  fangoostputdelta:
-    handler: lambda/handler.fangoostputdelta
-    events:
-      - http:
-          path: version/put/delta/fangoost
-          method: post
-          cors: true
-  fangoostputtheta:
-    handler: lambda/handler.fangoostputtheta
-    events:
-      - http:
-          path: version/put/theta/fangoost
-          method: post
-          cors: true
-  fangoostputgamma:
-    handler: lambda/handler.fangoostputgamma
-    events:
-      - http:
-          path: version/put/gamma/fangoost
-          method: post
-          cors: true
-
-  carrmadanput:
-    handler: lambda/handler.carrmadanput
-    events:
-      - http:
-          path: version/put/price/carrmadan
-          method: post
-          cors: true
-
-  carrmadancall:
-    handler: lambda/handler.carrmadancall
-    events:
-      - http:
-          path: version/call/price/carrmadan
-          method: post
-          cors: true
-
-  fstsput:
-    handler: lambda/handler.fstsput
-    events:
-      - http:
-          path: version/put/price/fsts
-          method: post
-          cors: true
-  fstscall:
-    handler: lambda/handler.fstscall
-    events:
-      - http:
-          path: version/call/price/fsts
-          method: post
-          cors: true
-  fstsputdelta:
-    handler: lambda/handler.fstsputdelta
-    events:
-      - http:
-          path: version/put/delta/fsts
-          method: post
-          cors: true
-  fstscalldelta:
-    handler: lambda/handler.fstscalldelta
-    events:
-      - http:
-          path: version/call/delta/fsts
-          method: post
-          cors: true
-  fstsputtheta:
-    handler: lambda/handler.fstsputtheta
-    events:
-      - http:
-          path: version/put/theta/fsts
-          method: post
-          cors: true
-  fstscalltheta:
-    handler: lambda/handler.fstscalltheta
-    events:
-      - http:
-          path: version/call/theta/fsts
-          method: post
-          cors: true
-  fstsputgamma:
-    handler: lambda/handler.fstsputgamma
-    events:
-      - http:
-          path: version/put/gamma/fsts
-          method: post
-          cors: true
-  fstscallgamma:
-    handler: lambda/handler.fstscallgamma
-    events:
-      - http:
-          path: version/call/gamma/fsts
-          method: post
-          cors: true
-  VaR:
-    handler: lambda/handler.VaR
-    events:
-      - http:
-          path: version/density/var
-          method: post
-          cors: true
-  density:
-    handler: lambda/handler.density
-    events:
-      - http:
-          path: version/density/raw
-          method: post
-          cors: true
-  fullmodel:
-    handler: lambda/handler.fullmodel
+  calibrator:
     memorySize: 3008 # optional, in MB, default is 1024
-    timeout: 60 # optional, in seconds, default is 6
+    timeout: 30 # optional, in seconds, default is 6
+    handler: lambda/handler.calibrator
     events:
       - http:
-          path: version/call/calibration
-          method: post
+          path: version/calibrator
+          method: get
+          request:
+            parameters:
+              querystrings:
+                C: false
+                G: false
+                M: false
+                Y: false
+                speed: false
+                v0: false
+                adaV: false
+                rho: false
+                variable: true
+                k: true
+                prices: true
           cors: true
+
       
 

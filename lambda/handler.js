@@ -33,6 +33,7 @@ const totalKeys=[
   "adaV",
   "speed"
 ]
+
 const calibratorRequiredKeys=body=>{
   const totalKey=Object.assign({}, body, body.variable)
   return totalKeys.find(key=>totalKey[key]===undefined)
@@ -50,9 +51,9 @@ const done = cb=>(err, res) => cb(null, {
     'Content-Type': 'application/json',
   }
 })
+
 const genericSpawn=(binary, options, done)=>{
-  const binaryUrl=process.env.LAMBDA_TASK_ROOT?`${__dirname}/${binary}`:`./bin/${binary}`
-  const model=spawn(binaryUrl,options)
+  const model=spawn(`./bin/${binary}`,options)
   let modelOutput=''
   let modelErr=''
   model.stdout.on('data', data=>{
@@ -77,11 +78,21 @@ const spawnBinaryNoFunctionality=binary=>(parms, done)=>{
 }
 const calculatorSpawn=spawnBinary('calculator')
 const calibratorSpawn=spawnBinaryNoFunctionality('calibrator')
-calculatorKeys.forEach((key, index)=>{
-  module.exports[key]=(event, context, callback) => {
-    calculatorSpawn(index, event.body, done(callback))
+
+
+module.exports.calculator=(event, context, callback)=>{
+  const {optionType, sensitivity, algorithm}=event.pathParameters
+  const index=calculatorKeys[optionType+sensitivity+algorithm]
+  calculatorSpawn(index, event.queryStringParameters, done(callback))
+}
+module.exports.calibrator=(event, context, callback)=>{
+  const keyResult=calibratorRequiredKeys(JSON.parse(event.body))
+  if(keyResult){
+    return done(callback)(new Error(`Requires additional keys!  Missing ${keyResult}`))
   }
-})
+  calibratorSpawn(event.body, done(callback))
+}
+
 module.exports.fullmodel=(event, context, callback) => {
   const keyResult=calibratorRequiredKeys(JSON.parse(event.body))
   if(keyResult){

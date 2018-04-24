@@ -12,7 +12,9 @@ const options=url=>({
     url,
     headers: {
         'User-Agent': 'levy-functions'
-    }
+    },
+    insecure: true,
+    rejectUnauthorized: false
 })
 
 const pipeResponse=(url, tag_name, name)=>new Promise((resolve, reject)=>{

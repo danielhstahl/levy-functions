@@ -1,6 +1,10 @@
 'use strict'
 const spawn = require('child_process').spawn
-const calculatorKeys=[
+const calculatorKeys={
+  carrmadanput:0,
+  carrmadancall:1,
+
+}
   'carrmadanput',
   'carrmadancall',
   'fangoostput',
@@ -76,11 +80,21 @@ const spawnBinaryNoFunctionality=binary=>(parms, done)=>{
 }
 const calculatorSpawn=spawnBinary('calculator')
 const calibratorSpawn=spawnBinaryNoFunctionality('calibrator')
-calculatorKeys.forEach((key, index)=>{
-  module.exports[key]=(event, context, callback) => {
-    calculatorSpawn(index, event.body, done(callback))
+
+
+module.exports.calculator=(event, context, callback)=>{
+  const {optionType, sensitivity, algorithm}=event.pathParameters
+  const index=calculatorKeys[optionType+sensitivity+algorithm]
+  calculatorSpawn(index, event.queryStringParameters, done(callback))
+}
+module.exports.calibrator=(event, context, callback)=>{
+  const keyResult=calibratorRequiredKeys(JSON.parse(event.body))
+  if(keyResult){
+    return done(callback)(new Error(`Requires additional keys!  Missing ${keyResult}`))
   }
-})
+  calibratorSpawn(event.body, done(callback))
+}
+
 module.exports.fullmodel=(event, context, callback) => {
   const keyResult=calibratorRequiredKeys(JSON.parse(event.body))
   if(keyResult){

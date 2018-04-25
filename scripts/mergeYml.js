@@ -16,6 +16,9 @@ const updateYMLFunctions=fileName=>doc=>Object.keys(doc.functions).reduce((aggr,
     [funcName+fileName]:{
         ...doc.functions[funcName],
         handler:doc.functions[funcName].handler.replace('lambda', fileName),
+        package:{
+            include:doc.functions[funcName].package.include.replace('lambda', fileName)
+        },
         events:doc.functions[funcName].events.map(event=>({
             ...event, 
             http:{

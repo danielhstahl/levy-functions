@@ -66,29 +66,16 @@ functions:
       - http:
           path: version/{optionType}/{sensitivity}/{algorithm}
           method: get
+          cors: true
           request:
             parameters:
               querystrings:
-                numU: false
-                r: false 
-                T: false 
-                S0: false
-                sigma: false
-                C: false
-                G: false
-                M: false
-                Y: false
-                speed: false
-                v0: false
-                adaV: false
-                rho: false
-                k: false
-                quantile: false
+                json: true
               paths:
                 optionType: true
                 sensitivity: true
                 algorithm: false
-          cors: true
+          
   calibrator:
     memorySize: 3008 # optional, in MB, default is 1024
     timeout: 30 # optional, in seconds, default is 6
@@ -97,21 +84,12 @@ functions:
       - http:
           path: version/calibrator
           method: get
+          cors: true
           request:
             parameters:
               querystrings:
-                C: false
-                G: false
-                M: false
-                Y: false
-                speed: false
-                v0: false
-                adaV: false
-                rho: false
-                variable: true
-                k: true
-                prices: true
-          cors: true
+                json: true
+          
 
       
 

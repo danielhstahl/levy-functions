@@ -86,14 +86,14 @@ module.exports.calculator=(event, context, callback)=>{
   const {optionType, sensitivity, algorithm}=event.pathParameters
   const key=algorithm?optionType+sensitivity+algorithm:optionType+sensitivity
   const index=calculatorKeys[key]
-  calculatorSpawn(index, event.queryStringParameters, done(callback))
+  calculatorSpawn(index, event.queryStringParameters.json, done(callback))
 }
 
 module.exports.calibrator=(event, context, callback)=>{
-  const keyResult=calibratorRequiredKeys(JSON.parse(event.queryStringParameters))
+  const keyResult=calibratorRequiredKeys(JSON.parse(event.queryStringParameters.json))
   if(keyResult){
     return done(callback)(new Error(`Requires additional keys!  Missing ${keyResult}`))
   }
-  calibratorSpawn(event.queryStringParameters, done(callback))
+  calibratorSpawn(event.queryStringParameters.json, done(callback))
 }
 module.exports.calculatorKeys=calculatorKeys

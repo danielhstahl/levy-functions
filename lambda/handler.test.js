@@ -4,7 +4,7 @@ const createEvent=(data, parameters)=>({
     queryStringParameters:JSON.stringify(data),
     pathParameters:parameters
 })
-it('correctly calls calculator handlers', ()=>{
+it('correctly calls calculator handlers', (done)=>{
     const event=createEvent({
         k:[40, 50, 60]
     }, {
@@ -14,7 +14,8 @@ it('correctly calls calculator handlers', ()=>{
     })
     return handler.calculator(event, {}, (err, val)=>{
         const parsedVal=JSON.parse(val.body)
-        resolve(expect(Array.isArray(parsedVal)).toEqual(true))
+        expect(Array.isArray(parsedVal)).toEqual(true)
+        done()
     })
 })
 it('correctly calls calibrator handler for full model', (done)=>{
@@ -56,7 +57,7 @@ it('correctly sends error  for full model', (done)=>{
 it('correctly calls VaR', (done)=>{
     const event=createEvent({}, {
         optionType:'density',
-        sensitivity:'raw'
+        sensitivity:'var'
     })
     handler.calculator(event, {}, (err, val)=>{
         const parsedVal=JSON.parse(val.body)

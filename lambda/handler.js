@@ -43,18 +43,8 @@ const calibratorRequiredKeys=body=>{
   return totalKeys.find(key=>totalKey[key]===undefined)
 }
 
-
 process.env['PATH']=`${process.env['PATH']}:${process.env['LAMBDA_TASK_ROOT']}`
 
-const done = cb=>(err, res) => cb(null, {
-  statusCode: err ? '400' : '200',
-  body: err ? err.message : res,
-  headers: {
-    "Access-Control-Allow-Origin" : "*", // Required for CORS support to work
-    "Access-Control-Allow-Credentials" : true, // Required for cookies, authorization headers with HTTPS 
-    'Content-Type': 'application/json'    
-  }
-})
 const msg=body=>({
   statusCode:'200',
   body
@@ -64,7 +54,8 @@ const errMsg=body=>({
   body
 })
 const genericSpawn=(binary, options, callback)=>{
-  const model=spawn(`./bin/${binary}`,options)
+  const binaryPath=process.env['LAMBDA_TASK_ROOT']?`./${binary}`:`./bin/${binary}`
+  const model=spawn(binaryPath,options)
   let modelOutput=''
   let modelErr=''
   model.stdout.on('data', data=>{

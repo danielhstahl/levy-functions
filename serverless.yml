@@ -65,17 +65,8 @@ functions:
     events:
       - http:
           path: version/{optionType}/{sensitivity}/{algorithm}
-          method: get
+          method: post
           cors: true
-          request:
-            parameters:
-              querystrings:
-                json: true
-              paths:
-                optionType: true
-                sensitivity: true
-                algorithm: false
-          
   calibrator:
     memorySize: 3008 # optional, in MB, default is 1024
     timeout: 30 # optional, in seconds, default is 6
@@ -83,12 +74,8 @@ functions:
     events:
       - http:
           path: version/calibrator
-          method: get
+          method: post
           cors: true
-          request:
-            parameters:
-              querystrings:
-                json: true
           
 
       

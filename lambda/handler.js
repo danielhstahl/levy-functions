@@ -50,7 +50,7 @@ const done = cb=>(err, res) => cb(null, {
   headers: {
     "Access-Control-Allow-Origin" : "*", // Required for CORS support to work
     "Access-Control-Allow-Credentials" : true, // Required for cookies, authorization headers with HTTPS 
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json'    
   }
 })
 
@@ -86,14 +86,14 @@ module.exports.calculator=(event, context, callback)=>{
   const {optionType, sensitivity, algorithm}=event.pathParameters
   const key=algorithm?optionType+sensitivity+algorithm:optionType+sensitivity
   const index=calculatorKeys[key]
-  calculatorSpawn(index, event.queryStringParameters.json, done(callback))
+  calculatorSpawn(index, event.body, done(callback))
 }
 
 module.exports.calibrator=(event, context, callback)=>{
-  const keyResult=calibratorRequiredKeys(JSON.parse(event.queryStringParameters.json))
+  const keyResult=calibratorRequiredKeys(JSON.parse(event.body))
   if(keyResult){
     return done(callback)(new Error(`Requires additional keys!  Missing ${keyResult}`))
   }
-  calibratorSpawn(event.queryStringParameters.json, done(callback))
+  calibratorSpawn(event.body, done(callback))
 }
 module.exports.calculatorKeys=calculatorKeys

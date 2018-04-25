@@ -1,7 +1,7 @@
 const handler=require('./handler')
 const calibratorParams=require('../Examples/exampleCalibrator.json')
 const createEvent=(data, parameters)=>({
-    queryStringParameters:{json:JSON.stringify(data)},
+    body:JSON.stringify(data),
     pathParameters:parameters
 })
 it('correctly calls calculator handlers', (done)=>{

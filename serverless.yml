@@ -64,7 +64,7 @@ functions:
     handler: lambda/handler.calculator
     events:
       - http:
-          path: version/{optionType}/{sensitivity}/{algorithm}
+          path: version/calculator/{optionType}/{sensitivity}/{algorithm}
           method: post
           cors: true
   calibrator:

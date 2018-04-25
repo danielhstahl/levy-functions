@@ -1,5 +1,7 @@
 'use strict'
 const spawn = require('child_process').spawn
+const middy = require('middy')
+const { cors } = require('middy/middlewares')
 
 const calculatorKeys={
   putpricecarrmadan:0,
@@ -53,8 +55,15 @@ const done = cb=>(err, res) => cb(null, {
     'Content-Type': 'application/json'    
   }
 })
-
-const genericSpawn=(binary, options, done)=>{
+const msg=body=>({
+  statusCode:'200',
+  body
+})
+const errMsg=body=>({
+  statusCode:'400',
+  body
+})
+const genericSpawn=(binary, options, callback)=>{
   const model=spawn(`./bin/${binary}`,options)
   let modelOutput=''
   let modelErr=''
@@ -66,34 +75,36 @@ const genericSpawn=(binary, options, done)=>{
   })
   model.on('close', code=>{
     if(modelErr){
-      return done(new Error(modelErr), "")
+      return callback(null, errMsg(modelErr))
     }
-    return done(null, modelOutput)
+    return callback(null, msg(modelOutput))
   })
 }
 const getParametersOrObject=parameters=>parameters||"{}"
-const spawnBinary=binary=>(functionalityIndicator, parms, done)=>{
-  genericSpawn(binary, [functionalityIndicator,getParametersOrObject(parms)], done)
+const spawnBinary=binary=>(functionalityIndicator, parms, callback)=>{
+  genericSpawn(binary, [functionalityIndicator,getParametersOrObject(parms)], callback)
 }
-const spawnBinaryNoFunctionality=binary=>(parms, done)=>{
-  genericSpawn(binary, [getParametersOrObject(parms)], done)
+const spawnBinaryNoFunctionality=binary=>(parms, callback)=>{
+  genericSpawn(binary, [getParametersOrObject(parms)], callback)
 }
 const calculatorSpawn=spawnBinary('calculator')
 const calibratorSpawn=spawnBinaryNoFunctionality('calibrator')
 
 
-module.exports.calculator=(event, context, callback)=>{
+module.exports.calculator=middy((event, context, callback)=>{
   const {optionType, sensitivity, algorithm}=event.pathParameters
   const key=algorithm?optionType+sensitivity+algorithm:optionType+sensitivity
   const index=calculatorKeys[key]
-  calculatorSpawn(index, event.body, done(callback))
-}
+  calculatorSpawn(index, event.body, callback)
+}).use(cors())
 
-module.exports.calibrator=(event, context, callback)=>{
+module.exports.calibrator=middy((event, context, callback)=>{
   const keyResult=calibratorRequiredKeys(JSON.parse(event.body))
   if(keyResult){
-    return done(callback)(new Error(`Requires additional keys!  Missing ${keyResult}`))
+    const err=`Requires additional keys!  Missing ${keyResult}`
+    return callback(null,  errMsg(err))
+    //done(callback)(new Error(`Requires additional keys!  Missing ${keyResult}`))
   }
-  calibratorSpawn(event.body, done(callback))
-}
+  calibratorSpawn(event.body, callback)
+}).use(cors())
 module.exports.calculatorKeys=calculatorKeys

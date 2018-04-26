@@ -98,7 +98,6 @@ module.exports.calibrator=(event, context, callback)=>{
   if(keyResult){
     const err=`Requires additional keys!  Missing ${keyResult}`
     return callback(null,  errMsg(err))
-    //done(callback)(new Error(`Requires additional keys!  Missing ${keyResult}`))
   }
   calibratorSpawn(event.body, callback)
 }

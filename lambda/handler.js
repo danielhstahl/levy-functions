@@ -1,7 +1,6 @@
 'use strict'
 const spawn = require('child_process').spawn
-const middy = require('middy')
-const { cors } = require('middy/middlewares')
+
 
 const calculatorKeys={
   putpricecarrmadan:0,
@@ -45,14 +44,19 @@ const calibratorRequiredKeys=body=>{
 
 process.env['PATH']=`${process.env['PATH']}:${process.env['LAMBDA_TASK_ROOT']}`
 
-const msg=body=>({
-  statusCode:'200',
+const gMsg=statusCode=>body=>({
+  statusCode,
+  headers: {
+    "Access-Control-Allow-Origin" : "*", // Required for CORS support to work
+    "Access-Control-Allow-Credentials" : true, // Required for cookies, authorization headers with HTTPS 
+    'Content-Type': 'application/json',
+  },
   body
 })
-const errMsg=body=>({
-  statusCode:'400',
-  body
-})
+const errMsg=gMsg('400')
+const msg=gMsg('200')
+
+
 const genericSpawn=(binary, options, callback)=>{
   const binaryPath=process.env['LAMBDA_TASK_ROOT']?`./${binary}`:`./bin/${binary}`
   const model=spawn(binaryPath,options)
@@ -82,14 +86,14 @@ const calculatorSpawn=spawnBinary('calculator')
 const calibratorSpawn=spawnBinaryNoFunctionality('calibrator')
 
 
-module.exports.calculator=middy((event, context, callback)=>{
+module.exports.calculator=(event, context, callback)=>{
   const {optionType, sensitivity, algorithm}=event.pathParameters
   const key=algorithm?optionType+sensitivity+algorithm:optionType+sensitivity
   const index=calculatorKeys[key]
   calculatorSpawn(index, event.body, callback)
-}).use(cors())
+}
 
-module.exports.calibrator=middy((event, context, callback)=>{
+module.exports.calibrator=(event, context, callback)=>{
   const keyResult=calibratorRequiredKeys(JSON.parse(event.body))
   if(keyResult){
     const err=`Requires additional keys!  Missing ${keyResult}`
@@ -97,5 +101,5 @@ module.exports.calibrator=middy((event, context, callback)=>{
     //done(callback)(new Error(`Requires additional keys!  Missing ${keyResult}`))
   }
   calibratorSpawn(event.body, callback)
-}).use(cors())
+}
 module.exports.calculatorKeys=calculatorKeys

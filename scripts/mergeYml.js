@@ -46,11 +46,9 @@ const parseFunctions=folderNames=>({
     package:getPackageInfo(folderNames)
 })
 const aggregateYMLJson=({fnc, package})=>fnc.then(ymlObj=>({...package, functions:ymlObj.reduce((aggr, doc)=>({...aggr, ...doc}), {})}))
-const convertJsonToServerlessYML=ymlJson=>yaml.safeDump(ymlJson)
+const convertJsonToServerlessYML=ymlJson=>yaml.safeDump(ymlJson).replace(/'/g, '')
 
 const writeToFile=ymlString=>writeFile('./releases/serverless.yml', ymlString)
-
-
 
 readDirectory('./releases')
     .then(parseFunctions)

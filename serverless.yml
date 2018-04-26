@@ -56,6 +56,7 @@ provider:
 
 package:
   include:
+  
    - bin/**
    - lambda/handler.js
 
@@ -64,46 +65,37 @@ functions:
     handler: lambda/handler.calculator
     events:
       - http:
-          path: version/{optionType}/{sensitivity}/{algorithm}
-          method: get
+          path: version/calculator/{optionType}/{sensitivity}/{algorithm}
+          method: post
+          cors: true
           request:
             parameters:
-              querystrings:
-                numU: false
-                r: false 
-                T: false 
-                S0: false
-                sigma: false
-                C: false
-                G: false
-                M: false
-                Y: false
-                speed: false
-                v0: false
-                adaV: false
-                rho: false
-                k: false
-                quantile: false
               paths:
                 optionType: true
                 sensitivity: true
                 algorithm: true
+  density:
+    handler: lambda/handler.density
+    events:
+      - http:
+          path: version/density/{densityType}
+          method: post
           cors: true
+          request:
+            parameters:
+              paths:
+                densityType: true
   calibrator:
-    memorySize: 1024 # optional, in MB, default is 1024
-    #timeout: 60 # optional, in seconds, default is 6
+    memorySize: 3008 # optional, in MB, default is 1024
+    timeout: 30 # optional, in seconds, default is 6
     handler: lambda/handler.calibrator
+
     events:
       - http:
           path: version/calibrator
-          method: get
-          request:
-            parameters:
-              querystrings:
-                C: false
-                variable: true
-
+          method: post
           cors: true
+          
 
       
 

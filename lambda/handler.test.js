@@ -56,10 +56,9 @@ it('correctly sends error  for full model', (done)=>{
 
 it('correctly calls VaR', (done)=>{
     const event=createEvent({}, {
-        optionType:'density',
-        sensitivity:'var'
+        densityType:'var'
     })
-    handler.calculator(event, {}, (err, val)=>{
+    handler.density(event, {}, (err, val)=>{
         const parsedVal=JSON.parse(val.body)
         expect(parsedVal.VaR).toBeDefined()
         expect(parsedVal.ES).toBeDefined()

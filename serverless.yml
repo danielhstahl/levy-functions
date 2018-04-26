@@ -59,9 +59,6 @@ package:
   
    - bin/**
    - lambda/handler.js
-  exclude:
-    - node_modules/**
-    - '!node_modules/middy/**'
 
 functions:
   calculator:

@@ -58,7 +58,7 @@ const msg=gMsg('200')
 
 
 const genericSpawn=(binary, options, callback)=>{
-  const binaryPath=process.env['LAMBDA_TASK_ROOT']?`./${binary}`:`./bin/${binary}`
+  const binaryPath=process.env['LAMBDA_TASK_ROOT']?`./${__filepath}/${binary}`:`./bin/${binary}`
   const model=spawn(binaryPath,options)
   let modelOutput=''
   let modelErr=''

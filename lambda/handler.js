@@ -88,7 +88,13 @@ const calibratorSpawn=spawnBinaryNoFunctionality('calibrator')
 
 module.exports.calculator=(event, context, callback)=>{
   const {optionType, sensitivity, algorithm}=event.pathParameters
-  const key=algorithm?optionType+sensitivity+algorithm:optionType+sensitivity
+  const key=optionType+sensitivity+algorithm
+  const index=calculatorKeys[key]
+  calculatorSpawn(index, event.body, callback)
+}
+module.exports.density=(event, context, callback)=>{
+  const {densityType}=event.pathParameters
+  const key='density'+densityType
   const index=calculatorKeys[key]
   calculatorSpawn(index, event.body, callback)
 }

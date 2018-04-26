@@ -73,7 +73,18 @@ functions:
               paths:
                 optionType: true
                 sensitivity: true
-                algorithm: false
+                algorithm: true
+  density:
+    handler: lambda/handler.density
+    events:
+      - http:
+          path: version/density/{densityType}
+          method: post
+          cors: true
+          request:
+            parameters:
+              paths:
+                densityType: true
   calibrator:
     memorySize: 3008 # optional, in MB, default is 1024
     timeout: 30 # optional, in seconds, default is 6

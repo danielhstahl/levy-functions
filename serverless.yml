@@ -62,9 +62,6 @@ package:
 functions:
   calculator:
     handler: lambda/handler.calculator
-    package:
-      include:
-        - lambda/**
     events:
       - http:
           path: version/calculator/{optionType}/{sensitivity}/{algorithm}
@@ -74,9 +71,7 @@ functions:
     memorySize: 3008 # optional, in MB, default is 1024
     timeout: 30 # optional, in seconds, default is 6
     handler: lambda/handler.calibrator
-    package:
-      include:
-        - lambda/**
+
     events:
       - http:
           path: version/calibrator

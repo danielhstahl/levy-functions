@@ -65,7 +65,7 @@ functions:
     handler: lambda/handler.calculator
     events:
       - http:
-          path: version/calculator/{optionType}/{sensitivity}/{algorithm?}
+          path: version/calculator/{optionType}/{sensitivity}/{algorithm}
           method: post
           cors: true
           request:

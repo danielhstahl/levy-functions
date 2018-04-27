@@ -15,7 +15,7 @@ const options=url=>({
     }
 })
 const makeExecutable=(path, resolve, reject)=>()=>{
-    fs.chmod(path, 777, err=>{
+    fs.chmod(path, 0755, err=>{
         if(err){
             reject(err)
         }

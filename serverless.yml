@@ -86,7 +86,7 @@ functions:
               paths:
                 densityType: true
   calibrator:
-    memorySize: 3008 # optional, in MB, default is 1024
+    memorySize: 1024 # optional, in MB, default is 1024
     timeout: 30 # optional, in seconds, default is 6
     handler: lambda/handler.calibrator
 

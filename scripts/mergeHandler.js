@@ -14,9 +14,19 @@ const options=url=>({
         'User-Agent': 'levy-functions'
     }
 })
-
+const makeExecutable=(path, resolve, reject)=>()=>{
+    fs.chmod(path, 0755, err=>{
+        if(err){
+            reject(err)
+        }
+        else{
+            resolve()
+        }
+    })
+}
 const pipeResponse=(url, tag_name, name)=>new Promise((resolve, reject)=>{
-    request.get(options(url)).on('error', err=>reject(err)).pipe(fs.createWriteStream(`./releases/${tag_name}/${name}`)).on('finish', resolve)
+    const path=`./releases/${tag_name}/${name}`
+    request.get(options(url)).on('error', reject).pipe(fs.createWriteStream(path)).on('finish', makeExecutable(path, resolve, reject))
 })
 
 const getAssets=({assets, tag_name})=>mkdir(`./releases/${tag_name}`).then(()=>Promise.all(

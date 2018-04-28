@@ -16,8 +16,13 @@ calibrator:calibrator.o
 calibrator.o: calibrator.cpp parse_json.h get_cf.h
 	$(GCCVAL) -std=c++14 -O3  -pthread -c calibrator.cpp  $(INCLUDES) -fopenmp 
 
+defaultParameters:defaultParameters.o
+	$(GCCVAL) -std=c++14 -O3  -pthread defaultParameters.o $(INCLUDES) -o defaultParameters -fopenmp -static-libstdc++
+defaultParameters.o: defaultParameters.cpp parse_json.h get_cf.h
+	$(GCCVAL) -std=c++14 -O3  -pthread -c defaultParameters.cpp  $(INCLUDES) -fopenmp 
+
 clean:
-	-rm *.o test calculator calibrator
+	-rm *.o test calculator calibrator defaultParameters
 
 test: test.cpp parse_json.h
 	$(GCCVAL) -std=c++14 -pthread test.cpp $(INCLUDES) -o test -fopenmp

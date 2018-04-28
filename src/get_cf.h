@@ -1,4 +1,7 @@
+#ifndef GET_CF_LEVY_FNC
+#define GET_CF_LEVY_FNC
 #include "CharacteristicFunctions.h"
+#include "cuckoo.h"
 
 template<typename U>
 auto cfLogBase(const U& u, 
@@ -42,3 +45,20 @@ auto cf(
     };
     
 }
+
+const std::unordered_map<std::string, std::tuple<cuckoo::upper_lower<double>, double> > modelParams({
+    {"lambda", std::make_tuple(cuckoo::upper_lower<double>(0.0, 2.0), 1.0)}, 
+    {"muJ", std::make_tuple(cuckoo::upper_lower<double>(-1.0, 1.0), 0.0)}, 
+    {"sigJ", std::make_tuple(cuckoo::upper_lower<double>(0.0, 2.0), .3)}, 
+    {"sigma", std::make_tuple(cuckoo::upper_lower<double>(0.0, 1.0), .3)}, 
+    {"v0", std::make_tuple(cuckoo::upper_lower<double>(0.2, 1.8), 1.0)}, 
+    {"speed", std::make_tuple(cuckoo::upper_lower<double>(0.0, 3.0), .4)}, 
+    {"adaV", std::make_tuple(cuckoo::upper_lower<double>(0.0, 3.0), .5)}, 
+    {"rho", std::make_tuple(cuckoo::upper_lower<double>(-1.0, 1.0), -.4)},
+    {"r", std::make_tuple(cuckoo::upper_lower<double>(0.0, .4), .03)},
+    {"S0", std::make_tuple(cuckoo::upper_lower<double>(0.0, 1000000.0), 50.0)},
+    {"T", std::make_tuple(cuckoo::upper_lower<double>(0.0, 1000000.0), .25)},
+    {"numU", std::make_tuple(cuckoo::upper_lower<double>(5, 10), 7)}
+});
+
+#endif

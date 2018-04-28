@@ -1,3 +1,6 @@
+#ifndef PARSE_JSON_LEVY_FNC
+#define PARSE_JSON_LEVY_FNC
+
 #include <iostream>
 #include <cmath>
 #include "cuckoo.h"
@@ -5,8 +8,9 @@
 #include "writer.h" //rapidjson
 #include "stringbuffer.h" //rapidjson
 #include <deque>
+#include "get_cf.h"//for modelParams
 #include <unordered_map>
-
+/*
 struct option_variables{
     int numU=6;//gets raised to power of 2: 2^numU
     double r=.03;
@@ -20,7 +24,7 @@ struct option_variables{
     double v0=1.05;
     double adaV=.2;
     double rho=-.5;
-};
+};*/
 
 template<typename T>
 T between_values(const T& val, const T& lower, const T& upper){
@@ -33,17 +37,9 @@ rapidjson::Document parse_char(char* json){
     return parms;
 }
 
-std::vector<double> get_k_var_vector(const rapidjson::Document& parms){
-    std::vector<double> local_k;
-    if(parms.FindMember("k")!=parms.MemberEnd()){
-        for (auto& v : parms["k"].GetArray()) {
-            local_k.emplace_back(v.GetDouble());
-        }
-    }
-    return local_k;
-}
-std::deque<double> get_k_var(const rapidjson::Document& parms){
-    std::deque<double> local_k;
+template<typename vecT>
+vecT get_k_var(const rapidjson::Document& parms){
+    vecT local_k;
     if(parms.FindMember("k")!=parms.MemberEnd()){
         for (auto& v : parms["k"].GetArray()) {
             local_k.emplace_back(v.GetDouble());
@@ -68,22 +64,18 @@ double get_quantile(const rapidjson::Document& parms){
     }
     return local_quantile;
 }
-
-option_variables get_static_vars(const rapidjson::Document& parms){
-    option_variables local_option;
-    if(parms.FindMember("numU")!=parms.MemberEnd()){
-        local_option.numU=between_values(parms["numU"].GetInt(), 5, 10);
+constexpr int RANGE=0;
+constexpr int DEFAULTVALUE=1;
+template<typename CustomMap>
+auto get_ranged_variable(const rapidjson::Document& parms, const CustomMap& defaultParameters, const std::string& key){
+    const auto paramRanges=defaultParameters.at(key);
+    if(parms.HasMember(key.c_str())){
+        const auto cuckooRange=std::get<RANGE>(paramRanges);
+        return between_values(parms[key.c_str()].GetDouble(), cuckooRange.lower, cuckooRange.upper);
     }
-    if(parms.FindMember("r")!=parms.MemberEnd()){
-        local_option.r=between_values(parms["r"].GetDouble(), 0.0, maxLarge);
+    else{
+        return std::get<DEFAULTVALUE>(paramRanges);
     }
-    if(parms.FindMember("T")!=parms.MemberEnd()){
-        local_option.T=between_values(parms["T"].GetDouble(), 0.0, maxLarge);
-    }
-    if(parms.FindMember("S0")!=parms.MemberEnd()){
-        local_option.S0=between_values(parms["S0"].GetDouble(), 0.0, maxLarge);
-    }
-    return std::move(local_option);
 }
 
 template<typename JsonParm>
@@ -97,12 +89,18 @@ int updateIndex(const JsonParm& parms, const std::string& key, int index, std::u
 }
 
 
-template<typename RpJson, typename Array1, typename Array2>
-std::vector<cuckoo::upper_lower<double> > getConstraints(const RpJson& json, const Array1& possibleParameters, const Array2& fullModelConstraints){
+template<typename RpJson, typename Array1, typename Array2, typename Object>
+std::vector<cuckoo::upper_lower<double> > getConstraints(const RpJson& json, const Array1& possibleParameters, const Array2& fullModelConstraints, const Object& optionalConstraints ){
     std::vector<cuckoo::upper_lower<double> > modelConstraints;
     for(auto& v:possibleParameters){
         if(json.HasMember(v.c_str())){
-            modelConstraints.push_back(fullModelConstraints.at(v));
+            if(optionalConstraints.HasMember(v.c_str())){
+                const auto& constraint=optionalConstraints[v.c_str()];
+                modelConstraints.emplace_back(cuckoo::upper_lower<double>(constraint["lower"].GetDouble(), constraint["upper"].GetDouble()));
+            }
+            else{
+                modelConstraints.emplace_back(std::get<0>(fullModelConstraints.at(v)));
+            }
         }
     }
     return modelConstraints;
@@ -132,36 +130,6 @@ double getArgOrConstant(
 }
 
 
-option_variables get_option_var(const rapidjson::Document& parms){
-    
-    option_variables local_option=get_static_vars(parms);
-    if(parms.FindMember("sigma")!=parms.MemberEnd()){
-        local_option.sigma=between_values(parms["sigma"].GetDouble(), 0.0, maxLarge);
-    }
-    if(parms.FindMember("lambda")!=parms.MemberEnd()){
-        auto result=
-        local_option.lambda=between_values(parms["lambda"].GetDouble(), 0.0, maxLarge);
-    }
-    if(parms.FindMember("muJ")!=parms.MemberEnd()){
-        local_option.muJ=between_values(parms["muJ"].GetDouble(), 0.0, maxLarge);
-    }
-    if(parms.FindMember("sigJ")!=parms.MemberEnd()){
-        local_option.sigJ=between_values(parms["sigJ"].GetDouble(), 0.0, maxLarge);
-    }
-    if(parms.FindMember("speed")!=parms.MemberEnd()){
-        local_option.speed=between_values(parms["speed"].GetDouble(), 0.0, maxLarge);
-    }
-    if(parms.FindMember("v0")!=parms.MemberEnd()){
-        local_option.v0=between_values(parms["v0"].GetDouble(), 0.0, maxLarge);
-    }
-    if(parms.FindMember("adaV")!=parms.MemberEnd()){
-        local_option.adaV=between_values(parms["adaV"].GetDouble(), 0.0, maxLarge);
-    }
-    if(parms.FindMember("rho")!=parms.MemberEnd()){
-        local_option.rho=between_values(parms["rho"].GetDouble(), -1.0, 1.0);
-    }
-    return local_option;
-}
 
 template<typename Array1, typename Array2, typename Array3>
 void json_print_options(const Array1& arr1, const Array2& arr2, const Array3& arr3){
@@ -186,14 +154,29 @@ template<int optparms, int fnval, typename Array1, typename TupleOfArrayAndValue
 void json_print_calibrated_params(const Array1& paramNames, TupleOfArrayAndValue&& optimResults, int totalOptions){
     auto params=std::get<optparms>(optimResults);
     auto fnVal=std::get<fnval>(optimResults);
-    //auto n=paramNames.size();
-    int i=0;
     std::cout<<"{";
     for( const auto& node : paramNames ) {
         std::cout<<"\""<<node.first<<"\":"<<params[node.second]<<",";
-        ++i;
     }
     std::cout<<"\"mse\":"<<fnVal<<"}";
+}
+
+void json_print_default_parameters(){
+    std::cout<<"{";
+    int n=modelParams.size();
+    int i=0;
+    for(auto& v:modelParams){
+        i++;
+        auto ranges=std::get<RANGE>(v.second);
+        if(i==n){
+            std::cout<<"\""<<v.first<<"\":"<<"{\"upper\":"<<ranges.upper<<", \"lower\":"<<ranges.lower<<"}";
+        }
+        else{
+            std::cout<<"\""<<v.first<<"\":"<<"{\"upper\":"<<ranges.upper<<", \"lower\":"<<ranges.lower<<"},";
+        }
+        
+    }
+    std::cout<<"}";
 }
 
 
@@ -201,3 +184,4 @@ void json_print_var(double var, double es){
     std::cout<<"{\"VaR\":"<<var<<",\"ES\":"<<es<<"}"<<std::endl;
 }
 
+#endif

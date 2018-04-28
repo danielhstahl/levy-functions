@@ -10,8 +10,8 @@ if git tag -a "$1" -m "updating to $1";
 then
   git push --follow-tags origin master
 else
-  echo "Tag already exists.  Overwrite?"
-  read "(Y/N):" contin
+  echo "Tag already exists.  Overwrite? (Y/N)"
+  read contin
   if $contin=="Y"; then
     git tag -d $1
     git push --delete origin $1

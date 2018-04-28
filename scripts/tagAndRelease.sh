@@ -6,5 +6,15 @@ if [ -z "$1" ]
 fi
 git add .
 git commit -m "release $1"
-git tag -a "$1" -m "updating to $1"
-git push --follow-tags origin master
+if git tag -a "$1" -m "updating to $1";
+then
+  git push --follow-tags origin master
+else
+  echo "Tag already exists.  Overwrite?"
+  read "(Y/N):" contin
+  if $contin=="Y"; then
+    git tag -d $1
+    git push --delete origin $1
+    git push --follow-tags origin master
+  fi
+fi

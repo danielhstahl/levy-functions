@@ -28,5 +28,6 @@ levyfunctions
 *cuckoo_search
 releases
 src/calculator
+src/defaultParameters
 src/calibrator
 bin

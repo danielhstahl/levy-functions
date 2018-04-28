@@ -10,21 +10,6 @@
 #include <deque>
 #include "get_cf.h"//for modelParams
 #include <unordered_map>
-/*
-struct option_variables{
-    int numU=6;//gets raised to power of 2: 2^numU
-    double r=.03;
-    double T=.25;
-    double S0=50;
-    double sigma=.2;
-    double lambda=1.0;
-    double muJ=1.4;
-    double sigJ=.3;
-    double speed=.4;
-    double v0=1.05;
-    double adaV=.2;
-    double rho=-.5;
-};*/
 
 template<typename T>
 T between_values(const T& val, const T& lower, const T& upper){

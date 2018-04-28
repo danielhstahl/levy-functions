@@ -85,6 +85,14 @@ functions:
             parameters:
               paths:
                 densityType: true
+  defaultParameters:
+    handler: lambda/handler.defaultParameters
+    events:
+      - http:
+          path: version/calibrator/parameter_ranges
+          method: get
+          cors: true
+
   calibrator:
     memorySize: 1024 # optional, in MB, default is 1024
     timeout: 30 # optional, in seconds, default is 6

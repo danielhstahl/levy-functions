@@ -15,7 +15,6 @@ template<typename T>
 T between_values(const T& val, const T& lower, const T& upper){
     return val<lower?lower:(val>upper?upper:val);
 }
-const double maxLarge=1000000.0;
 rapidjson::Document parse_char(char* json){
     rapidjson::Document parms;
     parms.Parse(json);

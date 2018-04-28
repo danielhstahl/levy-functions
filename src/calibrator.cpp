@@ -19,7 +19,6 @@ auto removeFirstAndLastElement(Array&& arr){
     return sub;
 }
 
-
 auto getU(int N){
     double du= 2.0*M_PI/N;
     return futilities::for_each_parallel(1, N, [&](const auto& index){

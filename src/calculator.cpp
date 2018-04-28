@@ -324,7 +324,7 @@ void get_density(const CF& cf, int numU, double xMax){
 }
 
 auto get_jump_diffusion_vol(double sigma, double lambda, double muJ, double sigJ, double T){
-    return (sigma*sigma+lambda*(muJ*muJ+sigJ*sigJ))*T;
+    return sqrt((sigma*sigma+lambda*(muJ*muJ+sigJ*sigJ))*T);
 }
 
 int main(int argc, char* argv[]){

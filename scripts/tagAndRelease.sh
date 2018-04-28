@@ -16,7 +16,7 @@ else
     git push --delete origin $1
     git tag -a "$1" -m "updating to $1"
 
-    id=curl -s https://api.github.com/repos/phillyfan1138/levy-functions/releases/tags/$1 | node -pe "JSON.parse(require('fs').readFileSync('/dev/stdin').toString()).id"
+    id=$(curl -s https://api.github.com/repos/phillyfan1138/levy-functions/releases/tags/$1 | node -pe "JSON.parse(require('fs').readFileSync('/dev/stdin').toString()).id")
 
     curl -i -u phillyfan1138 -H "User-Agent: levy-functions" -X DELETE https://api.github.com/repos/phillyfan1138/levy-functions/releases/$id
     

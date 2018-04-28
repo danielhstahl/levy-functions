@@ -12,7 +12,7 @@ then
 else
   echo "Tag already exists.  Overwrite? (Y/N)"
   read contin
-  if $contin=="Y"; then
+  if $contin==Y; then
     git tag -d $1
     git push --delete origin $1
     git push --follow-tags origin master

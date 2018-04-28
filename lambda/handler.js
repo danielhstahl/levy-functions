@@ -1,5 +1,5 @@
 'use strict'
-const spawn = require('child_process').spawn
+const {spawn} = require('child_process')
 
 
 const calculatorKeys={

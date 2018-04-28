@@ -7,19 +7,11 @@
 #include "cuckoo.h"
 #include <chrono>
 
-const std::array<std::string, 8> possibleParameters({
+const std::array<std::string, 8> possibleCalibrationParameters({
     "lambda", "muJ", "sigJ", "sigma", "v0", "speed", "adaV", "rho"
 });
-const std::unordered_map<std::string, cuckoo::upper_lower<double> > fullModelConstraints({
-    {"lambda", cuckoo::upper_lower<double>(0.0, 2.0)}, //c
-    {"muJ", cuckoo::upper_lower<double>(-1.0, 1.0)}, //g
-    {"sigJ", cuckoo::upper_lower<double>(0.0, 2.0)}, //m
-    {"sigma", cuckoo::upper_lower<double>(0.0, 1.0)}, //sigma
-    {"v0", cuckoo::upper_lower<double>(0.2, 1.8)}, //v0
-    {"speed", cuckoo::upper_lower<double>(0.0, 1.0)}, //speed
-    {"adaV", cuckoo::upper_lower<double>(0.0, 1.0)}, //adaV,
-    {"rho", cuckoo::upper_lower<double>(-1.0, 1.0)} //rho
-});
+
+
 
 template<typename Array>
 auto removeFirstAndLastElement(Array&& arr){
@@ -65,16 +57,18 @@ auto genericCallCalibrator_cuckoo(
 int main(int argc, char* argv[]){
     if(argc>1){
         auto parsedJson=parse_char(argv[1]);
-        auto options=get_static_vars(parsedJson);
         auto prices=get_prices_var(parsedJson);
-
+        const auto T=get_ranged_variable(parsedJson, modelParams, "T");
+        const auto r=get_ranged_variable(parsedJson, modelParams, "r");
+        const auto S0=get_ranged_variable(parsedJson, modelParams, "S0");
         const auto& jsonVariable=parsedJson["variable"];
-        auto modelConstraints=getConstraints(jsonVariable, possibleParameters, fullModelConstraints);
-        const std::unordered_map<std::string, int> mapKeyToIndex=constructKeyToIndex(jsonVariable, possibleParameters);
+        const auto& additionalConstraints=parsedJson["constraints"];
+        auto modelConstraints=getConstraints(jsonVariable, possibleCalibrationParameters, modelParams, additionalConstraints);
+
+        const std::unordered_map<std::string, int> mapKeyToIndex=constructKeyToIndex(jsonVariable, possibleCalibrationParameters);
         auto getArgOrConstantCurry=[&](const auto& key, const auto& args){
             return getArgOrConstant(key, args, parsedJson, mapKeyToIndex);
         };
-        auto T=options.T;
         auto cfHOC=[
             getArgOrConstantCurry=std::move(getArgOrConstantCurry), 
             T
@@ -101,10 +95,11 @@ int main(int argc, char* argv[]){
             genericCallCalibrator_cuckoo(
                 std::move(cfHOC),                    
                 modelConstraints,
-                prices, get_k_var_vector(parsedJson),
-                options.S0, options.r, T
+                prices, get_k_var<std::vector<double>>(parsedJson),
+                S0, r, T
             ), 
             prices.size()
         );          
     }
+
 }

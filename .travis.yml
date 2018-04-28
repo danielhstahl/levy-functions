@@ -21,6 +21,7 @@ before_install:
 - mkdir deploy
 - cp ./src/calculator ./deploy
 - cp ./src/calibrator ./deploy
+- cp ./src/defaultParameters ./deploy
 script:
 - npm test
 
@@ -41,6 +42,7 @@ deploy:
   file: 
     - "./deploy/calculator"
     - "./deploy/calibrator"
+    - "./deploy/defaultParameters"
     - "./lambda/handler.js"
     - "./serverless.yml"
   skip_cleanup: true

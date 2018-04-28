@@ -1,19 +1,41 @@
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "catch.hpp"
 #include "parse_json.h"
+#include "get_cf.h" //modelParams
 
 TEST_CASE("parses option with no input", "parse_json"){
     //option_var myTestOption;
     auto parsedJson=parse_char((char*)"{}");
-    REQUIRE(get_option_var(parsedJson).r==.03);
+    REQUIRE(get_ranged_variable(parsedJson, modelParams, "r")==.03);
 }
-TEST_CASE("parses option with some input", "parse_json"){
-    auto parsedJson=parse_char((char*)"{\"r\":0.04}");
-    REQUIRE(get_option_var(parsedJson).r==.04);
+
+TEST_CASE("gets default constraints if additional constraints doesnt exists", "parse_json"){
+    
+    auto parsedJson=parse_char((char*)"{\"sigma\":0.4,\"v0\":0.9,\"speed\":0.5,\"adaV\":0.4,\"rho\":-0.4}");
+    auto parsedJsonOption=parse_char((char*)"{}");
+    const std::array<std::string, 8> possibleCalibrationParameters({
+        "lambda", "muJ", "sigJ", "sigma", "v0", "speed", "adaV", "rho"
+    });
+    auto modelConstraints=getConstraints(parsedJson, possibleCalibrationParameters, modelParams, parsedJsonOption);
+    //modelConstraints 0 is sigma since lambda, muJ, sigJ are not in variables
+    REQUIRE(modelConstraints[0].upper==1.0);
+    REQUIRE(modelConstraints[0].lower==0.0);
 }
+TEST_CASE("gets additional constraints if exists", "parse_json"){
+    auto parsedJson=parse_char((char*)"{\"sigma\":0.4,\"v0\":0.9,\"speed\":0.5,\"adaV\":0.4,\"rho\":-0.4}");
+    auto parsedJsonOption=parse_char((char*)"{\"sigma\":{\"upper\":1.5, \"lower\":0.5}}");
+    const std::array<std::string, 8> possibleCalibrationParameters({
+        "lambda", "muJ", "sigJ", "sigma", "v0", "speed", "adaV", "rho"
+    });
+    auto modelConstraints=getConstraints(parsedJson, possibleCalibrationParameters, modelParams, parsedJsonOption);
+    //modelConstraints 0 is sigma since lambda, muJ, sigJ are not in variables
+    REQUIRE(modelConstraints[0].upper==1.5);
+    REQUIRE(modelConstraints[0].lower==.5);
+}
+
 TEST_CASE("parses k with some input", "parse_json"){
     auto parsedJson=parse_char((char*)"{\"k\":[0.04, 0.05]}");
-    REQUIRE(get_k_var(parsedJson)[0]==.04);
+    REQUIRE(get_k_var<std::vector<double>>(parsedJson)[0]==.04);
 }
 
 TEST_CASE("creates an index where it exists", "parse_json"){

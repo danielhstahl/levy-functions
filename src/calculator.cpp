@@ -304,7 +304,6 @@ void fangoost_put_gamma(const CF& cf, Array&& strikes, int numU, double S0, doub
 template<typename CF>
 void get_var(const CF& cf, double quantile, int numU, double xMax){
     auto prec=.0000001;
-    //auto var=cfdistutilities::computeVaR(quantile, prec, -xMax, xMax, numU, cf);
     auto extremeVals=cfdistutilities::computeES(
         quantile, prec, -xMax, xMax, 
         numU, cf
@@ -323,9 +322,6 @@ void get_density(const CF& cf, int numU, double xMax){
         fangoost::computeXRange(numX, -xMax, xMax)
     );
 }
-/*auto get_cgmy_vol(double sigma, double c, double y, double m, double g, double t){
-    return sqrt(t*(sigma*sigma+c*tgamma(2.0-y)*(1.0/pow(m, 2.0-y)+1.0/pow(g, 2.0-y))));
-}*/
 
 auto get_jump_diffusion_vol(double sigma, double lambda, double muJ, double sigJ, double T){
     return (sigma*sigma+lambda*(muJ*muJ+sigJ*sigJ))*T;
@@ -334,61 +330,69 @@ auto get_jump_diffusion_vol(double sigma, double lambda, double muJ, double sigJ
 int main(int argc, char* argv[]){
     if(argc>2){
         auto parsedJson=parse_char(argv[2]);
-        auto options=get_option_var(parsedJson);
+        const auto T=get_ranged_variable(parsedJson, modelParams, "T");
+        const auto r=get_ranged_variable(parsedJson, modelParams, "r");
+        const auto S0=get_ranged_variable(parsedJson, modelParams, "S0");
+    
+        const auto lambda=get_ranged_variable(parsedJson, modelParams, "lambda");
+        const auto muJ=get_ranged_variable(parsedJson, modelParams, "lambda");
+        const auto sigJ=get_ranged_variable(parsedJson, modelParams, "sigJ");
+        const auto sigma=get_ranged_variable(parsedJson, modelParams, "sigma");
+        
+        const int numU=pow(2, (int)get_ranged_variable(parsedJson, modelParams, "numU"));
         auto cgmyCF=cf(
-            options.r,
-            options.T,
-            options.S0
+            r,
+            T,
+            S0
         )(
-            options.lambda,
-            options.muJ,
-            options.sigJ,
-            options.sigma,
-            options.v0,
-            options.speed,
-            options.adaV,
-            options.rho
+            lambda,
+            muJ,
+            sigJ,
+            sigma,
+            get_ranged_variable(parsedJson, modelParams, "v0"),
+            get_ranged_variable(parsedJson, modelParams, "speed"),
+            get_ranged_variable(parsedJson, modelParams, "adaV"),
+            get_ranged_variable(parsedJson, modelParams, "rho")
         );
         /**NOTE that this is a big assumption about the
          * domain for these distributions.
          * Be careful!*/
-        double xMaxDensity=get_jump_diffusion_vol(options.sigma, options.lambda, options.muJ, options.sigJ, options.T)*5.0;
+        double xMaxDensity=get_jump_diffusion_vol(sigma, lambda, muJ, sigJ, T)*5.0;
         double xMaxOptions=xMaxDensity*2.0;
-        int numU=pow(2, options.numU);
         int key=std::stoi(argv[1]);
         switch(key){
             case carrmadanput: {
                 carr_madan_put(
                     cgmyCF, numU, 
-                    options.S0, 
-                    options.r, 
-                    options.T
+                    S0, 
+                    r, 
+                    T
                 ); 
                 break;
             }
             case carrmadancall: {
                 carr_madan_call(
                     cgmyCF, numU, 
-                    options.S0, 
-                    options.r, 
-                    options.T
+                    S0, 
+                    r, 
+                    T
                 ); 
                 break;
             }
             case fstscall: {
                 fsts_call(
                     cgmyCF, numU, 
-                     options.S0,
-                    options.r,
-                    options.T, xMaxOptions
+                    S0,
+                    r,
+                    T, xMaxOptions
                 );
                 break;
             }
             case fstscalldelta: {
                 fsts_call_delta(
                     cgmyCF, numU, 
-                    options.S0,
-                    options.r, options.T,
+                    S0,
+                    r, T,
                     xMaxOptions
                 );
                 break;
@@ -396,8 +400,8 @@ int main(int argc, char* argv[]){
             case fstscalltheta: {
                 fsts_call_theta(
                     cgmyCF, numU, 
-                    options.S0,
-                    options.r, options.T,
+                    S0,
+                    r, T,
                     xMaxOptions
                 );
                 break;
@@ -405,8 +409,8 @@ int main(int argc, char* argv[]){
             case fstscallgamma: {
                 fsts_call_gamma(
                     cgmyCF, numU, 
-                    options.S0,
-                    options.r, options.T,
+                    S0,
+                    r, T,
                     xMaxOptions
                 );
                 break;
@@ -414,8 +418,8 @@ int main(int argc, char* argv[]){
             case fstsput: {
                 fsts_put(
                     cgmyCF, numU, 
-                    options.S0,
-                    options.r, options.T,
+                    S0,
+                    r, T,
                     xMaxOptions
                 );
                 break;
@@ -423,8 +427,8 @@ int main(int argc, char* argv[]){
             case fstsputdelta: {
                 fsts_put_delta(
                     cgmyCF, numU, 
-                    options.S0,
-                    options.r, options.T,
+                    S0,
+                    r, T,
                     xMaxOptions
                 );
                 break;
@@ -432,8 +436,8 @@ int main(int argc, char* argv[]){
             case fstsputtheta: {
                 fsts_put_theta(
                     cgmyCF, numU, 
-                    options.S0,
-                    options.r, options.T,
+                    S0,
+                    r, T,
                     xMaxOptions
                 );
                 break;
@@ -441,85 +445,85 @@ int main(int argc, char* argv[]){
             case fstsputgamma: {
                 fsts_put_gamma(
                     cgmyCF, numU, 
-                    options.S0,
-                    options.r, options.T,
+                    S0,
+                    r, T,
                     xMaxOptions
                 );
                 break;
             }
             case fangoostcall: {
                 fangoost_call(
-                    cgmyCF, get_k_var(parsedJson), 
+                    cgmyCF, get_k_var<std::deque<double> >(parsedJson), 
                     numU, 
-                    options.S0, options.r,
-                    options.T, xMaxOptions
+                    S0, r,
+                    T, xMaxOptions
                 );
                 break;
             }
             case fangoostcalldelta: {
                 fangoost_call_delta(
-                    cgmyCF, get_k_var(parsedJson), 
+                    cgmyCF, get_k_var<std::deque<double> >(parsedJson), 
                     numU, 
-                    options.S0, options.r,
-                    options.T, xMaxOptions
+                    S0,r,
+                    T, xMaxOptions
                 );
                 break;
             }
             case fangoostcalltheta: {
                 fangoost_call_theta(
-                    cgmyCF, get_k_var(parsedJson), 
+                    cgmyCF, get_k_var<std::deque<double> >(parsedJson), 
                     numU, 
-                    options.S0, options.r,
-                    options.T, xMaxOptions
+                    S0, r,
+                    T, xMaxOptions
                 );
                 break;
             }
             case fangoostcallgamma: {
                 fangoost_call_gamma(
-                    cgmyCF, get_k_var(parsedJson), 
+                    cgmyCF, get_k_var<std::deque<double> >(parsedJson), 
                     numU, 
-                    options.S0, options.r,
-                    options.T, xMaxOptions
+                    S0, r,
+                    T, xMaxOptions
                 );
                 break;
             }
             case fangoostput: {
                 fangoost_put(
-                    cgmyCF, get_k_var(parsedJson), 
+                    cgmyCF, get_k_var<std::deque<double> >(parsedJson), 
                     numU,
-                    options.S0, 
-                    options.r,
-                    options.T, xMaxOptions
+                    S0, 
+                    r,
+                    T, xMaxOptions
                 );
                 break;
             }
             case fangoostputdelta: {
                 fangoost_put_delta(
-                    cgmyCF, get_k_var(parsedJson), 
+                    cgmyCF, get_k_var<std::deque<double> >(parsedJson), 
                     numU,
-                    options.S0, 
-                    options.r,
-                    options.T, xMaxOptions
+                    S0, 
+                    r,
+                    T, xMaxOptions
                 );
                 break;
             }
             case fangoostputtheta: {
                 fangoost_put_theta(
-                    cgmyCF, get_k_var(parsedJson), 
+                    cgmyCF, get_k_var<std::deque<double> >(parsedJson), 
                     numU,
-                    options.S0, 
-                    options.r,
-                    options.T, xMaxOptions
+                    S0, 
+                    r,
+                    T, xMaxOptions
                 );
                 break;
             }
             case fangoostputgamma: {
                 fangoost_put_gamma(
-                    cgmyCF, get_k_var(parsedJson), 
+                    cgmyCF, get_k_var<std::deque<double> >(parsedJson), 
                     numU,
-                    options.S0, 
-                    options.r,
-                    options.T, xMaxOptions
+                    S0, 
+                    r,
+                    T, xMaxOptions
                 );
                 break;
             }

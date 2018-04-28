@@ -29,6 +29,17 @@ it('correctly calls calibrator handler for full model', (done)=>{
         done()
     })
 }, 40000)
+it('correctly calls defaultParameters', (done)=>{
+    const event=createEvent(calibratorParams)
+    handler.defaultParameters(event, {}, (err, val)=>{
+        const parsedVal=JSON.parse(val.body)
+        expect(parsedVal.sigma).toBeDefined()
+        expect(parsedVal.speed).toBeDefined()
+        expect(parsedVal.adaV).toBeDefined()
+        expect(parsedVal.rho).toBeDefined()
+        done()
+    })
+})
 it('correctly sends error  for full model', (done)=>{
     const args={
         "numU":8,

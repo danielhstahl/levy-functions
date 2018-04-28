@@ -83,6 +83,7 @@ const spawnBinaryNoFunctionality=binary=>(parms, callback)=>{
 }
 const calculatorSpawn=spawnBinary('calculator')
 const calibratorSpawn=spawnBinaryNoFunctionality('calibrator')
+const defaultParametersSpawn=callback=>genericSpawn('defaultParameters', [], callback)
 
 
 module.exports.calculator=(event, context, callback)=>{
@@ -96,6 +97,9 @@ module.exports.density=(event, context, callback)=>{
   const key='density'+densityType
   const index=calculatorKeys[key]
   calculatorSpawn(index, event.body, callback)
+}
+module.exports.defaultParameters=(event, context, callback)=>{
+  defaultParametersSpawn(callback)
 }
 
 module.exports.calibrator=(event, context, callback)=>{

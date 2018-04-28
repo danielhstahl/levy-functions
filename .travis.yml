@@ -43,6 +43,7 @@ deploy:
     - "./deploy/calibrator"
     - "./lambda/handler.js"
     - "./serverless.yml"
+  skip_cleanup: true
   on:
     repo: phillyfan1138/levy-functions
     tags: true

@@ -51,6 +51,7 @@ fs.remove('./releases', ()=>{
         fs.copy('./serverless.yml', `./releases/v${numV}/serverless.yml`),
         fs.copy('./lambda/handler.js', `./releases/v${numV}/handler.js`),
         fs.copy('./bin/calculator', `./releases/v${numV}/calculator`),
+        fs.copy('./bin/calculator', `./releases/v${numV}/defaultParameters`),
         fs.copy('./bin/calibrator', `./releases/v${numV}/calibrator`)
     ]))
     .catch(err=>{

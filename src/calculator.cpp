@@ -340,7 +340,7 @@ int main(int argc, char* argv[]){
         const auto sigma=get_ranged_variable(parsedJson, modelParams, "sigma");
         
         const int numU=pow(2, (int)get_ranged_variable(parsedJson, modelParams, "numU"));
-        auto cgmyCF=cf(
+        auto instantiatedCf=cf(
             r,
             T,
             S0
@@ -363,7 +363,7 @@ int main(int argc, char* argv[]){
         switch(key){
             case carrmadanput: {
                 carr_madan_put(
-                    cgmyCF, numU, 
+                    instantiatedCf, numU, 
                     S0, 
                     r, 
                     T
@@ -372,7 +372,7 @@ int main(int argc, char* argv[]){
             }
             case carrmadancall: {
                 carr_madan_call(
-                    cgmyCF, numU, 
+                    instantiatedCf, numU, 
                     S0, 
                     r, 
                     T
@@ -381,7 +381,7 @@ int main(int argc, char* argv[]){
             }
             case fstscall: {
                 fsts_call(
-                    cgmyCF, numU, 
+                    instantiatedCf, numU, 
                     S0,
                     r,
                     T, xMaxOptions
@@ -390,7 +390,7 @@ int main(int argc, char* argv[]){
             }
             case fstscalldelta: {
                 fsts_call_delta(
-                    cgmyCF, numU, 
+                    instantiatedCf, numU, 
                     S0,
                     r, T,
                     xMaxOptions
@@ -399,7 +399,7 @@ int main(int argc, char* argv[]){
             }
             case fstscalltheta: {
                 fsts_call_theta(
-                    cgmyCF, numU, 
+                    instantiatedCf, numU, 
                     S0,
                     r, T,
                     xMaxOptions
@@ -408,7 +408,7 @@ int main(int argc, char* argv[]){
             }
             case fstscallgamma: {
                 fsts_call_gamma(
-                    cgmyCF, numU, 
+                    instantiatedCf, numU, 
                     S0,
                     r, T,
                     xMaxOptions
@@ -417,7 +417,7 @@ int main(int argc, char* argv[]){
             }
             case fstsput: {
                 fsts_put(
-                    cgmyCF, numU, 
+                    instantiatedCf, numU, 
                     S0,
                     r, T,
                     xMaxOptions
@@ -426,7 +426,7 @@ int main(int argc, char* argv[]){
             }
             case fstsputdelta: {
                 fsts_put_delta(
-                    cgmyCF, numU, 
+                    instantiatedCf, numU, 
                     S0,
                     r, T,
                     xMaxOptions
@@ -435,7 +435,7 @@ int main(int argc, char* argv[]){
             }
             case fstsputtheta: {
                 fsts_put_theta(
-                    cgmyCF, numU, 
+                    instantiatedCf, numU, 
                     S0,
                     r, T,
                     xMaxOptions
@@ -444,7 +444,7 @@ int main(int argc, char* argv[]){
             }
             case fstsputgamma: {
                 fsts_put_gamma(
-                    cgmyCF, numU, 
+                    instantiatedCf, numU, 
                     S0,
                     r, T,
                     xMaxOptions
@@ -453,7 +453,7 @@ int main(int argc, char* argv[]){
             }
             case fangoostcall: {
                 fangoost_call(
-                    cgmyCF, get_k_var<std::deque<double> >(parsedJson), 
+                    instantiatedCf, get_k_var<std::deque<double> >(parsedJson), 
                     numU, 
                     S0, r,
                     T, xMaxOptions
@@ -462,7 +462,7 @@ int main(int argc, char* argv[]){
             }
             case fangoostcalldelta: {
                 fangoost_call_delta(
-                    cgmyCF, get_k_var<std::deque<double> >(parsedJson), 
+                    instantiatedCf, get_k_var<std::deque<double> >(parsedJson), 
                     numU, 
                     S0,r,
                     T, xMaxOptions
@@ -471,7 +471,7 @@ int main(int argc, char* argv[]){
             }
             case fangoostcalltheta: {
                 fangoost_call_theta(
-                    cgmyCF, get_k_var<std::deque<double> >(parsedJson), 
+                    instantiatedCf, get_k_var<std::deque<double> >(parsedJson), 
                     numU, 
                     S0, r,
                     T, xMaxOptions
@@ -480,7 +480,7 @@ int main(int argc, char* argv[]){
             }
             case fangoostcallgamma: {
                 fangoost_call_gamma(
-                    cgmyCF, get_k_var<std::deque<double> >(parsedJson), 
+                    instantiatedCf, get_k_var<std::deque<double> >(parsedJson), 
                     numU, 
                     S0, r,
                     T, xMaxOptions
@@ -489,7 +489,7 @@ int main(int argc, char* argv[]){
             }
             case fangoostput: {
                 fangoost_put(
-                    cgmyCF, get_k_var<std::deque<double> >(parsedJson), 
+                    instantiatedCf, get_k_var<std::deque<double> >(parsedJson), 
                     numU,
                     S0, 
                     r,
@@ -499,7 +499,7 @@ int main(int argc, char* argv[]){
             }
             case fangoostputdelta: {
                 fangoost_put_delta(
-                    cgmyCF, get_k_var<std::deque<double> >(parsedJson), 
+                    instantiatedCf, get_k_var<std::deque<double> >(parsedJson), 
                     numU,
                     S0, 
                     r,
@@ -509,7 +509,7 @@ int main(int argc, char* argv[]){
             }
             case fangoostputtheta: {
                 fangoost_put_theta(
-                    cgmyCF, get_k_var<std::deque<double> >(parsedJson), 
+                    instantiatedCf, get_k_var<std::deque<double> >(parsedJson), 
                     numU,
                     S0, 
                     r,
@@ -519,7 +519,7 @@ int main(int argc, char* argv[]){
             }
             case fangoostputgamma: {
                 fangoost_put_gamma(
-                    cgmyCF, get_k_var<std::deque<double> >(parsedJson), 
+                    instantiatedCf, get_k_var<std::deque<double> >(parsedJson), 
                     numU,
                     S0, 
                     r,
@@ -529,14 +529,14 @@ int main(int argc, char* argv[]){
             }
             case VaR: {
                 get_var(
-                    cgmyCF, get_quantile(parsedJson), 
+                    instantiatedCf, get_quantile(parsedJson), 
                     numU, xMaxDensity
                 );
                 break;
             }
             case density: {
                 get_density(
-                    cgmyCF, numU, 
+                    instantiatedCf, numU, 
                     xMaxDensity
                 );
                 break;

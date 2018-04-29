@@ -31,7 +31,7 @@ const getPackageInfo=folderNames=>({
     service:'levy-functions',
     provider:{
         name:'aws',
-        runtime:'nodejs6.10'
+        runtime:'nodejs8.10'
     },
     package:{
         include:folderNames

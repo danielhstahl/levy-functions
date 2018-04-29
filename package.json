@@ -27,6 +27,8 @@
   },
   "homepage": "https://github.com/phillyfan1138/levy-functions#readme",
   "devDependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3",
     "jest": "^21.2.1"
   },
   "dependencies": {

@@ -9,7 +9,8 @@
   "scripts": {
     "test": "jest",
     "mergeReleases": "node ./scripts/mergeHandler",
-    "release": "node ./scripts/mergeHandler && ./scripts/tagAndRelease.sh"
+    "release": "node ./scripts/mergeHandler && ./scripts/tagAndRelease.sh",
+    "devServer":"node ./mockServer/server"
   },
   "repository": {
     "type": "git",

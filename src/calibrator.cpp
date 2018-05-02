@@ -47,7 +47,7 @@ auto generateSplineCurves(
     const auto discount=exp(-r*T);
     auto s=optioncal::getOptionSpline(strikes, prices, S0, discount, minStrike, maxStrike);
     double minLogStrike=log(minStrike);
-    double maxLogStrike=log(maxStrike/stock);
+    double maxLogStrike=log(maxStrike/S0);
     double logdk=(maxLogStrike-minLogStrike)/(double)(numNodes-1);
     json_print_multiple_obj(
         "curve",
@@ -55,7 +55,7 @@ auto generateSplineCurves(
             json_print_spline(
                 numNodes, 
                 log(minStrike), 
-                log(maxStrike/stock),
+                log(maxStrike/S0),
                 logdk,
                 [&](const auto x){
                     return x-r*T;

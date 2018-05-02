@@ -190,18 +190,18 @@ void json_print_spline(const std::vector<double>& domain, Domain&& fnDomain, Ran
 }
 
 template<typename Fn, typename Str>
-void json_print_multiple_obj_helper(const Str& key, Fn&& fn){
+void json_print_multiple_obj_helper(Str&& key, Fn&& fn){
     std::cout<<"\""<<key<<"\":"<<fn()<<"}";
 }
 template<typename Fn, typename Str, typename ...Fns>
-void json_print_multiple_obj_helper(const Str& key, Fn&& fn, Fns&&... fns){
+void json_print_multiple_obj_helper(Str&& key, Fn&& fn, Fns&&... fns){
     std::cout<<"\""<<key<<"\":"<<fn()<<", ";
-    json_print_multiple_obj_helper(fns);
+    json_print_multiple_obj_helper(fns...);
 }
 template<typename ...Fns>
 void json_print_multiple_obj(Fns&&... fns){
     std::cout<<"{";
-    json_print_multiple_obj_helper(fns);
+    json_print_multiple_obj_helper(fns...);
 }
 
 #endif

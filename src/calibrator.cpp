@@ -63,19 +63,19 @@ auto generateSplineCurves(
                 [&](const auto x){
                     return valOrZero(s(exp(x)));
                 }
-            )
+            );
         }, 
         "points",
         [&](){
             json_print_spline(
                 strikes,
                 [&](const auto x, int i){
-                    return log(x/stock)-r*T;
+                    return log(x/S0)-r*T;
                 },
                 [&](const auto x, int i){
-                    return prices[i]/stock-valOrZero(1.0-x*discount/stock);
+                    return prices[i]/S0-valOrZero(1.0-x*discount/S0);
                 }
-            )
+            );
         });
 
 }

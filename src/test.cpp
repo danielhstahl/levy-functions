@@ -90,4 +90,11 @@ TEST_CASE("get double when exists", "parse_json"){
             mapKeyToIndex
         )==2.0
     );
+
+    TEST_CASE("does key value pair with one key function", "parse_json"){
+        std::cout<<json_print_multiple_obj("hello", [](){std::cout<<"sup"});//should print {"hello":sup}
+    }
+    TEST_CASE("does key value pair with multiple key function", "parse_json"){
+        std::cout<<json_print_multiple_obj("hello", [](){std::cout<<"sup"}, "hello", [](){std::cout<<"sup"}, "hello", [](){std::cout<<"sup"});//should print {"hello":sup, "hello":sup, "hello":sup}
+    }
 }

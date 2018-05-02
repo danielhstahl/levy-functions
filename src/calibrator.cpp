@@ -25,16 +25,74 @@ auto getU(int N){
         return index*du;
     });
 }
+template<typename Array1, typename Array2>
+auto generateConstParameters(
+    const Array1& prices, const Array2& strikes, double S0
+){
+    const int N=1024;
+    const auto maxStrike=strikes.back()*10.0;
+    const auto minStrike=S0/maxStrike;
+    return std::make_tuple(N, minStrike, maxStrike);
+}
+
+template<typename Array1, typename Array2>
+auto generateSplineCurves(
+    const Array1& prices, const Array2& strikes, 
+    double S0, double r, double T, int numNodes
+){
+    const auto parameters=generateConstParameters(prices, strikes, S0);
+    const int N=std::get<0>(parameters);
+    const auto minStrike=std::get<1>(parameters);
+    const auto maxStrike=std::get<2>(parameters);
+    const auto discount=exp(-r*T);
+    auto s=optioncal::getOptionSpline(strikes, prices, S0, discount, minStrike, maxStrike);
+    double minLogStrike=log(minStrike);
+    double maxLogStrike=log(maxStrike/stock);
+    double logdk=(maxLogStrike-minLogStrike)/(double)(numNodes-1);
+    json_print_multiple_obj(
+        "curve",
+        [&](){
+            json_print_spline(
+                numNodes, 
+                log(minStrike), 
+                log(maxStrike/stock),
+                logdk,
+                [&](const auto x){
+                    return x-r*T;
+                },
+                [&](const auto x){
+                    return valOrZero(s(exp(x)));
+                }
+            )
+        }, 
+        "points",
+        [&](){
+            json_print_spline(
+                strikes,
+                [&](const auto x, int i){
+                    return log(x/stock)-r*T;
+                },
+                [&](const auto x, int i){
+                    return prices[i]/stock-valOrZero(1.0-x*discount/stock);
+                }
+            )
+        });
+
+}
+
+
+
+
 template<typename CF, typename Array1, typename Array2, typename Array3>
 auto genericCallCalibrator_cuckoo(
     CF&& logCF, const Array1& ul, const Array2& prices, Array3&& strikes, 
     double S0, double r, double T
 ){
-    const int N=1024;
+    const auto parameters=generateConstParameters(prices, strikes, S0);
+    const int N=std::get<0>(parameters);
+    const auto minStrike=std::get<1>(parameters);
+    const auto maxStrike=std::get<2>(parameters);
     const auto uArray=getU(15);
-    
-    const auto maxStrike=strikes.back()*10.0;
-    const auto minStrike=S0/maxStrike;
     const auto estimateOfPhi=optioncal::generateFOEstimate(
         strikes, 
         prices,  S0, 

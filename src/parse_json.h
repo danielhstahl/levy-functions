@@ -167,5 +167,41 @@ void json_print_default_parameters(){
 void json_print_var(double var, double es){
     std::cout<<"{\"VaR\":"<<var<<",\"ES\":"<<es<<"}"<<std::endl;
 }
+template<typename Domain, typename Range>
+void json_print_spline(int n, double min, double max, double dx, Domain&& fnDomain, Range&& fnRange){
+    std::cout<<"[";
+    for(int i=0; i<(n-1); ++i){
+        double x=min+i*dx;
+        std::cout<<"{\"logStrike\":"<<fnDomain(x)<<", \"transformedOption\":"<<fnRange(x)<<"},";
+    }
+    double x=min+(n-1)*dx;
+    std::cout<<"{\"logStrike\":"<<fnDomain(x)<<", \"transformedOption\":"<<fnRange(x)<<"}]";
+}
+template<typename Domain, typename Range>
+void json_print_spline(const std::vector<double>& domain, Domain&& fnDomain, Range&& fnRange){
+    std::cout<<"[";
+    int n=domain.size();
+    for(int i=0; i<(n-1); ++i){
+        double x=domain[i];
+        std::cout<<"{\"logStrike\":"<<fnDomain(x, i)<<", \"transformedOption\":"<<fnRange(x, i)<<"},";
+    }
+    double x=domain.back();
+    std::cout<<"{\"logStrike\":"<<fnDomain(x, n-1)<<", \"transformedOption\":"<<fnRange(x,  n-1)<<"}]";
+}
+
+template<typename Fn, typename Str>
+void json_print_multiple_obj_helper(const Str& key, Fn&& fn){
+    std::cout<<"\""<<key<<"\":"<<fn()<<"}";
+}
+template<typename Fn, typename Str, typename ...Fns>
+void json_print_multiple_obj_helper(const Str& key, Fn&& fn, Fns&&... fns){
+    std::cout<<"\""<<key<<"\":"<<fn()<<", ";
+    json_print_multiple_obj_helper(fns);
+}
+template<typename ...Fns>
+void json_print_multiple_obj(Fns&&... fns){
+    std::cout<<"{";
+    json_print_multiple_obj_helper(fns);
+}
 
 #endif

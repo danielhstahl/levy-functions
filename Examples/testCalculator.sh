@@ -1,1 +1,1 @@
-../bin/calculator 6  "$(< exampleCalculator.json)"
+../bin/calculator 19  "$(< exampleCalculator.json)"

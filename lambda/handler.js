@@ -24,6 +24,10 @@ const calculatorKeys={
   densityvar:18,
   densityraw:19
 }
+const calibratorKeys={
+  spline:0,
+  calibrate:1
+}
 
 const totalKeys=[
   "lambda", 
@@ -78,11 +82,12 @@ const getParametersOrObject=parameters=>parameters||"{}"
 const spawnBinary=binary=>(functionalityIndicator, parms, callback)=>{
   genericSpawn(binary, [functionalityIndicator,getParametersOrObject(parms)], callback)
 }
+/*
 const spawnBinaryNoFunctionality=binary=>(parms, callback)=>{
   genericSpawn(binary, [getParametersOrObject(parms)], callback)
-}
+}*/
 const calculatorSpawn=spawnBinary('calculator')
-const calibratorSpawn=spawnBinaryNoFunctionality('calibrator')
+const calibratorSpawn=spawnBinary('calibrator')
 const defaultParametersSpawn=callback=>genericSpawn('defaultParameters', [], callback)
 
 
@@ -95,19 +100,19 @@ module.exports.calculator=(event, context, callback)=>{
 module.exports.density=(event, context, callback)=>{
   const {densityType}=event.pathParameters
   const key='density'+densityType
-  const index=calculatorKeys[key]
-  calculatorSpawn(index, event.body, callback)
+  calculatorSpawn(calculatorKeys[key], event.body, callback)
 }
 module.exports.defaultParameters=(event, context, callback)=>{
   defaultParametersSpawn(callback)
 }
 
 module.exports.calibrator=(event, context, callback)=>{
+  const {calibration}=event.pathParameters
   const keyResult=calibratorRequiredKeys(JSON.parse(event.body))
   if(keyResult){
     const err=`Requires additional keys!  Missing ${keyResult}`
     return callback(null,  errMsg(err))
   }
-  calibratorSpawn(event.body, callback)
+  calibratorSpawn(calibratorKeys[calibration], event.body, callback)
 }
 module.exports.calculatorKeys=calculatorKeys

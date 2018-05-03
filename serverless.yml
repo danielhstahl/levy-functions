@@ -93,6 +93,7 @@ functions:
           method: get
           cors: true
 
+
   calibrator:
     memorySize: 1024 # optional, in MB, default is 1024
     timeout: 30 # optional, in seconds, default is 6
@@ -100,9 +101,13 @@ functions:
 
     events:
       - http:
-          path: version/calibrator
+          path: version/calibrator/{calibration}
           method: post
           cors: true
+          request:
+            parameters:
+              paths:
+                calibration: true
           
 
       

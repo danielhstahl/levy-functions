@@ -10,7 +10,7 @@
     "test": "jest",
     "mergeReleases": "node ./scripts/mergeHandler",
     "release": "node ./scripts/mergeHandler && ./scripts/tagAndRelease.sh",
-    "devServer":"node ./mockServer/server"
+    "devServer": "node ./mockServer/server"
   },
   "repository": {
     "type": "git",
@@ -37,6 +37,7 @@
     "es6-promisify": "^6.0.0",
     "fs-extra": "^5.0.0",
     "js-yaml": "^3.11.0",
+    "npm": "^6.0.0",
     "request": "^2.85.0",
     "unzip": "^0.1.11"
   }

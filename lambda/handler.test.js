@@ -19,13 +19,22 @@ it('correctly calls calculator handlers', (done)=>{
     })
 })
 it('correctly calls calibrator handler for full model', (done)=>{
-    const event=createEvent(calibratorParams)
+    const event=createEvent(calibratorParams, {calibration:'calibrate'})
     handler.calibrator(event, {}, (err, val)=>{
         const parsedVal=JSON.parse(val.body)
         expect(parsedVal.sigma).toBeDefined()
         expect(parsedVal.speed).toBeDefined()
         expect(parsedVal.adaV).toBeDefined()
         expect(parsedVal.rho).toBeDefined()
+        done()
+    })
+}, 40000)
+it('correctly calls calibrator handler for spline', (done)=>{
+    const event=createEvent(calibratorParams, {calibration:'spline'})
+    handler.calibrator(event, {}, (err, val)=>{
+        const parsedVal=JSON.parse(val.body)
+        expect(parsedVal.curve).toBeDefined()
+        expect(parsedVal.points).toBeDefined()
         done()
     })
 }, 40000)
@@ -57,7 +66,7 @@ it('correctly sends error  for full model', (done)=>{
         "k":[95,100,130,150,160,165,170,175,185,190,195,200,210,240,250],
         "prices":[85,78.7,51.5,35.38,28.3,25.2,22.27,19.45,14.77,12.75,11,9.35,6.9,2.55,1.88]
     }
-    const event=createEvent(args)
+    const event=createEvent(args, {calibration:'calibrate'})
     handler.calibrator(event, {}, (err, val)=>{
         expect(val.body).toEqual("Requires additional keys!  Missing rho")
         done()
@@ -69,6 +78,7 @@ it('correctly calls VaR', (done)=>{
         densityType:'var'
     })
     handler.density(event, {}, (err, val)=>{
+        console.log(val.body)
         const parsedVal=JSON.parse(val.body)
         expect(parsedVal.VaR).toBeDefined()
         expect(parsedVal.ES).toBeDefined()

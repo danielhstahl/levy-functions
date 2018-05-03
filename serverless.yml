@@ -89,7 +89,7 @@ functions:
     handler: lambda/handler.defaultParameters
     events:
       - http:
-          path: version/calibrator/parameter_ranges
+          path: version/parameters/parameter_ranges
           method: get
           cors: true
 

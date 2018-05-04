@@ -1,1 +1,1 @@
-../bin/calibrator  "$(< exampleCalibrator.json)"
+../bin/calibrator 1 "$(< exampleCalibrator.json)"

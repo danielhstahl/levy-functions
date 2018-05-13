@@ -22,8 +22,7 @@ auto cfLogBase(const U& u,
 
 auto cf(
     double r,
-    double T, 
-    double S0
+    double T
 ){
     //trivially copyable...this is the SV3 of the following paper:
     //https://pdfs.semanticscholar.org/67cd/b553e2624c79a960ff79d0dfe6e6833690a7.pdf 
@@ -45,7 +44,50 @@ auto cf(
     };
     
 }
-
+/**should be the same as cf when delta=0*/
+auto cfGeneric(
+    double r,
+    double T
+){
+    return [=](
+        double lambda, 
+        double muJ, double sigJ,
+        double sigma, double v0, 
+        double speed,double adaV, 
+        double rho, double q, 
+        double delta
+    ){
+        
+        auto numODE=64;//hopefully this is sufficient
+         //const T& rho, const T& K, const T& H, const T& l
+        auto alpha=chfunctions::AlphaOrBeta(0.0, speed, 0.0, 0.0);
+        return [=, alpha=std::move(alpha), numODE=std::move(numODE)](const auto& u){
+            //const T& rho, const T& K, const T& H, const T& l
+            auto beta=chfunctions::AlphaOrBeta(
+                chfunctions::mertonLogRNCF(u, lambda, muJ, sigJ, 0.0, sigma), 
+                -(speed+delta*lambda/q-u*rho*sigma*adaV),
+                adaV*adaV, 
+                lambda
+            );
+            auto expCF=chfunctions::exponentialCF(u, q);
+            return exp(r*T*u+chfunctions::logAffine(
+                rungekutta::computeFunctional(T, numODE, std::vector<std::complex<double> >({0, 0}),
+                    [&](double t, const std::vector<std::complex<double> >& x){
+                        auto cfPart=chfunctions::exponentialCF(
+                            u+x[0]*delta, 
+                            q
+                        )-expCF;
+                        return std::vector<std::complex<double> >({
+                            beta(x[0], cfPart),
+                            alpha(x[0], cfPart)
+                        });
+                    }
+                ),
+                v0
+            ));
+        };
+    };
+}
 const std::unordered_map<std::string, std::tuple<cuckoo::upper_lower<double>, double> > modelParams({
     {"lambda", std::make_tuple(cuckoo::upper_lower<double>(0.0, 2.0), 1.0)}, 
     {"muJ", std::make_tuple(cuckoo::upper_lower<double>(-1.0, 1.0), 0.0)}, 
@@ -58,7 +100,9 @@ const std::unordered_map<std::string, std::tuple<cuckoo::upper_lower<double>, do
     {"r", std::make_tuple(cuckoo::upper_lower<double>(0.0, .4), .03)},
     {"S0", std::make_tuple(cuckoo::upper_lower<double>(0.0, 1000000.0), 50.0)},
     {"T", std::make_tuple(cuckoo::upper_lower<double>(0.0, 1000000.0), .25)},
-    {"numU", std::make_tuple(cuckoo::upper_lower<double>(5, 10), 7)}
+    {"numU", std::make_tuple(cuckoo::upper_lower<double>(5, 10), 7)},
+    {"q", std::make_tuple(cuckoo::upper_lower<double>(0, 20), 5)},
+    {"delta", std::make_tuple(cuckoo::upper_lower<double>(0, 2), 1)}
 });
 
 #endif

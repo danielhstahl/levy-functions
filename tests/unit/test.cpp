@@ -99,3 +99,22 @@ TEST_CASE("does key value pair with one key function", "parse_json"){
 TEST_CASE("does key value pair with multiple key function", "parse_json"){
     json_print_multiple_obj("hello", [](){std::cout<<"sup";}, "hello", [](){std::cout<<"sup";}, "hello", [](){std::cout<<"sup";});//should print {"hello":sup, "hello":sup, "hello":sup}
 }
+TEST_CASE("roughly the same cf", "cf"){
+    double lambda=1.0;
+    double muJ=0.0;
+    double sigJ=.3;
+    double sigma=.3;
+    double v0=1.0;
+    double speed=.4;
+    double adaV=.5;
+    double rho=-.4;
+    double r=.03;
+    double T=.25;
+    double q=5;
+    double delta=0.0;
+    std::complex<double> testU({1.0, 1.0});
+    auto myResultA=cf(r, T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho)(testU);
+    auto myResultN=cfGeneric(r, T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho, q, delta)(testU);
+    REQUIRE(myResultA.real()==Approx(myResultN.real()));
+    REQUIRE(myResultA.imag()==Approx(myResultN.imag()));
+}

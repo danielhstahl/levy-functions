@@ -104,13 +104,13 @@ v0=.9
 s0=50
 k=50
 delta=1
-n=100000 #number of options to simulate
-m=1000 #number of items per path
+n=1000000 #number of options to simulate
+m=10000 #number of items per path
 t=1
 dt=t/(m)
 simulateExpJump=function(numJumps){
   if(numJumps>0){
-    return(sum(delta*rexp(numJumps, lambda)))
+    return(sum(delta*rexp(numJumps, q)))
   }
   else{
     return(0)
@@ -132,7 +132,7 @@ generatePricePath=function(m, type){
   w1=w2*rho+rnorm(m)*sqrt(1-rho*rho)
   for(j in c(1:m)){
     numJ=rpois(1, v*lambda*dt)
-    s=s*exp(r*dt-sig*sig*.5*v*dt-lambda*v*dt*(exp(muL+.5*sigL*sigL)-1)+sqrt(v*dt)*sig*w1[j]+simulateGaussJump(numJ))
+    s=s*exp(r*dt-sig*sig*.5*v*dt-lambda*v*dt*(exp(muL+.5*sigL*sigL)-1)+sqrt(abs(v)*dt)*sig*w1[j]+simulateGaussJump(numJ))
     v=v+a*(1-(delta*lambda/(a*q)+1)*v)*dt+eta*sqrt(abs(v)*dt)*w2[j]+simulateExpJump(numJ)
   }
   if(type=='option'){
@@ -155,7 +155,9 @@ stockPrices=sapply(c(1:n), function(index){
   return(generatePricePath(m, 'stock'))
 })
 price=exp(-r*t)*mean(optionPrices)
-price
+bounds=qnorm(.95)*sd(optionPrices)/sqrt(n-1)
+priceLow=price-bounds
+priceHigh=price+bounds
 
 mean(stockPrices)*exp(-r*t)# should be 50 if a martingale
 

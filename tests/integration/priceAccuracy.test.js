@@ -17,7 +17,6 @@ it('correctly returns heston price', (done)=>{
     //convert parameters
     const sigma=Math.sqrt(b)
     const speed=a
-    const kappa=speed
     const v0Hat=v0/b
     const adaV=c/Math.sqrt(b)
 
@@ -76,7 +75,7 @@ it('correctly returns generic price', (done)=>{
     })
     return handler.calculator(event, {}, (err, val)=>{
         const parsedVal=JSON.parse(val.body)
-        expect(parsedVal[1].value).toBeCloseTo(5.431071, 3)
+        expect(parsedVal[1].value).toBeCloseTo(4.696068, 3)
         done()
     })
 })

@@ -110,7 +110,7 @@ t=1
 dt=t/(m)
 simulateExpJump=function(numJumps){
   if(numJumps>0){
-    return(delta*rexp(numJumps, lambda))
+    return(sum(delta*rexp(numJumps, lambda)))
   }
   else{
     return(0)
@@ -119,7 +119,7 @@ simulateExpJump=function(numJumps){
 }
 simulateGaussJump=function(numJumps){
   if(numJumps>0){
-    return(rnorm(numJumps, muL, sigL))
+    return(sum(rnorm(numJumps, muL, sigL)))
   }
   else{
     return(0)
@@ -141,6 +141,7 @@ generatePricePath=function(m, type){
     v=v+a*(1-(delta*lambda/(a*q)+1)*v)*dt+eta*sqrt(abs(v)*dt)*w2[j]+simulateExpJump(numJ)
    # print(v)
   }
+  #print(s)
   if(type=='option'){
     if(s>k){
       return(s-k)

@@ -7,7 +7,7 @@
 #include "cuckoo.h"
 #include <chrono>
 
-const std::array<std::string, 8> possibleCalibrationParameters({
+const std::array<std::string, 10> possibleCalibrationParameters({
     "lambda", "muJ", "sigJ", "sigma", "v0", "speed", "adaV", "rho", "q", "delta"
 });
 

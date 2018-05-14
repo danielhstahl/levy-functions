@@ -115,6 +115,57 @@ TEST_CASE("roughly the same cf", "cf"){
     std::complex<double> testU({1.0, 1.0});
     auto myResultA=cf(r, T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho)(testU);
     auto myResultN=cfGeneric(r, T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho, q, delta)(testU);
-    REQUIRE(myResultA.real()==Approx(myResultN.real()));
-    REQUIRE(myResultA.imag()==Approx(myResultN.imag()));
+    REQUIRE(myResultA.real()==Approx(myResultN.real()).epsilon(.001));
+    REQUIRE(myResultA.imag()==Approx(myResultN.imag()).epsilon(.001));
+}
+TEST_CASE("roughly the same cf for heston", "cf"){
+    double lambda=0.0;
+    double muJ=0.0;
+    double sigJ=0.0;
+    double sigma=sqrt(.0398);
+    double v0=.0175/.0398;
+    double speed=1.5768;
+    double adaV=.5751/sigma;
+    double rho=-.5711;
+    double r=0;
+    double T=1.0;
+    double q=5;
+    double delta=0.0;
+    std::complex<double> testU({1.0, 1.0});
+    auto myResultA=cf(r, T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho)(testU);
+    auto myResultN=cfGeneric(r, T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho, q, delta)(testU);
+    REQUIRE(myResultA.real()==Approx(myResultN.real()).epsilon(.001));
+    REQUIRE(myResultA.imag()==Approx(myResultN.imag()).epsilon(.001));
+}
+TEST_CASE("test CIR", "cf"){
+    auto rho1=1.0;
+    auto k0=.05; //long run average of .05/.3
+    auto k1=-.3;
+    auto H1=.09;
+    auto T=.5;
+    auto r0=.15;
+    std::complex<double> testU({0.0, 0.0});
+    auto myResultA=cf(0, T)(0.0, 0.0, 0.0, 0.0, -r0, -k1, sqrt(H1), 0.0)(testU);
+    auto myResultN=cfGeneric(0.0, T)(0.0, 0.0, 0.0, 0.0, -r0, -k1, sqrt(H1), 0.0, 5.0, 0)(testU);
+
+    REQUIRE(myResultA.real()==Approx(myResultN.real()).epsilon(.001));
+}
+TEST_CASE("roughly the same cf for heston v2", "cf"){
+    double lambda=0.0;
+    double muJ=0.0;
+    double sigJ=0.0;
+    double sigma=sqrt(.0398);
+    double v0=.0175/.0398;
+    double speed=1.5768;
+    double adaV=.5751/sigma;
+    double rho=-.5711;
+    double r=0;
+    double T=1.0; 
+    double q=5;
+    double delta=0.0;
+    std::complex<double> testU({0.0, 18.0});
+    auto myResultA=cf(r, T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho)(testU);
+    auto myResultN=cfGeneric(r, T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho, q, delta)(testU);
+    REQUIRE(myResultA.real()==Approx(myResultN.real()).epsilon(.001));
+    REQUIRE(myResultA.imag()==Approx(myResultN.imag()).epsilon(.001));
 }

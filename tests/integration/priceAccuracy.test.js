@@ -49,7 +49,7 @@ it('correctly returns heston price', (done)=>{
         done()
     })
 })
-/*
+
 it('correctly returns generic price', (done)=>{
     //own MC
     
@@ -58,15 +58,17 @@ it('correctly returns generic price', (done)=>{
         r:.03,
         T:1.0,
         S0:50,
-        sigma, 
-        lambda:0,
-        muJ:0,
-        sigJ:0,
-        speed,
-        v0:v0Hat,
-        adaV,
-        rho,
-        k:[100]
+        sigma:.2, 
+        lambda:.5,
+        muJ:-.05,
+        sigJ:-1.0,
+        speed:.3,
+        v0:.9,
+        adaV:.2,
+        rho:-.5,
+        delta:1,
+        q:5,
+        k:[50]
     }
     const event=createEvent(parameters, {
         optionType:'call',
@@ -79,4 +81,16 @@ it('correctly returns generic price', (done)=>{
         done()
     })
 })
-*/
+/**r=.03
+sig=.2
+sigL=.1
+muL=-.05
+rho=-.5
+q=5 #size of jump is .2 on average
+lambda=.5 #one jumps every two years on average
+a=.3
+eta=.2
+v0=.9
+s0=50
+k=50
+delta=1 */

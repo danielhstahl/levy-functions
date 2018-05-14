@@ -44,8 +44,11 @@ auto cf(
     };
     
 }
+
+
+
 /**should be the same as cf when delta=0*/
-auto cfGeneric(
+auto cfLogGeneric(
     double r,
     double T
 ){
@@ -61,11 +64,7 @@ auto cfGeneric(
         auto numODE=64;//hopefully this is sufficient
          //const T& rho, const T& K, const T& H, const T& l
         auto alpha=chfunctions::AlphaOrBeta(0.0, speed, 0.0, 0.0);
-        /*auto alpha=[speed](const auto& val){
-            return val*speed;
-        };*/
         return [=, alpha=std::move(alpha), numODE=std::move(numODE)](const auto& u){
-            
             //const T& rho, const T& K, const T& H, const T& l
             auto beta=chfunctions::AlphaOrBeta(
                 -chfunctions::mertonLogRNCF(u, lambda, muJ, sigJ, 0.0, sigma), 
@@ -73,24 +72,15 @@ auto cfGeneric(
                 adaV*adaV, 
                 lambda 
             );
-            //std::cout<<"U: "<<u<<std::endl;
-
-            /*auto beta=[&](const auto& val, const auto& cfPart){
-                return chfunctions::mertonLogRNCF(u, lambda, muJ, sigJ, 0.0, sigma)-(speed+(delta*lambda)/q-u*rho*sigma*adaV)*val-val*val*adaV*adaV*.5-lambda*cfPart;
-            };*/
-
+            
             auto expCF=chfunctions::exponentialCF(u, q);
-            return exp(r*T*u+chfunctions::logAffine(
+            return chfunctions::logAffine(
                 rungekutta::computeFunctional_move(T, numODE, std::vector<std::complex<double> >({0, 0}),
                     [&](double t, const std::vector<std::complex<double> >& x){
                         auto cfPart=chfunctions::exponentialCF(
                             u+x[0]*delta, 
                             q
                         )-expCF;
-                        /*if(std::isnan(beta(x[0], cfPart).real())){
-                            std::cout<<"x0: "<<x[0]<<std::endl;
-                            std::cout<<"cfPart: "<<cfPart<<std::endl;
-                        }*/
                         return std::vector<std::complex<double> >({
                             beta(x[0], cfPart),
                             alpha(x[0], cfPart)
@@ -98,7 +88,26 @@ auto cfGeneric(
                     }
                 ),
                 v0
-            ));
+            );
+        };
+    };
+}
+template<typename U>
+auto cfGeneric(
+    double r,
+    double T
+){
+    return [=](
+        double lambda, 
+        double muJ, double sigJ,
+        double sigma, double v0, 
+        double speed,double adaV, 
+        double rho, double q, 
+        double delta
+    ){
+        auto logCF=cfLogGeneric(r, T)(lambda, muJ, sigJ, sigma ,v0, speed, adaV, rho, q, delta);
+        return [=, logCF=std::move(logCF)](const auto& u){
+            return exp(r*u*T+logCF(u));
         };
     };
 }

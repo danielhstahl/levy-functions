@@ -52,7 +52,6 @@ it('correctly returns heston price', (done)=>{
 
 it('correctly returns generic price', (done)=>{
     //own MC
-    
     const parameters={
         numU:8,
         r:.03,
@@ -61,7 +60,7 @@ it('correctly returns generic price', (done)=>{
         sigma:.2, 
         lambda:.5,
         muJ:-.05,
-        sigJ:-1.0,
+        sigJ:.1,
         speed:.3,
         v0:.9,
         adaV:.2,
@@ -77,7 +76,7 @@ it('correctly returns generic price', (done)=>{
     })
     return handler.calculator(event, {}, (err, val)=>{
         const parsedVal=JSON.parse(val.body)
-        expect(parsedVal[1].value).toBeCloseTo(3.815319, 3)
+        expect(parsedVal[1].value).toBeCloseTo(5.431071, 3)
         done()
     })
 })

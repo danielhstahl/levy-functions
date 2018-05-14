@@ -8,7 +8,7 @@
 #include <chrono>
 
 const std::array<std::string, 8> possibleCalibrationParameters({
-    "lambda", "muJ", "sigJ", "sigma", "v0", "speed", "adaV", "rho"
+    "lambda", "muJ", "sigJ", "sigma", "v0", "speed", "adaV", "rho", "q", "delta"
 });
 
 
@@ -136,16 +136,15 @@ int main(int argc, char* argv[]){
                 auto getArgOrConstantCurry=[&](const auto& key, const auto& args){
                     return getArgOrConstant(key, args, parsedJson, mapKeyToIndex);
                 };
+                auto cfLogHOC=cfLogGeneric(r, T);
                 auto cfHOC=[
                     getArgOrConstantCurry=std::move(getArgOrConstantCurry), 
-                    T
+                    cfLogHOC=std::move(cfLogHOC)
                 ](const auto& u, const auto& args){
                     auto getField=[&](const auto& key){
                         return getArgOrConstantCurry(key, args);
                     };
-                    return cfLogBase(
-                        u, 
-                        T,
+                    return cfLogHOC(
                         getField("lambda"), 
                         getField("muJ"), 
                         getField("sigJ"), 
@@ -153,8 +152,10 @@ int main(int argc, char* argv[]){
                         getField("v0"), 
                         getField("speed"), 
                         getField("adaV"), 
-                        getField("rho")
-                    );
+                        getField("rho"),
+                        getField("q"),
+                        getField("delta")
+                    )(u);
                 };
 
                 json_print_calibrated_params<cuckoo::optparms, cuckoo::fnval>(

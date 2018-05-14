@@ -27,7 +27,7 @@ Here \(dW^1_t dW^2_t=\rho dt\) and \(N_t\) is the same jump process as the one i
 \subsection{Risk Neutral log asset price}
 
 Following Carr and Wu, the risk neutral log price can be modeled as follows (note that the market is incomplete):
-\[x_t=\mathrm{log}\left(\frac{S_t}{S_0}\right)=rt-\left(\frac{\sigma^2}{2}-\lambda \left(e^{\mu_y+\frac{\sigma_y^2}{2}}-1\right) \right)t+\sigma \tilde{W}^1_t+\sum_{j=1}^{N_t} y_j\]
+\[x_t=\mathrm{log}\left(\frac{S_t}{S_0}\right)=rt-\left(\frac{\sigma^2}{2}+\lambda \left(e^{\mu_y+\frac{\sigma_y^2}{2}}-1\right) \right)t+\sigma \tilde{W}^1_t+\sum_{j=1}^{N_t} y_j\]
 
 \subsection{Analytical Characteristic Function}
 
@@ -36,7 +36,7 @@ Following Carr and Wu, the full time changed \(x_\tau\) has the following charac
 \[\phi_x(u)=\mathbb{\hat{E}}\left[ e^{ui rt} e^{\tau \psi(u)} \right]\]
 
 Where 
-\[\psi(u)=\lambda \left(e^{iu \mu_y-\frac{u^2\sigma_y^2}{2}}-1\right)-\frac{\sigma^2}{2} u^2-\left(\frac{\sigma^2}{2}-\lambda \left(e^{\mu_y+\frac{\sigma_y^2}{2}}\right)\right)ui \]
+\[\psi(u)=\lambda \left(e^{iu \mu_y-\frac{u^2\sigma_y^2}{2}}-1\right)-\frac{\sigma^2}{2} u^2-\left(\frac{\sigma^2}{2}+\lambda \left(e^{\mu_y+\frac{\sigma_y^2}{2}}-1\right)\right)ui \]
 
 
 Under \(\mathbb{\hat{P}}\), \(v_s\) has the following dynamics:
@@ -104,7 +104,7 @@ v0=.9
 s0=50
 k=50
 delta=1
-n=10000 #number of options to simulate
+n=100000 #number of options to simulate
 m=1000 #number of items per path
 t=1
 dt=t/(m)
@@ -126,22 +126,15 @@ simulateGaussJump=function(numJumps){
   }
 }
 generatePricePath=function(m, type){
-  #v=c(1:m)
-  #s=c(1:m)
-  #v[1]=v0
-  #s[1]=s0
   s=s0
   v=v0
   w2=rnorm(m)
   w1=w2*rho+rnorm(m)*sqrt(1-rho*rho)
   for(j in c(1:m)){
-    #print(v*lambda*dt)
     numJ=rpois(1, v*lambda*dt)
-    s=s*exp(r*dt-sig*sig*.5*v*dt+lambda*v*dt*(exp(muL+.5*sigL*sigL)-1)+sqrt(v*dt)*sig*w1[j]+simulateGaussJump(numJ))
+    s=s*exp(r*dt-sig*sig*.5*v*dt-lambda*v*dt*(exp(muL+.5*sigL*sigL)-1)+sqrt(v*dt)*sig*w1[j]+simulateGaussJump(numJ))
     v=v+a*(1-(delta*lambda/(a*q)+1)*v)*dt+eta*sqrt(abs(v)*dt)*w2[j]+simulateExpJump(numJ)
-   # print(v)
   }
-  #print(s)
   if(type=='option'){
     if(s>k){
       return(s-k)

@@ -335,7 +335,7 @@ int main(int argc, char* argv[]){
         const auto S0=get_ranged_variable(parsedJson, modelParams, "S0");
     
         const auto lambda=get_ranged_variable(parsedJson, modelParams, "lambda");
-        const auto muJ=get_ranged_variable(parsedJson, modelParams, "lambda");
+        const auto muJ=get_ranged_variable(parsedJson, modelParams, "muJ");
         const auto sigJ=get_ranged_variable(parsedJson, modelParams, "sigJ");
         const auto sigma=get_ranged_variable(parsedJson, modelParams, "sigma");
         

@@ -92,7 +92,7 @@ auto cfLogGeneric(
         };
     };
 }
-template<typename U>
+
 auto cfGeneric(
     double r,
     double T

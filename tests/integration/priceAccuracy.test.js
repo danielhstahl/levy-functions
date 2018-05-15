@@ -48,6 +48,45 @@ it('correctly returns heston price', (done)=>{
         done()
     })
 })
+it('correctly returns merton price', (done)=>{
+    //https://www.upo.es/personal/jfernav/papers/Jumps_JOD_.pdf pg 8
+    const r=.1
+    const T=.5
+    const S0=38
+    const sigJ=Math.sqrt(.05)
+    const sigma=sigJ
+    const muJ=-sigJ*sigJ*.5
+    const k=35
+    const lambda=1
+    
+    const parameters={
+        numU:8,
+        r,
+        T,
+        S0,
+        sigma, 
+        lambda,
+        muJ,
+        sigJ,
+        speed:0,
+        v0:1,
+        adaV:0,
+        rho:0,
+        delta:0,
+        q:5,
+        k:[k]
+    }
+    const event=createEvent(parameters, {
+        optionType:'call',
+        sensitivity:'price',
+        algorithm:'fangoost'
+    })
+    return handler.calculator(event, {}, (err, val)=>{
+        const parsedVal=JSON.parse(val.body)
+        expect(parsedVal[1].value).toBeCloseTo(5.9713, 3)
+        done()
+    })
+})
 
 it('correctly returns generic price', (done)=>{
     //own MC

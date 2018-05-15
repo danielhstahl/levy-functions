@@ -62,15 +62,17 @@ auto cfLogGeneric(
     ){
         
         auto numODE=64;//hopefully this is sufficient
-         //const T& rho, const T& K, const T& H, const T& l
-        auto alpha=chfunctions::AlphaOrBeta(0.0, speed, 0.0, 0.0);
+         
+        double speedTmp=speed;//copy here in order to move to move
+        //const T& rho, const T& K, const T& H, const T& l
+        auto alpha=chfunctions::AlphaOrBeta_move(0.0, std::move(speedTmp), 0.0, 0.0);
         return [=, alpha=std::move(alpha), numODE=std::move(numODE)](const auto& u){
             //const T& rho, const T& K, const T& H, const T& l
-            auto beta=chfunctions::AlphaOrBeta(
+            auto beta=chfunctions::AlphaOrBeta_move(
                 -chfunctions::mertonLogRNCF(u, lambda, muJ, sigJ, 0.0, sigma), 
                 -(speed+(delta*lambda)/q-u*rho*sigma*adaV),
                 adaV*adaV, 
-                lambda 
+                std::move(lambda)
             );
             
             auto expCF=chfunctions::exponentialCF(u, q);

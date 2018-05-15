@@ -21,6 +21,7 @@ it('correctly calls calculator handlers', (done)=>{
 it('correctly calls calibrator handler for full model', (done)=>{
     const event=createEvent(calibratorParams, {calibration:'calibrate'})
     handler.calibrator(event, {}, (err, val)=>{
+        console.log(val.body)
         const parsedVal=JSON.parse(val.body)
         expect(parsedVal.sigma).toBeDefined()
         expect(parsedVal.speed).toBeDefined()

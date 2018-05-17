@@ -128,7 +128,8 @@ int main(int argc, char* argv[]){
         int key=std::stoi(argv[1]);
         switch(key){
             case splineChoice:{
-                generateSplineCurves(prices, strikes, S0, r, T, 256);
+                const int numIndices=256;
+                generateSplineCurves(prices, strikes, S0, r, T, numIndices);
                 break;
             }
             case calibrateChoice:{

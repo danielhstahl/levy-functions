@@ -77,15 +77,21 @@ auto cfLogGeneric(
             
             auto expCF=chfunctions::exponentialCF(u, q);
             return chfunctions::logAffine(
-                rungekutta::computeFunctional_move(T, numODE, std::vector<std::complex<double> >({0, 0}),
-                    [&](double t, const std::vector<std::complex<double> >& x){
+                rungekutta::compute_efficient_2d(
+                    T, numODE, 
+                    std::vector<std::complex<double> >({0, 0}),
+                    [&](
+                        double t, 
+                        const std::complex<double>& x1,  
+                        const std::complex<double>& x2
+                    ){
                         auto cfPart=chfunctions::exponentialCF(
-                            u+x[0]*delta, 
+                            u+x1*delta, 
                             q
                         )-expCF;
                         return std::vector<std::complex<double> >({
-                            beta(x[0], cfPart),
-                            alpha(x[0], cfPart)
+                            beta(x1, cfPart),
+                            alpha(x1, cfPart)
                         });
                     }
                 ),

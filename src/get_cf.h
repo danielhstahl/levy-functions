@@ -61,7 +61,7 @@ auto cfLogGeneric(
         double delta
     ){
         
-        auto numODE=32;//hopefully this is sufficient
+        auto numODE=40;//hopefully this is sufficient
          
         double speedTmp=speed;//copy here in order to move to move
         //const T& rho, const T& K, const T& H, const T& l

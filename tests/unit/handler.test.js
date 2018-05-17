@@ -28,7 +28,7 @@ it('correctly calls calibrator handler for full model', (done)=>{
         expect(parsedVal.speed).toBeDefined()
         expect(parsedVal.adaV).toBeDefined()
         expect(parsedVal.rho).toBeDefined()
-        console.time("calibrator")
+        console.timeEnd("calibrator")
         done()
     })
 }, 40000)

@@ -19,6 +19,7 @@ it('correctly calls calculator handlers', (done)=>{
     })
 })
 it('correctly calls calibrator handler for full model', (done)=>{
+    console.time("calibrator")
     const event=createEvent(calibratorParams, {calibration:'calibrate'})
     handler.calibrator(event, {}, (err, val)=>{
         console.log(val.body)
@@ -27,6 +28,7 @@ it('correctly calls calibrator handler for full model', (done)=>{
         expect(parsedVal.speed).toBeDefined()
         expect(parsedVal.adaV).toBeDefined()
         expect(parsedVal.rho).toBeDefined()
+        console.time("calibrator")
         done()
     })
 }, 40000)
@@ -38,7 +40,7 @@ it('correctly calls calibrator handler for spline', (done)=>{
         expect(parsedVal.points).toBeDefined()
         done()
     })
-}, 40000)
+})
 it('correctly calls defaultParameters', (done)=>{
     const event=createEvent(calibratorParams)
     handler.defaultParameters(event, {}, (err, val)=>{

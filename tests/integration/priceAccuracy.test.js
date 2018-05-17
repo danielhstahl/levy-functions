@@ -43,6 +43,7 @@ it('correctly returns heston price', (done)=>{
         algorithm:'fangoost'
     })
     return handler.calculator(event, {}, (err, val)=>{
+        console.log(val.body)
         const parsedVal=JSON.parse(val.body)
         expect(parsedVal[1].value).toBeCloseTo(5.78515545, 3)
         done()

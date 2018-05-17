@@ -104,7 +104,7 @@ it('correctly returns generic price', (done)=>{
         adaV:.2,
         rho:-.5,
         delta:1,
-        q:5,
+        q:10,
         k:[50]
     }
     const event=createEvent(parameters, {
@@ -114,7 +114,8 @@ it('correctly returns generic price', (done)=>{
     })
     return handler.calculator(event, {}, (err, val)=>{
         const parsedVal=JSON.parse(val.body)
-        expect(parsedVal[1].value).toBeCloseTo(4.696068, 3)
+        expect(parsedVal[1].value).toBeGreaterThan(4.611191)
+        expect(parsedVal[1].value).toBeLessThan(4.846037)
         done()
     })
 })

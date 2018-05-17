@@ -91,9 +91,10 @@ auto genericCallCalibrator_cuckoo(
 ){
     const auto parameters=generateConstParameters(prices, strikes, S0);
     const int N=std::get<0>(parameters);
+    const int numU=15;//15 seems like a reasonable number in tests
     const auto minStrike=std::get<1>(parameters);
     const auto maxStrike=std::get<2>(parameters);
-    const auto uArray=getU(15);
+    const auto uArray=getU(numU);
     const auto estimateOfPhi=optioncal::generateFOEstimate(
         strikes, 
         prices,  S0, 
@@ -107,7 +108,9 @@ auto genericCallCalibrator_cuckoo(
         std::move(logCF),
         std::move(uArray)
     ); //returns function which takes param vector
-    return cuckoo::optimize(objFn, ul, 25, 500, std::chrono::system_clock::now().time_since_epoch().count());
+    const int nestSize=25;
+    const int totalMC=500;
+    return cuckoo::optimize(objFn, ul, nestSize, totalMC, std::chrono::system_clock::now().time_since_epoch().count());
 }
 constexpr int splineChoice=0;
 constexpr int calibrateChoice=1;

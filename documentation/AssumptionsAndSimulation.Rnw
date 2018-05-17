@@ -96,7 +96,7 @@ sig=.2
 sigL=.1
 muL=-.05
 rho=-.5
-q=5 #size of jump is .2 on average
+q=10 #size of jump is .1 on average
 lambda=.5 #one jumps every two years on average
 a=.3
 eta=.2
@@ -104,8 +104,8 @@ v0=.9
 s0=50
 k=50
 delta=1
-n=1000000 #number of options to simulate
-m=10000 #number of items per path
+n=10000 #number of options to simulate
+m=100000 #number of items per path
 t=1
 dt=t/(m)
 simulateExpJump=function(numJumps){
@@ -125,16 +125,20 @@ simulateGaussJump=function(numJumps){
     return(0)
   }
 }
+
 generatePricePath=function(m, type){
   s=s0
   v=v0
+ # sPath=c(s)
   w2=rnorm(m)
   w1=w2*rho+rnorm(m)*sqrt(1-rho*rho)
   for(j in c(1:m)){
     numJ=rpois(1, v*lambda*dt)
     s=s*exp(r*dt-sig*sig*.5*v*dt-lambda*v*dt*(exp(muL+.5*sigL*sigL)-1)+sqrt(abs(v)*dt)*sig*w1[j]+simulateGaussJump(numJ))
     v=v+a*(1-(delta*lambda/(a*q)+1)*v)*dt+eta*sqrt(abs(v)*dt)*w2[j]+simulateExpJump(numJ)
+   # sPath=c(sPath, s)
   }
+  #plot(sPath, type='l')
   if(type=='option'){
     if(s>k){
       return(s-k)

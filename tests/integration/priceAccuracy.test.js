@@ -114,21 +114,9 @@ it('correctly returns generic price', (done)=>{
     })
     return handler.calculator(event, {}, (err, val)=>{
         const parsedVal=JSON.parse(val.body)
+        console.log(parsedVal[1].value)
         expect(parsedVal[1].value).toBeGreaterThan(4.611191)
         expect(parsedVal[1].value).toBeLessThan(4.846037)
         done()
     })
 })
-/**r=.03
-sig=.2
-sigL=.1
-muL=-.05
-rho=-.5
-q=5 #size of jump is .2 on average
-lambda=.5 #one jumps every two years on average
-a=.3
-eta=.2
-v0=.9
-s0=50
-k=50
-delta=1 */

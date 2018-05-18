@@ -115,6 +115,14 @@ auto genericCallCalibrator_cuckoo(
 constexpr int splineChoice=0;
 constexpr int calibrateChoice=1;
 
+template<typename Arr1, typename Json>
+constexpr bool hasAllVariables(const Json& json, Arr1&& arr){
+    return json.HasMember(arr);
+}
+template<typename Arr1, typename Json, typename ...Arrs>
+constexpr bool hasAllVariables(const Json& json, Arr1&& arr, Arrs&&... arrs){
+    return json.HasMember(arr)&&hasAllVariables(json, arrs...);
+}
 
 
 int main(int argc, char* argv[]){
@@ -140,6 +148,8 @@ int main(int argc, char* argv[]){
                 auto getArgOrConstantCurry=[&](const auto& key, const auto& args){
                     return getArgOrConstant(key, args, parsedJson, mapKeyToIndex);
                 };
+                /**TODO!  Fix this so that can be more efficient*/
+                //auto cfLogHOC=hasAllVariables(jsonVariable, "lambda", "delta")?cfLogGeneric(r, T):cfLogBase(r, T);
                 auto cfLogHOC=cfLogGeneric(r, T);
                 auto cfHOC=[
                     getArgOrConstantCurry=std::move(getArgOrConstantCurry), 

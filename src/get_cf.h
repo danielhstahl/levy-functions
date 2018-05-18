@@ -3,21 +3,30 @@
 #include "CharacteristicFunctions.h"
 #include "cuckoo.h"
 
-template<typename U>
-auto cfLogBase(const U& u, 
-    double T,
-    double lambda, double muJ, double sigJ,
-    double sigma, double v0, double speed,
-    double adaV, double rho
+
+auto cfLogBase(
+    double r, 
+    double T
 ){
-    return chfunctions::cirLogMGF(
-        -chfunctions::mertonLogRNCF(u, lambda, muJ, sigJ, 0.0, sigma),
-        speed, 
-        speed-adaV*rho*u*sigma,
-        adaV,
-        T,
-        v0
-    );
+    return [=](
+        double lambda, 
+        double muJ, double sigJ,
+        double sigma, double v0, 
+        double speed,double adaV, 
+        double rho, double q, 
+        double delta
+    ){
+        return [=](const auto& u){
+            return chfunctions::cirLogMGF(
+                -chfunctions::mertonLogRNCF(u, lambda, muJ, sigJ, 0.0, sigma),
+                speed, 
+                speed-adaV*rho*u*sigma,
+                adaV,
+                T,
+                v0
+            );
+        };
+    };
 }
 
 auto cf(

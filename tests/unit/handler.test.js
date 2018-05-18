@@ -7,6 +7,8 @@ const calibratorParams={
     "lambda":0,
     "muJ":2.5,
     "sigJ":0.3,
+    "q":5,
+    "delta":.5,
     "variable":{
         "sigma":0.4,
         "v0":0.9,

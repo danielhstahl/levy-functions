@@ -131,7 +131,7 @@ var elapsed_time = function(note){
     console.log(process.hrtime(start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
     start = process.hrtime(); // reset the timer
 }
-it('correctly calls calibrator handler', (done)=>{
+it('calls calibrator handler and finishes in under 20 seconds', (done)=>{
     const parameters={
         "numU":8,
         "r":0.003,
@@ -171,5 +171,52 @@ it('correctly calls calibrator handler', (done)=>{
         done()
     })
 }, 40000)
+it('correctly calls calibrator handler', (done)=>{
+    const parameters={
+        "numU":8,
+        "r":0.003,
+        "T":1,
+        "S0":178.46,
+        "variable":{
+            "sigma":0.4,
+            "v0":0.9,
+            "speed":0.5,
+            "adaV":0.4,
+            "rho":-0.4,
+            "lambda":0.1,
+            "muJ":2.5,
+            "sigJ":0.3,
+            "q":5,
+            "delta":1
+        },
+        constraints:{
 
-/**STILL need to add work around calibration accuracy */
+        },
+        "k":[95,130,150,160,165,170,175,185,190,195,200,210,240,250],
+        "prices":[85,51.5,35.38,28.3,25.2,22.27,19.45,14.77,12.75,11,9.35,6.9,2.55,1.88]
+    }
+    const event=createEvent(parameters, {calibration:'calibrate'})
+    handler.calibrator(event, {}, (err, val)=>{
+        console.log(val.body)
+        const parsedVal=JSON.parse(val.body)
+        const calculatorParameters={
+            ...parameters,
+            ...parsedVal
+        }
+        const calculatorEvent=createEvent(calculatorParameters, {
+            optionType:'call',
+            sensitivity:'price',
+            algorithm:'fangoost'
+        })
+        return handler.calculator(calculatorEvent, {}, (err, val)=>{
+            const parsedVal=JSON.parse(val.body)
+            const criteriaDiff=parameters.S0*.005
+            parsedVal.filter((v, i)=>i!==0&&i!==(parsedVal.length-1)).map((v, i)=>{
+                const diff=Math.abs(v.value-parameters.prices[i])
+                expect(diff).toBeLessThan(criteriaDiff)
+            })
+            
+            done()
+        })
+    })
+}, 40000)

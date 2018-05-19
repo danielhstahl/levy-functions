@@ -31,3 +31,6 @@ src/calculator
 src/defaultParameters
 src/calibrator
 bin
+*.log
+*.tex
+*.gz

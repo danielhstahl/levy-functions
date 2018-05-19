@@ -62,19 +62,18 @@ auto get_ranged_variable(const rapidjson::Document& parms, const CustomMap& defa
     }
 }
 
-template<typename JsonParm>
-int updateIndex(const JsonParm& parms, const std::string& key, int index, std::unordered_map<std::string, int>* mapKeyToIndex){
-    if(parms.HasMember(key.c_str())){
-        mapKeyToIndex->insert(std::make_pair(key, index));
-        return index+1;
-    }
-    return index;
-    
+template<typename Arr1, typename Json>
+constexpr bool hasAllVariables(const Json& json, Arr1&& arr){
+    return json.HasMember(arr);
+}
+template<typename Arr1, typename Json, typename ...Arrs>
+constexpr bool hasAllVariables(const Json& json, Arr1&& arr, Arrs&&... arrs){
+    return json.HasMember(arr)&&hasAllVariables(json, arrs...);
 }
 
 
 template<typename RpJson, typename Array1, typename Array2, typename Object>
-std::vector<cuckoo::upper_lower<double> > getConstraints(const RpJson& json, const Array1& possibleParameters, const Array2& fullModelConstraints, const Object& optionalConstraints ){
+std::vector<cuckoo::upper_lower<double> > getConstraints(const RpJson& json, const Array1& possibleParameters, const Array2& fullModelConstraints, Object&& optionalConstraints ){
     std::vector<cuckoo::upper_lower<double> > modelConstraints;
     for(auto& v:possibleParameters){
         if(json.HasMember(v.c_str())){
@@ -90,6 +89,16 @@ std::vector<cuckoo::upper_lower<double> > getConstraints(const RpJson& json, con
     return modelConstraints;
 }
 
+template<typename JsonParm>
+int updateIndex(const JsonParm& parms, const std::string& key, int index, std::unordered_map<std::string, int>* mapKeyToIndex){
+    if(parms.HasMember(key.c_str())){
+        mapKeyToIndex->insert(std::make_pair(key, index));
+        return index+1;
+    }
+    return index;
+    
+}
+
 template< typename JsonVariable, typename Array>
 std::unordered_map<std::string, int> constructKeyToIndex(JsonVariable&& variableVar, const Array& possibleParameters ){
     std::unordered_map<std::string, int> mapKeyToIndex;
@@ -100,17 +109,33 @@ std::unordered_map<std::string, int> constructKeyToIndex(JsonVariable&& variable
     return mapKeyToIndex;
 }
 
-template<typename JsonStatic>
+template< typename JsonVariable, typename Array>
+auto constructStaticKeyToValue(JsonVariable&& staticVar, const Array& possibleParameters ){
+    std::unordered_map<std::string, double> mapKeyToValue;
+    std::unordered_map<std::string, bool> mapKeyToExists;
+    for(auto& v:possibleParameters){
+        if(staticVar.HasMember(v.c_str())){
+            mapKeyToExists.emplace(v, true);
+            mapKeyToValue.emplace(v, staticVar[v.c_str()].GetDouble());
+        }
+        else{
+            mapKeyToExists.emplace(v, false);
+        }
+    }
+    return std::make_tuple(mapKeyToExists, mapKeyToValue);
+}
+
 double getArgOrConstant(
     const std::string& key, 
     const std::vector<double>& args, 
-    JsonStatic&& staticVar,
-    const std::unordered_map<std::string, int>& mapKeyToIndex
+    const std::unordered_map<std::string, int>& mapKeyToIndexVariable,
+    const std::unordered_map<std::string, bool>& mapKeyToExistsStatic,
+    const std::unordered_map<std::string, double>& mapKeyToValueStatic
 ){
     return 
-        staticVar.FindMember(key.c_str())!=staticVar.MemberEnd()?
-        staticVar[key.c_str()].GetDouble():
-        args[mapKeyToIndex.at(key)];
+        mapKeyToExistsStatic.at(key)?
+        mapKeyToValueStatic.at(key):
+        args[mapKeyToIndexVariable.at(key)];
 }
 
 

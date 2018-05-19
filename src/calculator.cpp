@@ -335,15 +335,14 @@ int main(int argc, char* argv[]){
         const auto S0=get_ranged_variable(parsedJson, modelParams, "S0");
     
         const auto lambda=get_ranged_variable(parsedJson, modelParams, "lambda");
-        const auto muJ=get_ranged_variable(parsedJson, modelParams, "lambda");
+        const auto muJ=get_ranged_variable(parsedJson, modelParams, "muJ");
         const auto sigJ=get_ranged_variable(parsedJson, modelParams, "sigJ");
         const auto sigma=get_ranged_variable(parsedJson, modelParams, "sigma");
         
         const int numU=pow(2, (int)get_ranged_variable(parsedJson, modelParams, "numU"));
-        auto instantiatedCf=cf(
+        auto instantiatedCf=cfGeneric(
             r,
-            T,
-            S0
+            T
         )(
             lambda,
             muJ,
@@ -352,7 +351,9 @@ int main(int argc, char* argv[]){
             get_ranged_variable(parsedJson, modelParams, "v0"),
             get_ranged_variable(parsedJson, modelParams, "speed"),
             get_ranged_variable(parsedJson, modelParams, "adaV"),
-            get_ranged_variable(parsedJson, modelParams, "rho")
+            get_ranged_variable(parsedJson, modelParams, "rho"),
+            get_ranged_variable(parsedJson, modelParams, "q"),
+            get_ranged_variable(parsedJson, modelParams, "delta")
         );
         /**NOTE that this is a big assumption about the
          * domain for these distributions.

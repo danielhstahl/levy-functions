@@ -14,9 +14,9 @@ calculator.o: calculator.cpp parse_json.h get_cf.h
 	$(GCCVAL) -std=c++14 -O3  -pthread -c calculator.cpp  $(INCLUDES) -fopenmp 
 
 calibrator:calibrator.o
-	$(GCCVAL) -std=c++14 -O3  -pthread calibrator.o $(INCLUDES) -o calibrator -fopenmp -static-libstdc++
+	$(GCCVAL) -std=c++17 -O3  -pthread calibrator.o $(INCLUDES) -o calibrator -fopenmp -static-libstdc++
 calibrator.o: calibrator.cpp parse_json.h get_cf.h
-	$(GCCVAL) -std=c++14 -O3  -pthread -c calibrator.cpp  $(INCLUDES) -fopenmp
+	$(GCCVAL) -std=c++17 -O3  -pthread -c calibrator.cpp  $(INCLUDES) -fopenmp
 
 defaultParameters:defaultParameters.o
 	$(GCCVAL) -std=c++14 -O3  -pthread defaultParameters.o $(INCLUDES) -o defaultParameters -fopenmp -static-libstdc++

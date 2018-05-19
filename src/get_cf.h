@@ -5,7 +5,6 @@
 
 
 auto cfLogBase(
-    double r, 
     double T
 ){
     return [=](
@@ -13,8 +12,7 @@ auto cfLogBase(
         double muJ, double sigJ,
         double sigma, double v0, 
         double speed,double adaV, 
-        double rho, double q, 
-        double delta
+        double rho
     ){
         return [=](const auto& u){
             return chfunctions::cirLogMGF(
@@ -45,9 +43,10 @@ auto cf(
         double adaV,
         double rho
     ){
-        return [=](const auto& u){
+        auto cfLogTmp=cfLogBase(T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho);
+        return [r, T, cfLog=std::move(cfLogTmp)](const auto& u){
             return exp(r*T*u+
-                cfLogBase(u, T, lambda, muJ, sigJ, sigma, v0, speed, adaV, rho)
+                cfLog(u)
             );
         };
     };
@@ -58,7 +57,6 @@ auto cf(
 
 /**should be the same as cf when delta=0*/
 auto cfLogGeneric(
-    double r,
     double T
 ){
     return [=](
@@ -69,9 +67,8 @@ auto cfLogGeneric(
         double rho, double q, 
         double delta
     ){
-        
+
         auto numODE=40;//hopefully this is sufficient
-         
         double speedTmp=speed;//copy here in order to move to move
         //const T& rho, const T& K, const T& H, const T& l
         auto alpha=chfunctions::AlphaOrBeta_move(0.0, std::move(speedTmp), 0.0, 0.0);
@@ -122,8 +119,8 @@ auto cfGeneric(
         double rho, double q, 
         double delta
     ){
-        auto logCF=cfLogGeneric(r, T)(lambda, muJ, sigJ, sigma ,v0, speed, adaV, rho, q, delta);
-        return [=, logCF=std::move(logCF)](const auto& u){
+        auto logCF=cfLogGeneric(T)(lambda, muJ, sigJ, sigma ,v0, speed, adaV, rho, q, delta);
+        return [r, T, logCF=std::move(logCF)](const auto& u){
             return exp(r*u*T+logCF(u));
         };
     };

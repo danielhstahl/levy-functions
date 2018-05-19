@@ -70,24 +70,30 @@ TEST_CASE("get double when exists", "parse_json"){
     auto staticJson=parse_char((char*)"{\"C\":5.0, \"Y\":3.0}");
     auto variableJson=parse_char((char*)"{\"sigma\":5.0, \"rho\":3.0}");
     std::vector<std::string> possibleParameters({"C", "Y", "sigma", "rho"});
+    
     auto mapKeyToIndex=constructKeyToIndex(variableJson, possibleParameters);
+    auto statics=constructStaticKeyToValue(staticJson, possibleParameters);
+    auto mapKeyToExistsStatic=std::get<0>(statics);
+    auto mapKeyToValueStatic=std::get<1>(statics);
     for(auto& v:mapKeyToIndex){
         std::cout<<v.first<<", "<<v.second<<std::endl;
     }
     REQUIRE(
         getArgOrConstant(
             "C", 
-            std::vector<double>({2.0, 6.0}), 
-            staticJson,
-            mapKeyToIndex
+            std::vector<double>({2.0, 6.0}),
+            mapKeyToIndex,
+            mapKeyToExistsStatic, 
+            mapKeyToValueStatic
         )==5.0
     );
     REQUIRE(
         getArgOrConstant(
             "sigma", 
             std::vector<double>({2.0, 6.0}), 
-            staticJson,
-            mapKeyToIndex
+            mapKeyToIndex,
+            mapKeyToExistsStatic, 
+            mapKeyToValueStatic
         )==2.0
     );
 
@@ -168,4 +174,16 @@ TEST_CASE("roughly the same cf for heston v2", "cf"){
     auto myResultN=cfGeneric(r, T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho, q, delta)(testU);
     REQUIRE(myResultA.real()==Approx(myResultN.real()).epsilon(.001));
     REQUIRE(myResultA.imag()==Approx(myResultN.imag()).epsilon(.001));
+}
+TEST_CASE("Returns true if variables exist", "parse_json"){
+    auto parsedJson=parse_char((char*)"{\"hello\":5, \"world\":3}");
+    REQUIRE(hasAllVariables(parsedJson, "hello", "world")==true);
+}
+TEST_CASE("Returns false if not variables exist but first variable exists", "parse_json"){
+    auto parsedJson=parse_char((char*)"{\"hello\":5, \"world\":3}");
+    REQUIRE(hasAllVariables(parsedJson, "hello", "hi")==false);
+}
+TEST_CASE("Returns false if not variables exist but second variable exists", "parse_json"){
+    auto parsedJson=parse_char((char*)"{\"hello\":5, \"world\":3}");
+    REQUIRE(hasAllVariables(parsedJson, "hi", "hello")==false);
 }

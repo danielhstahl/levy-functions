@@ -6,7 +6,6 @@
 #include "parse_json.h"
 #include "cuckoo.h"
 #include <chrono>
-
 const std::array<std::string, 10> possibleCalibrationParameters({
     "lambda", "muJ", "sigJ", "sigma", "v0", "speed", "adaV", "rho", "q", "delta"
 });
@@ -86,7 +85,7 @@ auto generateSplineCurves(
 
 template<typename CF, typename Array1, typename Array2, typename Array3>
 auto genericCallCalibrator_cuckoo(
-    CF&& logCF, const Array1& ul, const Array2& prices, Array3&& strikes, 
+    CF&& logCF, const Array1& ul, const Array2& prices, const Array3& strikes, 
     double S0, double r, double T
 ){
     const auto parameters=generateConstParameters(prices, strikes, S0);
@@ -115,15 +114,6 @@ auto genericCallCalibrator_cuckoo(
 constexpr int splineChoice=0;
 constexpr int calibrateChoice=1;
 
-template<typename Arr1, typename Json>
-constexpr bool hasAllVariables(const Json& json, Arr1&& arr){
-    return json.HasMember(arr);
-}
-template<typename Arr1, typename Json, typename ...Arrs>
-constexpr bool hasAllVariables(const Json& json, Arr1&& arr, Arrs&&... arrs){
-    return json.HasMember(arr)&&hasAllVariables(json, arrs...);
-}
-
 
 int main(int argc, char* argv[]){
     if(argc>2){
@@ -142,23 +132,28 @@ int main(int argc, char* argv[]){
             }
             case calibrateChoice:{
                 const auto& jsonVariable=parsedJson["variable"];
-                const auto& additionalConstraints=parsedJson["constraints"];
-                const auto modelConstraints=getConstraints(jsonVariable, possibleCalibrationParameters, modelParams, additionalConstraints);
-                const std::unordered_map<std::string, int> mapKeyToIndex=constructKeyToIndex(jsonVariable, possibleCalibrationParameters);
+               
+                const auto mapKeyToIndexVariable=constructKeyToIndex(jsonVariable, possibleCalibrationParameters);
+                
+                const auto mapStatic=constructStaticKeyToValue(parsedJson, possibleCalibrationParameters);
+                const auto mapKeyToExistsStatic=std::get<0>(mapStatic);
+                const auto mapKeyToValueStatic=std::get<1>(mapStatic);
+                //const auto [mapKeyToExistsStatic, mapKeyToValueStatic]=constructStaticKeyToValue(parsedJson, possibleCalibrationParameters);
                 auto getArgOrConstantCurry=[&](const auto& key, const auto& args){
-                    return getArgOrConstant(key, args, parsedJson, mapKeyToIndex);
+                    return getArgOrConstant(key, args, mapKeyToIndexVariable, mapKeyToExistsStatic, mapKeyToValueStatic);
                 };
-                /**TODO!  Fix this so that can be more efficient*/
-                //auto cfLogHOC=hasAllVariables(jsonVariable, "lambda", "delta")?cfLogGeneric(r, T):cfLogBase(r, T);
-                auto cfLogHOC=cfLogGeneric(r, T);
+                auto cfLogI=cfLogGeneric(T);
+                auto cfLogBaseI=cfLogBase(T);
                 auto cfHOC=[
                     getArgOrConstantCurry=std::move(getArgOrConstantCurry), 
-                    cfLogHOC=std::move(cfLogHOC)
+                    cfLogI=std::move(cfLogI),
+                    cfLogBaseI=std::move(cfLogBaseI),
+                    useNumericMethod=hasAllVariables(jsonVariable, "lambda", "delta")
                 ](const auto& u, const auto& args){
                     auto getField=[&](const auto& key){
                         return getArgOrConstantCurry(key, args);
                     };
-                    return cfLogHOC(
+                    return useNumericMethod?cfLogI(
                         getField("lambda"), 
                         getField("muJ"), 
                         getField("sigJ"), 
@@ -169,16 +164,29 @@ int main(int argc, char* argv[]){
                         getField("rho"),
                         getField("q"),
                         getField("delta")
+                    )(u):cfLogBaseI(
+                        getField("lambda"), 
+                        getField("muJ"), 
+                        getField("sigJ"), 
+                        getField("sigma"), 
+                        getField("v0"), 
+                        getField("speed"), 
+                        getField("adaV"), 
+                        getField("rho")
                     )(u);
                 };
-
                 json_print_calibrated_params<cuckoo::optparms, cuckoo::fnval>(
-                    mapKeyToIndex, 
+                    mapKeyToIndexVariable, 
                     genericCallCalibrator_cuckoo(
                         std::move(cfHOC),                    
-                        modelConstraints,
+                        getConstraints(
+                            jsonVariable, 
+                            possibleCalibrationParameters, 
+                            modelParams, 
+                            parsedJson["constraints"]
+                        ),
                         prices, 
-                        std::move(strikes),
+                        strikes,
                         S0, r, T
                     ), 
                     prices.size()

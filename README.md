@@ -37,14 +37,8 @@ These are a set of lambda functions for pricing options when assets follow an ex
 * Calibration for call prices  POST - https://74ekexhct2.execute-api.us-east-1.amazonaws.com/dev/v2/call/calibration
 
 
-# example
-The [Examples](./Examples) folder contains example scripts.  Run after `./compileAndPackage`.
-
-The `example.json` file is a series of parameters for the Heston model using parameters from [Fang-Oosterlee](http://ta.twi.tudelft.nl/mf/users/oosterle/oosterlee/COS.pdf) page 16.  Reference price is 5.785155450.
-
-To use this file, run `test.sh` from within the examples directory.
-
-
+# tests
+The [tests](./tests) folder contains unit and integration tests.  Run after `./compileAndPackage` and `npm install`.  Uses Jest for integration tests and lambda unit tests.  Run with `npm test`.  
 
 # lambda
 

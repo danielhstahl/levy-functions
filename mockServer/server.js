@@ -25,7 +25,7 @@ const handlers={
         return densityType==='raw'?[{"value":-398.227,"atPoint":7.59411e+06},{"value":109.545,"atPoint":95},{"value":107.437,"atPoint":100},{"value":96.7123,"atPoint":130},{"value":91.1387,"atPoint":150},{"value":88.7082,"atPoint":160},{"value":87.5658,"atPoint":165},{"value":86.4664,"atPoint":170},{"value":85.4065,"atPoint":175},{"value":83.392,"atPoint":185},{"value":82.4319,"atPoint":190},{"value":81.4998,"atPoint":195},{"value":80.5938,"atPoint":200},{"value":78.8528,"atPoint":210},{"value":74.1016,"atPoint":240},{"value":72.6501,"atPoint":250},{"value":178.456,"atPoint":0.00419377}]:{ES:-2.0, VaR:-1.9}
     },
     defaultParameters:req=>{
-        return {"T":{"upper":1e+06, "lower":0},"S0":{"upper":1e+06, "lower":0},"rho":{"upper":1, "lower":-1},"r":{"upper":0.4, "lower":0},"speed":{"upper":3, "lower":0},"v0":{"upper":1.8, "lower":0.2},"sigJ":{"upper":2, "lower":0},"adaV":{"upper":3, "lower":0},"sigma":{"upper":1, "lower":0},"muJ":{"upper":1, "lower":-1},"numU":{"upper":10, "lower":5},"lambda":{"upper":2, "lower":0}}
+        return {"T":{"upper":1e+06, "lower":0},"S0":{"upper":1e+06, "lower":0},"rho":{"upper":1, "lower":-1},"r":{"upper":0.4, "lower":0},"speed":{"upper":3, "lower":0},"v0":{"upper":1.8, "lower":0.2},"sigJ":{"upper":2, "lower":0},"adaV":{"upper":3, "lower":0},"sigma":{"upper":1, "lower":0},"muJ":{"upper":1, "lower":-1},"numU":{"upper":10, "lower":5},"lambda":{"upper":2, "lower":0}, "q":{"upper":20, "lower":0}, "delta":{"upper":2, "lower":0}}
     },
 
 }

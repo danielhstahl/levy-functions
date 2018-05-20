@@ -108,8 +108,9 @@ auto genericCallCalibrator_cuckoo(
         std::move(uArray)
     ); //returns function which takes param vector
     const int nestSize=25;
-    const int totalMC=500;
-    return cuckoo::optimize(objFn, ul, nestSize, totalMC, std::chrono::system_clock::now().time_since_epoch().count());
+    const int totalMC=1500;
+    const double tol=.000001;//tolerance for squared error
+    return cuckoo::optimize(objFn, ul, nestSize, totalMC, tol, std::chrono::system_clock::now().time_since_epoch().count());
 }
 constexpr int splineChoice=0;
 constexpr int calibrateChoice=1;

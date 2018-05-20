@@ -146,7 +146,6 @@ it('calls calibrator handler and finishes in under 20 seconds', (done)=>{
             "lambda":0.1,
             "muJ":2.5,
             "sigJ":0.3,
-            "q":5,
             "delta":1
         },
         constraints:{
@@ -171,7 +170,8 @@ it('calls calibrator handler and finishes in under 20 seconds', (done)=>{
         done()
     })
 }, 40000)
-it('correctly calls calibrator handler', (done)=>{
+/*
+it('correctly calls calibrator handler and matches call prices', (done)=>{
     const parameters={
         "numU":8,
         "r":0.003,
@@ -186,7 +186,6 @@ it('correctly calls calibrator handler', (done)=>{
             "lambda":0.1,
             "muJ":2.5,
             "sigJ":0.3,
-            "q":5,
             "delta":1
         },
         constraints:{
@@ -211,6 +210,8 @@ it('correctly calls calibrator handler', (done)=>{
         return handler.calculator(calculatorEvent, {}, (err, val)=>{
             const parsedVal=JSON.parse(val.body)
             const criteriaDiff=parameters.S0*.005
+            console.log(parsedVal)
+            console.log(parameters.prices)
             parsedVal.filter((v, i)=>i!==0&&i!==(parsedVal.length-1)).map((v, i)=>{
                 const diff=Math.abs(v.value-parameters.prices[i])
                 expect(diff).toBeLessThan(criteriaDiff)
@@ -219,4 +220,87 @@ it('correctly calls calibrator handler', (done)=>{
             done()
         })
     })
+}, 40000)*/
+
+it('correctly calls calibrator handler and matches call prices with fake data', (done)=>{
+    const parameters={
+        numU:8,
+        r:.03,
+        T:1.0,
+        S0:178.46,
+        sigma:.2, 
+        lambda:.5,
+        muJ:-.05,
+        sigJ:.1,
+        speed:.3,
+        v0:.9,
+        adaV:.2,
+        rho:-.5,
+        delta:1,
+        k:[95,130,150,160,165,170,175,185,190,195,200,210,240,250]
+    }
+    const event=createEvent(parameters, {
+        optionType:'call',
+        sensitivity:'price',
+        algorithm:'fangoost'
+    })
+    return handler.calculator(event, {}, (err, val)=>{
+        console.log(val.body)
+        const parsedVal=JSON.parse(val.body)
+        
+        const calParameters={
+            "numU":8,
+            "r":0.003,
+            "T":1,
+            "S0":178.46,
+            "variable":{
+                "sigma":0.4,
+                "v0":0.9,
+                "speed":0.5,
+                "adaV":0.4,
+                "rho":-0.4,
+                "lambda":0.1,
+                "muJ":2.5,
+                "sigJ":0.3,
+                "delta":1
+            },
+            constraints:{
+    
+            },
+            "k":parameters.k,
+            "prices":parsedVal.filter((v, i)=>i!==0&&i!==(parsedVal.length-1)).map((v, i)=>v.value)
+        }
+        const event=createEvent(calParameters, {calibration:'calibrate'})
+        handler.calibrator(event, {}, (err, val)=>{
+            console.log(val.body)
+            const calibrateVal=JSON.parse(val.body)
+            const calculatorParameters={
+                ...calParameters,
+                ...calibrateVal
+            }
+            //console.log(calculatorParameters)
+            const calculatorEvent=createEvent(calculatorParameters, {
+                optionType:'call',
+                sensitivity:'price',
+                algorithm:'fangoost'
+            })
+            return handler.calculator(calculatorEvent, {}, (err, val)=>{
+                const calcVal=JSON.parse(val.body)
+                const criteriaDiff=calParameters.S0*.005
+                console.log(calcVal)
+                console.log(parsedVal)
+                //console.log(parameters.prices)
+                const prices=calculatorParameters.prices
+                calcVal.filter((v, i)=>i!==0&&i!==(calcVal.length-1)).map((v, i)=>{
+                    const diff=Math.abs(v.value-prices[i])
+                    expect(diff).toBeLessThan(criteriaDiff)
+                })
+                
+                done()
+            })
+        })
+    })
+    
+    
 }, 40000)
+

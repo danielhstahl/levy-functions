@@ -138,7 +138,6 @@ const std::unordered_map<std::string, std::tuple<cuckoo::upper_lower<double>, do
     {"S0", std::make_tuple(cuckoo::upper_lower<double>(0.0, 1000000.0), 50.0)},
     {"T", std::make_tuple(cuckoo::upper_lower<double>(0.0, 1000000.0), .25)},
     {"numU", std::make_tuple(cuckoo::upper_lower<double>(5, 10), 7)},
-    {"q", std::make_tuple(cuckoo::upper_lower<double>(0, 20), 5)},
     {"delta", std::make_tuple(cuckoo::upper_lower<double>(0, 2), 1)}
 });
 

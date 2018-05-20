@@ -6,11 +6,9 @@
 #include "parse_json.h"
 #include "cuckoo.h"
 #include <chrono>
-const std::array<std::string, 10> possibleCalibrationParameters({
-    "lambda", "muJ", "sigJ", "sigma", "v0", "speed", "adaV", "rho", "q", "delta"
+const std::array<std::string, 9> possibleCalibrationParameters({
+    "lambda", "muJ", "sigJ", "sigma", "v0", "speed", "adaV", "rho", "delta"
 });
-
-
 
 template<typename Array>
 auto removeFirstAndLastElement(Array&& arr){
@@ -24,6 +22,7 @@ auto getU(int N){
         return index*du;
     });
 }
+
 template<typename Array1, typename Array2>
 auto generateConstParameters(
     const Array1& prices, const Array2& strikes, double S0
@@ -108,7 +107,8 @@ auto genericCallCalibrator_cuckoo(
         std::move(uArray)
     ); //returns function which takes param vector
     const int nestSize=25;
-    const int totalMC=1500;
+   // const int totalMC=1500;
+    const int totalMC=1000;
     const double tol=.000001;//tolerance for squared error
     return cuckoo::optimize(objFn, ul, nestSize, totalMC, tol, std::chrono::system_clock::now().time_since_epoch().count());
 }
@@ -163,7 +163,7 @@ int main(int argc, char* argv[]){
                         getField("speed"), 
                         getField("adaV"), 
                         getField("rho"),
-                        getField("q"),
+                        1.0, //q is one.  getField("q"),
                         getField("delta")
                     )(u):cfLogBaseI(
                         getField("lambda"), 

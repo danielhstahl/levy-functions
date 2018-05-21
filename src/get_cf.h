@@ -93,7 +93,7 @@ auto cfLogGeneric(
                         auto cfPart=(chfunctions::exponentialCFBeta(
                             x1, 
                             delta
-                        )-1)*chfunctions::gaussCF(u, muJ, sigJ);
+                        )-1.0)*chfunctions::gaussCF(u, muJ, sigJ);
                         return std::vector<std::complex<double> >({
                             beta(x1, cfPart),
                             alpha(x1, cfPart)

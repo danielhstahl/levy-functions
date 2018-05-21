@@ -68,16 +68,16 @@ auto cfLogGeneric(
     ){
 
         auto numODE=40;//hopefully this is sufficient
-        double speedTmp=speed;//copy here in order to move to move
+        //double speedTmp=speed;//copy here in order to move to move
         //const T& rho, const T& K, const T& H, const T& l
-        auto alpha=chfunctions::AlphaOrBeta_move(0.0, std::move(speedTmp), 0.0, 0.0);
+        auto alpha=chfunctions::AlphaOrBeta_move(0.0, speed, 0.0, 0.0);
         return [=, alpha=std::move(alpha), numODE=std::move(numODE)](const auto& u){
             //const T& rho, const T& K, const T& H, const T& l
             auto beta=chfunctions::AlphaOrBeta_move(
                 -chfunctions::mertonLogRNCF(u, lambda, muJ, sigJ, 0.0, sigma), 
-                -(speed+(delta*lambda)-u*rho*sigma*adaV),
+                -(speed+delta*lambda-u*rho*sigma*adaV),
                 adaV*adaV, 
-                std::move(lambda)
+                lambda
             );
             
             auto expCF=chfunctions::exponentialCFBeta(u, delta);
@@ -90,10 +90,10 @@ auto cfLogGeneric(
                         const std::complex<double>& x1,  
                         const std::complex<double>& x2
                     ){
-                        auto cfPart=chfunctions::exponentialCFBeta(
-                            u+x1, 
+                        auto cfPart=(chfunctions::exponentialCFBeta(
+                            x1, 
                             delta
-                        )-expCF;
+                        )-1.0)*expCF;
                         return std::vector<std::complex<double> >({
                             beta(x1, cfPart),
                             alpha(x1, cfPart)

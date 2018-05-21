@@ -63,9 +63,8 @@ auto cfLogGeneric(
         double lambda, 
         double muJ, double sigJ,
         double sigma, double v0, 
-        double speed,double adaV, 
-        double rho, double q, 
-        double delta
+        double speed, double adaV, 
+        double rho, double delta
     ){
 
         auto numODE=40;//hopefully this is sufficient
@@ -76,12 +75,12 @@ auto cfLogGeneric(
             //const T& rho, const T& K, const T& H, const T& l
             auto beta=chfunctions::AlphaOrBeta_move(
                 -chfunctions::mertonLogRNCF(u, lambda, muJ, sigJ, 0.0, sigma), 
-                -(speed+(delta*lambda)/q-u*rho*sigma*adaV),
+                -(speed+(delta*lambda)-u*rho*sigma*adaV),
                 adaV*adaV, 
                 std::move(lambda)
             );
             
-            auto expCF=chfunctions::exponentialCF(u, q);
+            auto expCF=chfunctions::exponentialCFBeta(u, delta);
             return chfunctions::logAffine(
                 rungekutta::compute_efficient_2d(
                     T, numODE, 
@@ -91,9 +90,9 @@ auto cfLogGeneric(
                         const std::complex<double>& x1,  
                         const std::complex<double>& x2
                     ){
-                        auto cfPart=chfunctions::exponentialCF(
-                            u+x1*delta, 
-                            q
+                        auto cfPart=chfunctions::exponentialCFBeta(
+                            u+x1, 
+                            delta
                         )-expCF;
                         return std::vector<std::complex<double> >({
                             beta(x1, cfPart),
@@ -116,10 +115,10 @@ auto cfGeneric(
         double muJ, double sigJ,
         double sigma, double v0, 
         double speed,double adaV, 
-        double rho, double q, 
+        double rho,
         double delta
     ){
-        auto logCF=cfLogGeneric(T)(lambda, muJ, sigJ, sigma ,v0, speed, adaV, rho, q, delta);
+        auto logCF=cfLogGeneric(T)(lambda, muJ, sigJ, sigma ,v0, speed, adaV, rho, delta);
         return [r, T, logCF=std::move(logCF)](const auto& u){
             return exp(r*u*T+logCF(u));
         };

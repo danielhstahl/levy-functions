@@ -76,12 +76,12 @@ The process \(v_t\) under \(\mathbb{\hat{P}}\) has this same structure with the 
 
 \[K_0=a,\,K_1=-a\left(k-\frac{iu\rho\sigma\eta}{a}\right)\]
 \[H_0=0,\,H_1=\eta^2\]
-\[l_0=0,\,l_1=\lambda e^{iuz}\]
+\[l_0=0,\,l_1=\lambda e^{iuy}\]
 \[\rho_0=0,\, \rho_1=-\psi(u) \]
 \[c=0\]
 
 Substituting and simplifying yields the following ODEs:
-\[\beta'(t) = -\psi(u) +\left(a+\delta \lambda \mathbb{E}[z_j]-iu\rho\sigma\eta \right) \beta(t)-\frac{\beta^2(t)\eta^2}{2}- \int_\Omega \left(e^{(\beta(t)\delta+iu) z} -e^{iu z}\right) \lambda \mu(dz) \]
+\[\beta'(t) = -\psi(u) +\left(a+\delta \lambda-iu\rho\sigma\eta \right) \beta(t)-\frac{\beta^2(t)\eta^2}{2}- \int_\Omega \left(e^{\beta(t)\delta z} -1\right) \lambda e^{iuy} \mu(dz, dy) \]
 \[\alpha'(t) = - a \beta(t) \]
 
 with \(\beta(T)=0,\,\alpha(T)=0\).

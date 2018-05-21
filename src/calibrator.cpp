@@ -163,7 +163,6 @@ int main(int argc, char* argv[]){
                         getField("speed"), 
                         getField("adaV"), 
                         getField("rho"),
-                        1.0, //q is one.  getField("q"),
                         getField("delta")
                     )(u):cfLogBaseI(
                         getField("lambda"), 

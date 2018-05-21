@@ -352,7 +352,6 @@ int main(int argc, char* argv[]){
             get_ranged_variable(parsedJson, modelParams, "speed"),
             get_ranged_variable(parsedJson, modelParams, "adaV"),
             get_ranged_variable(parsedJson, modelParams, "rho"),
-            1.0,//q
             get_ranged_variable(parsedJson, modelParams, "delta")
         );
         /**NOTE that this is a big assumption about the

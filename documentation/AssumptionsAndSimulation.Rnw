@@ -96,11 +96,6 @@ The methodology for option pricing uses the \href{http://engineering.nyu.edu/fil
 \section{Methodology for Calibration}
 
 The methodology for calibration uses the \href{http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.90.8837&rep=rep1&type=pdf}{Belomestny and Reiss} framework.  For more details and tests, see the FFTOptionPricing calibration \href{https://github.com/phillyfan1138/FFTOptionPricing/raw/master/docs/calibration/OptionCalibration.pdf}{documentation}.  
-\\
-\\
-In the parameterization above there are ten free parameters.  All else held equal, fewer parametesr are better.  Note that both \(\delta\) and \(q\) have very similar impacts on the results.  Hence we set \(q=1\) and let \(\delta\) manage the size of the jumps.  We choose to let \(\delta\) be free since with a fixed \(\delta\) the model only converges to Heston's model for \(q \to \infty\).  
-
-
 
 \section{Simulation}
 

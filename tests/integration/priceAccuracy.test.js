@@ -34,7 +34,6 @@ it('correctly returns heston price', (done)=>{
         adaV,
         rho,
         delta:0,
-        q:5,
         k:[100]
     }
     const event=createEvent(parameters, {
@@ -74,7 +73,6 @@ it('correctly returns merton price', (done)=>{
         adaV:0,
         rho:0,
         delta:0,
-        q:5,
         k:[k]
     }
     const event=createEvent(parameters, {
@@ -105,7 +103,6 @@ it('correctly returns generic price', (done)=>{
         adaV:.2,
         rho:-.5,
         delta:1,
-        q:10,
         k:[50]
     }
     const event=createEvent(parameters, {

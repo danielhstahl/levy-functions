@@ -166,7 +166,7 @@ it('calls calibrator handler and finishes in under 20 seconds', (done)=>{
         console.timeEnd("calibrator")
         done()
     })
-}, 40000)
+}, 100000)
 /*
 it('correctly calls calibrator handler and matches call prices', (done)=>{
     const parameters={
@@ -299,5 +299,5 @@ it('correctly calls calibrator handler and matches call prices with fake data', 
     })
     
     
-}, 40000)
+}, 100000)
 

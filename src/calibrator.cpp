@@ -97,16 +97,16 @@ auto genericCallCalibrator_cuckoo(
     auto objFn=[
         logCF=std::move(logCF), 
         strikes=std::move(strikes),
-        S0, r, T, numU
+        S0, r, T, numU, nM1
     ](const auto& params){
         return futilities::sum(optionprice::FangOostCallPrice(
             S0, strikes,
             r, T,
             numU,  
-            cfHOC(params)
+            logCF(params)
         ), [&](const auto& v, const auto& index){
             return (index==0||index==nM1)?0.0:futilities::const_power(v-strikes[index], 2);
-        })
+        });
     };
 
     const int nestSize=25;
@@ -157,9 +157,14 @@ int main(int argc, char* argv[]){
                     /*auto getField=[&](const auto& key){
                         return getArgOrConstantCurry(key, args);
                     };*/
-                    return [getField=[&](const auto& key){
-                        return getArgOrConstantCurry(key, args);
-                    }](const auto& u){
+                    return [
+                        getField=[&](const auto& key){
+                            return getArgOrConstantCurry(key, args);
+                        }, 
+                        cfI=std::move(cfI),
+                        cfBaseI=std::move(cfBaseI),
+                        useNumericMethod
+                    ](const auto& u){
                         return useNumericMethod?cfI(
                             getField("lambda"), 
                             getField("muJ"), 

@@ -84,28 +84,31 @@ auto generateSplineCurves(
 
 template<typename CF, typename Array1, typename Array2, typename Array3>
 auto genericCallCalibrator_cuckoo(
-    CF&& logCF, const Array1& ul, const Array2& prices, const Array3& strikes, 
+    CF&& logCF, const Array1& ul, const Array2& prices, Array3&& strikes, 
     double S0, double r, double T
 ){
     const auto parameters=generateConstParameters(prices, strikes, S0);
-    const int N=std::get<0>(parameters);
-    const int numU=15;//15 seems like a reasonable number in tests
     const auto minStrike=std::get<1>(parameters);
     const auto maxStrike=std::get<2>(parameters);
-    const auto uArray=getU(numU);
-    const auto estimateOfPhi=optioncal::generateFOEstimate(
-        strikes, 
-        prices,  S0, 
-        r, T,
-        minStrike, maxStrike
-    );
+    strikes.push_front(maxStrike);
+    strikes.push_back(minStrike);
+    int numU=256;
+    int nM1=strikes.size()-1;
+    auto objFn=[
+        logCF=std::move(logCF), 
+        strikes=std::move(strikes),
+        S0, r, T, numU
+    ](const auto& params){
+        return futilities::sum(optionprice::FangOostCallPrice(
+            S0, strikes,
+            r, T,
+            numU,  
+            cfHOC(params)
+        ), [&](const auto& v, const auto& index){
+            return (index==0||index==nM1)?0.0:futilities::const_power(v-strikes[index], 2);
+        })
+    };
 
-    auto phis=estimateOfPhi(N, uArray);
-    auto objFn=optioncal::getObjFn_arr(
-        std::move(phis),
-        std::move(logCF),
-        std::move(uArray)
-    ); //returns function which takes param vector
     const int nestSize=25;
    // const int totalMC=1500;
     const int totalMC=1000;
@@ -123,12 +126,12 @@ int main(int argc, char* argv[]){
         const auto T=get_ranged_variable(parsedJson, modelParams, "T");
         const auto r=get_ranged_variable(parsedJson, modelParams, "r");
         const auto S0=get_ranged_variable(parsedJson, modelParams, "S0");
-        auto strikes=get_k_var<std::vector<double>>(parsedJson);
+        auto strikes=get_k_var<std::deque<double>>(parsedJson);
         int key=std::stoi(argv[1]);
         switch(key){
             case splineChoice:{
                 const int numIndices=256;
-                generateSplineCurves(prices, strikes, S0, r, T, numIndices);
+                //generateSplineCurves(prices, strikes, S0, r, T, numIndices);
                 break;
             }
             case calibrateChoice:{
@@ -143,37 +146,41 @@ int main(int argc, char* argv[]){
                 auto getArgOrConstantCurry=[&](const auto& key, const auto& args){
                     return getArgOrConstant(key, args, mapKeyToIndexVariable, mapKeyToExistsStatic, mapKeyToValueStatic);
                 };
-                auto cfLogI=cfLogGeneric(T);
-                auto cfLogBaseI=cfLogBase(T);
+                auto cfI=cfGeneric(r, T);
+                auto cfBaseI=cf(r, T);
                 auto cfHOC=[
                     getArgOrConstantCurry=std::move(getArgOrConstantCurry), 
-                    cfLogI=std::move(cfLogI),
-                    cfLogBaseI=std::move(cfLogBaseI),
+                    cfI=std::move(cfI),
+                    cfBaseI=std::move(cfBaseI),
                     useNumericMethod=hasAllVariables(jsonVariable, "lambda", "delta")
-                ](const auto& u, const auto& args){
-                    auto getField=[&](const auto& key){
+                ](const auto& args){
+                    /*auto getField=[&](const auto& key){
                         return getArgOrConstantCurry(key, args);
+                    };*/
+                    return [getField=[&](const auto& key){
+                        return getArgOrConstantCurry(key, args);
+                    }](const auto& u){
+                        return useNumericMethod?cfI(
+                            getField("lambda"), 
+                            getField("muJ"), 
+                            getField("sigJ"), 
+                            getField("sigma"), 
+                            getField("v0"), 
+                            getField("speed"), 
+                            getField("adaV"), 
+                            getField("rho"),
+                            getField("delta")
+                        )(u):cfBaseI(
+                            getField("lambda"), 
+                            getField("muJ"), 
+                            getField("sigJ"), 
+                            getField("sigma"), 
+                            getField("v0"), 
+                            getField("speed"), 
+                            getField("adaV"), 
+                            getField("rho")
+                        )(u);
                     };
-                    return useNumericMethod?cfLogI(
-                        getField("lambda"), 
-                        getField("muJ"), 
-                        getField("sigJ"), 
-                        getField("sigma"), 
-                        getField("v0"), 
-                        getField("speed"), 
-                        getField("adaV"), 
-                        getField("rho"),
-                        getField("delta")
-                    )(u):cfLogBaseI(
-                        getField("lambda"), 
-                        getField("muJ"), 
-                        getField("sigJ"), 
-                        getField("sigma"), 
-                        getField("v0"), 
-                        getField("speed"), 
-                        getField("adaV"), 
-                        getField("rho")
-                    )(u);
                 };
                 json_print_calibrated_params<cuckoo::optparms, cuckoo::fnval>(
                     mapKeyToIndexVariable, 
@@ -186,7 +193,7 @@ int main(int argc, char* argv[]){
                             parsedJson["constraints"]
                         ),
                         prices, 
-                        strikes,
+                        std::move(strikes),
                         S0, r, T
                     ), 
                     prices.size()

@@ -156,8 +156,8 @@ it('calls calibrator handler and finishes in under 20 seconds', (done)=>{
     const event=createEvent(parameters, {calibration:'calibrate'})
     handler.calibrator(event, {}, (err, val)=>{
         console.log(val.body)
-        const twentySeconds=20000
-        expect(process.hrtime(start)[1] / 1000000).toBeLessThan(twentySeconds)
+        const twentySeconds=20
+        expect(process.hrtime(start)[0]).toBeLessThan(twentySeconds)
         const parsedVal=JSON.parse(val.body)
         expect(parsedVal.sigma).toBeDefined()
         expect(parsedVal.speed).toBeDefined()

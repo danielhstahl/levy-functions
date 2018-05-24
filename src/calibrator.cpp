@@ -84,7 +84,7 @@ auto generateSplineCurves(
 
 template<typename CF, typename Array1, typename Array2, typename Array3>
 auto genericCallCalibrator_cuckoo(
-    CF&& logCF, const Array1& ul, const Array2& prices, Array3&& strikes, 
+    CF&& logCF, const Array1& ul, Array2&& prices, Array3&& strikes, 
     double S0, double r, double T
 ){
     const auto parameters=generateConstParameters(prices, strikes, S0);
@@ -97,6 +97,7 @@ auto genericCallCalibrator_cuckoo(
     auto objFn=[
         logCF=std::move(logCF), 
         strikes=std::move(strikes),
+        prices=std::move(prices),
         S0, r, T, numU, nM1
     ](const auto& params){
         return futilities::sum(optionprice::FangOostCallPrice(
@@ -105,7 +106,7 @@ auto genericCallCalibrator_cuckoo(
             numU,  
             logCF(params)
         ), [&](const auto& v, const auto& index){
-            return (index==0||index==nM1)?0.0:futilities::const_power(v-strikes[index], 2);
+            return (index==0||index==nM1)?0.0:futilities::const_power(v-prices[index-1], 2);
         });
     };
 
@@ -123,6 +124,7 @@ int main(int argc, char* argv[]){
     if(argc>2){
         auto parsedJson=parse_char(argv[2]);
         auto prices=get_prices_var(parsedJson);
+        const int n=prices.size();
         const auto T=get_ranged_variable(parsedJson, modelParams, "T");
         const auto r=get_ranged_variable(parsedJson, modelParams, "r");
         const auto S0=get_ranged_variable(parsedJson, modelParams, "S0");
@@ -157,15 +159,6 @@ int main(int argc, char* argv[]){
                     auto getField=[&](const auto& key){
                         return getArgOrConstantCurry(key, args);
                     };
-                    /*auto lambda=getField("lambda");
-                    auto muJ=getField("muJ");
-                    auto sigJ=getField("sigJ");
-                    auto sigma=getField("sigma"); 
-                    auto v0=getField("v0");
-                    auto speed=getField("speed"); 
-                    auto adaV=getField("adaV"); 
-                    auto rho=getField("rho");
-                    auto delta=useNumericMethod?getField("delta"):0.0;*/
                     return [
                         lambda=getField("lambda"),
                         muJ=getField("muJ"),
@@ -212,11 +205,11 @@ int main(int argc, char* argv[]){
                             modelParams, 
                             parsedJson["constraints"]
                         ),
-                        prices, 
+                        std::move(prices), 
                         std::move(strikes),
                         S0, r, T
                     ), 
-                    prices.size()
+                    n
                 );          
             }
         }

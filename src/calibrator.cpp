@@ -154,36 +154,51 @@ int main(int argc, char* argv[]){
                     cfBaseI=std::move(cfBaseI),
                     useNumericMethod=hasAllVariables(jsonVariable, "lambda", "delta")
                 ](const auto& args){
-                    /*auto getField=[&](const auto& key){
+                    auto getField=[&](const auto& key){
                         return getArgOrConstantCurry(key, args);
-                    };*/
+                    };
+                    /*auto lambda=getField("lambda");
+                    auto muJ=getField("muJ");
+                    auto sigJ=getField("sigJ");
+                    auto sigma=getField("sigma"); 
+                    auto v0=getField("v0");
+                    auto speed=getField("speed"); 
+                    auto adaV=getField("adaV"); 
+                    auto rho=getField("rho");
+                    auto delta=useNumericMethod?getField("delta"):0.0;*/
                     return [
-                        getField=[&](const auto& key){
-                            return getArgOrConstantCurry(key, args);
-                        }, 
+                        lambda=getField("lambda"),
+                        muJ=getField("muJ"),
+                        sigJ=getField("sigJ"),
+                        sigma=getField("sigma"),
+                        v0=getField("v0"),
+                        speed=getField("speed"),
+                        adaV=getField("adaV"),
+                        rho=getField("rho"),
+                        delta=useNumericMethod?getField("delta"):0.0,
                         cfI=std::move(cfI),
                         cfBaseI=std::move(cfBaseI),
                         useNumericMethod
                     ](const auto& u){
                         return useNumericMethod?cfI(
-                            getField("lambda"), 
-                            getField("muJ"), 
-                            getField("sigJ"), 
-                            getField("sigma"), 
-                            getField("v0"), 
-                            getField("speed"), 
-                            getField("adaV"), 
-                            getField("rho"),
-                            getField("delta")
+                            lambda, 
+                            muJ, 
+                            sigJ, 
+                            sigma, 
+                            v0, 
+                            speed, 
+                            adaV, 
+                            rho,
+                            delta
                         )(u):cfBaseI(
-                            getField("lambda"), 
-                            getField("muJ"), 
-                            getField("sigJ"), 
-                            getField("sigma"), 
-                            getField("v0"), 
-                            getField("speed"), 
-                            getField("adaV"), 
-                            getField("rho")
+                            lambda, 
+                            muJ, 
+                            sigJ, 
+                            sigma, 
+                            v0, 
+                            speed, 
+                            adaV, 
+                            rho
                         )(u);
                     };
                 };

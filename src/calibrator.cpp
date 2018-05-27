@@ -89,35 +89,30 @@ auto genericCallCalibrator_cuckoo(
     double S0, double r, double T
 ){
     const auto parameters=generateConstParameters(prices, strikes, S0);
+    const int N=std::get<0>(parameters);
+    const int numU=15;//15 seems like a reasonable number in tests
     const auto minStrike=std::get<1>(parameters);
     const auto maxStrike=std::get<2>(parameters);
-    strikes.push_front(maxStrike);
-    strikes.push_back(minStrike);
-    int numU=32;
-    int nM1=strikes.size()-1;
-    constexpr double largeNumber=50000;
-    auto objFn=[
-        logCF=std::move(logCF), 
-        strikes=std::move(strikes),
-        prices=std::move(prices),
-        S0, r, T, numU, nM1
-    ](const auto& params){
-        return futilities::sum(optionprice::FangOostCallPrice(
-            S0, strikes,
-            r, T,
-            numU,  
-            logCF(params)
-        ), [&](const auto& v, const auto& index){
-            return std::isnan(v)?largeNumber:((index==0||index==nM1)?0.0:futilities::const_power((v-prices[index-1])/prices[index-1], 2));
-        });
-    };
+    const auto uArray=getU(numU);
+    const auto estimateOfPhi=optioncal::generateFOEstimate(
+        strikes, 
+        prices,  S0, 
+        r, T,
+        minStrike, maxStrike
+    );
 
+    auto phis=estimateOfPhi(N, uArray);
+    auto objFn=optioncal::getObjFn_arr(
+        std::move(phis),
+        std::move(logCF),
+        std::move(uArray)
+    ); //returns function which takes param vector
     const int nestSize=25;
    // const int totalMC=1500;
-    const int totalMC=1000; 
+    const int totalMC=1000;
     const double tol=.000001;//tolerance for squared error
     return firefly::optimize(objFn, ul, totalMC, std::chrono::system_clock::now().time_since_epoch().count());
-}
+} 
 constexpr int splineChoice=0;
 constexpr int calibrateChoice=1;
 
@@ -130,12 +125,12 @@ int main(int argc, char* argv[]){
         const auto T=get_ranged_variable(parsedJson, modelParams, "T");
         const auto r=get_ranged_variable(parsedJson, modelParams, "r");
         const auto S0=get_ranged_variable(parsedJson, modelParams, "S0");
-        auto strikes=get_k_var<std::deque<double>>(parsedJson);
+        auto strikes=get_k_var<std::vector<double>>(parsedJson);
         int key=std::stoi(argv[1]);
         switch(key){
             case splineChoice:{
                 const int numIndices=256;
-                //generateSplineCurves(prices, strikes, S0, r, T, numIndices);
+                generateSplineCurves(prices, strikes, S0, r, T, numIndices);
                 break;
             }
             case calibrateChoice:{
@@ -150,8 +145,8 @@ int main(int argc, char* argv[]){
                 auto getArgOrConstantCurry=[&](const auto& key, const auto& args){
                     return getArgOrConstant(key, args, mapKeyToIndexVariable, mapKeyToExistsStatic, mapKeyToValueStatic);
                 };
-                auto cfI=cfGeneric(r, T);
-                auto cfBaseI=cf(r, T);
+                auto cfI=cfLogGeneric(T);
+                auto cfBaseI=cfLogBase(T);
                 auto cfHOC=[
                     getArgOrConstantCurry=std::move(getArgOrConstantCurry), 
                     cfI=std::move(cfI),

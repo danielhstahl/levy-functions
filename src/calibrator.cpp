@@ -5,6 +5,7 @@
 #include "get_cf.h"
 #include "parse_json.h"
 #include "cuckoo.h"
+#include "firefly.h"
 #include <chrono>
 const std::array<std::string, 9> possibleCalibrationParameters({
     "lambda", "muJ", "sigJ", "sigma", "v0", "speed", "adaV", "rho", "delta"
@@ -92,8 +93,9 @@ auto genericCallCalibrator_cuckoo(
     const auto maxStrike=std::get<2>(parameters);
     strikes.push_front(maxStrike);
     strikes.push_back(minStrike);
-    int numU=256;
+    int numU=32;
     int nM1=strikes.size()-1;
+    constexpr double largeNumber=50000;
     auto objFn=[
         logCF=std::move(logCF), 
         strikes=std::move(strikes),
@@ -106,15 +108,15 @@ auto genericCallCalibrator_cuckoo(
             numU,  
             logCF(params)
         ), [&](const auto& v, const auto& index){
-            return (index==0||index==nM1)?0.0:futilities::const_power(v-prices[index-1], 2);
+            return std::isnan(v)?largeNumber:((index==0||index==nM1)?0.0:futilities::const_power((v-prices[index-1])/prices[index-1], 2));
         });
     };
 
     const int nestSize=25;
    // const int totalMC=1500;
-    const int totalMC=1000;
+    const int totalMC=1000; 
     const double tol=.000001;//tolerance for squared error
-    return cuckoo::optimize(objFn, ul, nestSize, totalMC, tol, std::chrono::system_clock::now().time_since_epoch().count());
+    return firefly::optimize(objFn, ul, totalMC, std::chrono::system_clock::now().time_since_epoch().count());
 }
 constexpr int splineChoice=0;
 constexpr int calibrateChoice=1;
@@ -154,7 +156,7 @@ int main(int argc, char* argv[]){
                     getArgOrConstantCurry=std::move(getArgOrConstantCurry), 
                     cfI=std::move(cfI),
                     cfBaseI=std::move(cfBaseI),
-                    useNumericMethod=hasAllVariables(jsonVariable, "lambda", "delta")
+                    useNumericMethod=hasAllVariablesAndNonZero(jsonVariable, "lambda", "delta")
                 ](const auto& args){
                     auto getField=[&](const auto& key){
                         return getArgOrConstantCurry(key, args);
@@ -195,7 +197,7 @@ int main(int argc, char* argv[]){
                         )(u);
                     };
                 };
-                json_print_calibrated_params<cuckoo::optparms, cuckoo::fnval>(
+                json_print_calibrated_params<swarm_utils::optparms, swarm_utils::fnval>(
                     mapKeyToIndexVariable, 
                     genericCallCalibrator_cuckoo(
                         std::move(cfHOC),                    

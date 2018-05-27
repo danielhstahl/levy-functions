@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <cmath>
-#include "cuckoo.h"
+#include "utils.h"
 #include "document.h" //rapidjson
 #include "writer.h" //rapidjson
 #include "stringbuffer.h" //rapidjson
@@ -63,23 +63,23 @@ auto get_ranged_variable(const rapidjson::Document& parms, const CustomMap& defa
 }
 
 template<typename Arr1, typename Json>
-constexpr bool hasAllVariables(const Json& json, Arr1&& arr){
-    return json.HasMember(arr);
+constexpr bool hasAllVariablesAndNonZero(const Json& json, Arr1&& arr){
+    return json.HasMember(arr)?json[arr].GetDouble()!=0:false;
 }
 template<typename Arr1, typename Json, typename ...Arrs>
-constexpr bool hasAllVariables(const Json& json, Arr1&& arr, Arrs&&... arrs){
-    return json.HasMember(arr)&&hasAllVariables(json, arrs...);
+constexpr bool hasAllVariablesAndNonZero(const Json& json, Arr1&& arr, Arrs&&... arrs){
+    return hasAllVariablesAndNonZero(json, std::move(arr))&&hasAllVariablesAndNonZero(json, arrs...);
 }
 
 
 template<typename RpJson, typename Array1, typename Array2, typename Object>
-std::vector<cuckoo::upper_lower<double> > getConstraints(const RpJson& json, const Array1& possibleParameters, const Array2& fullModelConstraints, Object&& optionalConstraints ){
-    std::vector<cuckoo::upper_lower<double> > modelConstraints;
+std::vector<swarm_utils::upper_lower<double> > getConstraints(const RpJson& json, const Array1& possibleParameters, const Array2& fullModelConstraints, Object&& optionalConstraints ){
+    std::vector<swarm_utils::upper_lower<double> > modelConstraints;
     for(auto& v:possibleParameters){
         if(json.HasMember(v.c_str())){
             if(optionalConstraints.HasMember(v.c_str())){
                 const auto& constraint=optionalConstraints[v.c_str()];
-                modelConstraints.emplace_back(cuckoo::upper_lower<double>(constraint["lower"].GetDouble(), constraint["upper"].GetDouble()));
+                modelConstraints.emplace_back(swarm_utils::upper_lower<double>(constraint["lower"].GetDouble(), constraint["upper"].GetDouble()));
             }
             else{
                 modelConstraints.emplace_back(std::get<0>(fullModelConstraints.at(v)));

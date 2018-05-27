@@ -120,7 +120,7 @@ TEST_CASE("roughly the same cf", "cf"){
     double delta=0.0;
     std::complex<double> testU({1.0, 1.0});
     auto myResultA=cf(r, T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho)(testU);
-    auto myResultN=cfGeneric(r, T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho, q, delta)(testU);
+    auto myResultN=cfGeneric(r, T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho, delta)(testU);
     REQUIRE(myResultA.real()==Approx(myResultN.real()).epsilon(.001));
     REQUIRE(myResultA.imag()==Approx(myResultN.imag()).epsilon(.001));
 }
@@ -139,7 +139,7 @@ TEST_CASE("roughly the same cf for heston", "cf"){
     double delta=0.0;
     std::complex<double> testU({1.0, 1.0});
     auto myResultA=cf(r, T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho)(testU);
-    auto myResultN=cfGeneric(r, T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho, q, delta)(testU);
+    auto myResultN=cfGeneric(r, T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho, delta)(testU);
     REQUIRE(myResultA.real()==Approx(myResultN.real()).epsilon(.001));
     REQUIRE(myResultA.imag()==Approx(myResultN.imag()).epsilon(.001));
 }
@@ -152,7 +152,7 @@ TEST_CASE("test CIR", "cf"){
     auto r0=.15;
     std::complex<double> testU({0.0, 0.0});
     auto myResultA=cf(0, T)(0.0, 0.0, 0.0, 0.0, -r0, -k1, sqrt(H1), 0.0)(testU);
-    auto myResultN=cfGeneric(0.0, T)(0.0, 0.0, 0.0, 0.0, -r0, -k1, sqrt(H1), 0.0, 5.0, 0)(testU);
+    auto myResultN=cfGeneric(0.0, T)(0.0, 0.0, 0.0, 0.0, -r0, -k1, sqrt(H1), 0.0, 0)(testU);
 
     REQUIRE(myResultA.real()==Approx(myResultN.real()).epsilon(.001));
 }
@@ -167,23 +167,26 @@ TEST_CASE("roughly the same cf for heston v2", "cf"){
     double rho=-.5711;
     double r=0;
     double T=1.0; 
-    double q=5;
     double delta=0.0;
     std::complex<double> testU({0.0, 18.0});
     auto myResultA=cf(r, T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho)(testU);
-    auto myResultN=cfGeneric(r, T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho, q, delta)(testU);
+    auto myResultN=cfGeneric(r, T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho, delta)(testU);
     REQUIRE(myResultA.real()==Approx(myResultN.real()).epsilon(.001));
     REQUIRE(myResultA.imag()==Approx(myResultN.imag()).epsilon(.001));
 }
 TEST_CASE("Returns true if variables exist", "parse_json"){
     auto parsedJson=parse_char((char*)"{\"hello\":5, \"world\":3}");
-    REQUIRE(hasAllVariables(parsedJson, "hello", "world")==true);
+    REQUIRE(hasAllVariablesAndNonZero(parsedJson, "hello", "world")==true);
 }
 TEST_CASE("Returns false if not variables exist but first variable exists", "parse_json"){
     auto parsedJson=parse_char((char*)"{\"hello\":5, \"world\":3}");
-    REQUIRE(hasAllVariables(parsedJson, "hello", "hi")==false);
+    REQUIRE(hasAllVariablesAndNonZero(parsedJson, "hello", "hi")==false);
 }
 TEST_CASE("Returns false if not variables exist but second variable exists", "parse_json"){
     auto parsedJson=parse_char((char*)"{\"hello\":5, \"world\":3}");
-    REQUIRE(hasAllVariables(parsedJson, "hi", "hello")==false);
+    REQUIRE(hasAllVariablesAndNonZero(parsedJson, "hi", "hello")==false);
+}
+TEST_CASE("Returns false if all variables exist and one is zero", "parse_json"){
+    auto parsedJson=parse_char((char*)"{\"hello\":0, \"world\":3}");
+    REQUIRE(hasAllVariablesAndNonZero(parsedJson, "hello", "world")==false);
 }

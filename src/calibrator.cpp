@@ -144,13 +144,10 @@ int main(int argc, char* argv[]){
                 auto getArgOrConstantCurry=[&](const auto& key, const auto& args){
                     return getArgOrConstant(key, args, mapKeyToIndexVariable, mapKeyToExistsStatic, mapKeyToValueStatic);
                 };
-                auto cfI=cfLogGeneric(T);
-                auto cfBaseI=cfLogBase(T);
+                auto cfI=cfLogBase(T);
                 auto cfHOC=[
                     getArgOrConstantCurry=std::move(getArgOrConstantCurry), 
-                    cfI=std::move(cfI),
-                    cfBaseI=std::move(cfBaseI),
-                    useNumericMethod=hasAllVariables(jsonVariable, "lambda", "delta")
+                    cfI=std::move(cfI)
                 ](const auto& args){
                     auto getField=[&](const auto& key){
                         return getArgOrConstantCurry(key, args);
@@ -165,21 +162,10 @@ int main(int argc, char* argv[]){
                         adaV=getField("adaV"),
                         rho=getField("rho"),
                         delta=getField("delta"),
-                        cfI=std::move(cfI),
-                        cfBaseI=std::move(cfBaseI),
-                        useNumericMethod
+                        cfI=std::move(cfI)
                     ](const auto& u){
-                        return useNumericMethod?cfI(
-                            lambda, 
-                            muJ, 
-                            sigJ, 
-                            sigma, 
-                            v0, 
-                            speed, 
-                            adaV, 
-                            rho,
-                            delta
-                        )(u):cfBaseI(
+                        return cfI(
+                            u,
                             lambda, 
                             muJ, 
                             sigJ, 
@@ -188,7 +174,7 @@ int main(int argc, char* argv[]){
                             speed, 
                             adaV, 
                             rho
-                        )(u);
+                        );
                     };
                 };
                 json_print_calibrated_params<swarm_utils::optparms, swarm_utils::fnval>(

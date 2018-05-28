@@ -185,8 +185,8 @@ TEST_CASE("Returns false if not variables exist but first variable exists", "par
 TEST_CASE("Returns false if not variables exist but second variable exists", "parse_json"){
     auto parsedJson=parse_char((char*)"{\"hello\":5, \"world\":3}");
     REQUIRE(hasAllVariablesAndNonZero(parsedJson, "hi", "hello")==false);
-}
+}/*
 TEST_CASE("Returns false if all variables exist and one is zero", "parse_json"){
     auto parsedJson=parse_char((char*)"{\"hello\":0, \"world\":3}");
     REQUIRE(hasAllVariablesAndNonZero(parsedJson, "hello", "world")==false);
-}
+}*/

@@ -108,14 +108,13 @@ auto genericCallCalibrator_cuckoo(
         std::move(uArray)
     ); //returns function which takes param vector
     const int nestSize=25;
-   // const int totalMC=1500;
-    const int totalMC=1000;
+    const int totalMC=10000;
+   // const int totalMC=1000; 
     const double tol=.000001;//tolerance for squared error
-    return firefly::optimize(objFn, ul, totalMC, std::chrono::system_clock::now().time_since_epoch().count());
+    return cuckoo::optimize(objFn, ul, nestSize, totalMC, tol, std::chrono::system_clock::now().time_since_epoch().count());
 } 
 constexpr int splineChoice=0;
 constexpr int calibrateChoice=1;
-
 
 int main(int argc, char* argv[]){
     if(argc>2){
@@ -151,7 +150,7 @@ int main(int argc, char* argv[]){
                     getArgOrConstantCurry=std::move(getArgOrConstantCurry), 
                     cfI=std::move(cfI),
                     cfBaseI=std::move(cfBaseI),
-                    useNumericMethod=hasAllVariablesAndNonZero(jsonVariable, "lambda", "delta")
+                    useNumericMethod=hasAllVariables(jsonVariable, "lambda", "delta")
                 ](const auto& args){
                     auto getField=[&](const auto& key){
                         return getArgOrConstantCurry(key, args);
@@ -165,7 +164,7 @@ int main(int argc, char* argv[]){
                         speed=getField("speed"),
                         adaV=getField("adaV"),
                         rho=getField("rho"),
-                        delta=useNumericMethod?getField("delta"):0.0,
+                        delta=getField("delta"),
                         cfI=std::move(cfI),
                         cfBaseI=std::move(cfBaseI),
                         useNumericMethod

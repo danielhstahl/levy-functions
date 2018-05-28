@@ -67,7 +67,7 @@ auto cfLogGeneric(
         double rho, double delta
     ){
 
-        auto numODE=64;//hopefully this is sufficient
+        auto numODE=40;//hopefully this is sufficient
         //double speedTmp=speed;//copy here in order to move to move
         //const T& rho, const T& K, const T& H, const T& l
         auto alpha=chfunctions::AlphaOrBeta_move(0.0, speed, 0.0, 0.0);

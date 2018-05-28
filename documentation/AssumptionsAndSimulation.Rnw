@@ -86,6 +86,48 @@ Substituting and simplifying yields the following ODEs:
 
 with \(\beta(T)=0,\,\alpha(T)=0\).
 
+\subsubsection{Solution to the ODEs}
+
+The two ODEs are seperate: once the solution is found for \(\beta(t)\), \(\alpha(t)\) can be found via integration.  The ODE for \(\beta(t)\) can be simplified as follows:
+\[\beta'(t) = -\psi(u) +\left(a+\delta \lambda-iu\rho\sigma\eta \right) \beta(t)-\frac{\beta^2 (t)\eta^2}{2}- \lambda \left(\frac{1}{1-\delta \beta(t)}-1\right)e^{\mu_y ui - \frac{u^2 \sigma^2_y}{2}} \]
+Since only \(\beta\) depends on time, the ODE simplifies to the following:
+\[\beta'(t) = \bar{a} +\bar{b} \beta(t)+\bar{c} \beta^2 (t)+\frac{\bar{k}}{1-\delta \beta(t)} \]
+This is seperable and can be written as follows:
+\[\int \frac{(1-\delta \beta(t))\beta'(t)}{\hat{a}+\hat{b}\beta(t)+\hat{c}\beta^2(t)+\hat{k}\beta^3(t)} = t+q \]
+With heavy abuse of notation, letting \(a\), \(b\), and \(c\) be the roots of the cubic polynomial,
+
+\[\int \frac{(1-\delta \beta(t))\beta'(t)}{(\beta(t)-a)(\beta(t)-b)(\beta(t)-c)} = t+q \]
+
+This can be seperated into three integrals via partial fractions:
+
+\[\int \left(\frac{h_1}{\beta(t)-a}+\frac{h_2}{\beta(t)-b}+\frac{h_3}{\beta(t)-c} \right)\beta'(t) = t+q \]
+
+Where the \(h_i\) satisfy
+
+\[\begin{bmatrix}
+  1 & 1 &1 \\
+  b+c & a+c & a+b \\
+  cb & ac & ab 
+\end{bmatrix}
+\begin{bmatrix}
+h_1 \\
+h_2 \\
+h_3
+\end{bmatrix}=
+\begin{bmatrix}
+0 \\
+\delta \\
+1
+\end{bmatrix}
+\]
+
+Solving the matrix yields the following solution for \(h\):
+
+\[h=\begin{bmatrix}
+\frac{1-a\delta}{(c-b)(b-a)} \\
+\frac{b\delta-1}{(b-a)(c-b)} \\
+\frac{1-c \delta}{(c-b)(c-a)}
+\end{bmatrix}\]
 
 
 \section{Methodology for Option Pricing}

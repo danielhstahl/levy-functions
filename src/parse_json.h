@@ -63,12 +63,12 @@ auto get_ranged_variable(const rapidjson::Document& parms, const CustomMap& defa
 }
 
 template<typename Arr1, typename Json>
-constexpr bool hasAllVariablesAndNonZero(const Json& json, Arr1&& arr){
-    return json.HasMember(arr)?json[arr].GetDouble()!=0:false;
+constexpr bool hasAllVariables(const Json& json, Arr1&& arr){
+    return json.HasMember(arr);
 }
 template<typename Arr1, typename Json, typename ...Arrs>
-constexpr bool hasAllVariablesAndNonZero(const Json& json, Arr1&& arr, Arrs&&... arrs){
-    return hasAllVariablesAndNonZero(json, std::move(arr))&&hasAllVariablesAndNonZero(json, arrs...);
+constexpr bool hasAllVariables(const Json& json, Arr1&& arr, Arrs&&... arrs){
+    return hasAllVariables(json, std::move(arr))&&hasAllVariables(json, arrs...);
 }
 
 

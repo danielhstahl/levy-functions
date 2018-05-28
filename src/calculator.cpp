@@ -327,18 +327,16 @@ auto get_jump_diffusion_vol(double sigma, double lambda, double muJ, double sigJ
     return sqrt((sigma*sigma+lambda*(muJ*muJ+sigJ*sigJ))*T);
 }
 
-int main(int argc, char* argv[]){
+int main(int argc, char* argv[]){ 
     if(argc>2){
         auto parsedJson=parse_char(argv[2]);
         const auto T=get_ranged_variable(parsedJson, modelParams, "T");
         const auto r=get_ranged_variable(parsedJson, modelParams, "r");
         const auto S0=get_ranged_variable(parsedJson, modelParams, "S0");
-    
         const auto lambda=get_ranged_variable(parsedJson, modelParams, "lambda");
         const auto muJ=get_ranged_variable(parsedJson, modelParams, "muJ");
         const auto sigJ=get_ranged_variable(parsedJson, modelParams, "sigJ");
         const auto sigma=get_ranged_variable(parsedJson, modelParams, "sigma");
-        
         const int numU=pow(2, (int)get_ranged_variable(parsedJson, modelParams, "numU"));
         auto instantiatedCf=cf(
             r,
@@ -357,7 +355,7 @@ int main(int argc, char* argv[]){
          * domain for these distributions.
          * Be careful!*/
         double xMaxDensity=get_jump_diffusion_vol(sigma, lambda, muJ, sigJ, T)*5.0;
-        double xMaxOptions=xMaxDensity*2.0;
+        double xMaxOptions=xMaxDensity*2.0; 
         int key=std::stoi(argv[1]);
         switch(key){
             case carrmadanput: {

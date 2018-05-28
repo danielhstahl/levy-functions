@@ -127,19 +127,17 @@ int main(int argc, char* argv[]){
         auto strikes=get_k_var<std::vector<double>>(parsedJson);
         int key=std::stoi(argv[1]);
         switch(key){
-            case splineChoice:{
+            case splineChoice:{ 
                 const int numIndices=256;
                 generateSplineCurves(prices, strikes, S0, r, T, numIndices);
                 break;
             }
             case calibrateChoice:{
                 const auto& jsonVariable=parsedJson["variable"];
-               
                 const auto mapKeyToIndexVariable=constructKeyToIndex(jsonVariable, possibleCalibrationParameters);
-                
                 const auto mapStatic=constructStaticKeyToValue(parsedJson, possibleCalibrationParameters);
                 const auto mapKeyToExistsStatic=std::get<0>(mapStatic);
-                const auto mapKeyToValueStatic=std::get<1>(mapStatic);
+                const auto mapKeyToValueStatic=std::get<1>(mapStatic); 
                 //const auto [mapKeyToExistsStatic, mapKeyToValueStatic]=constructStaticKeyToValue(parsedJson, possibleCalibrationParameters);
                 auto getArgOrConstantCurry=[&](const auto& key, const auto& args){
                     return getArgOrConstant(key, args, mapKeyToIndexVariable, mapKeyToExistsStatic, mapKeyToValueStatic);
@@ -161,7 +159,6 @@ int main(int argc, char* argv[]){
                         speed=getField("speed"),
                         adaV=getField("adaV"),
                         rho=getField("rho"),
-                        delta=getField("delta"),
                         cfI=std::move(cfI)
                     ](const auto& u){
                         return cfI(

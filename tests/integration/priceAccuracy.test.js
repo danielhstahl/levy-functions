@@ -33,7 +33,6 @@ it('correctly returns heston price', (done)=>{
         v0:v0Hat,
         adaV,
         rho,
-        delta:0,
         k:[100]
     }
     const event=createEvent(parameters, {
@@ -72,7 +71,6 @@ it('correctly returns merton price', (done)=>{
         v0:1,
         adaV:0,
         rho:0,
-        delta:0,
         k:[k]
     }
     const event=createEvent(parameters, {
@@ -81,6 +79,7 @@ it('correctly returns merton price', (done)=>{
         algorithm:'fangoost'
     })
     return handler.calculator(event, {}, (err, val)=>{
+        console.log(val.body)
         const parsedVal=JSON.parse(val.body)
         expect(parsedVal[1].value).toBeCloseTo(5.9713, 3)
         done()
@@ -96,7 +95,6 @@ it('calls calibrator handler and finishes in under 20 seconds', (done)=>{
         "r":0.003,
         "T":1,
         "S0":178.46,
-        "delta":0, //if this is included, will take longer than 20 seconds
         "variable":{
             "sigma":0.4,
             "v0":0.9,

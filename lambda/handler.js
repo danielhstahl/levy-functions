@@ -30,9 +30,10 @@ const calibratorKeys={
 }
 
 const totalKeys=[
-  "lambda", 
-  "muJ",
-  "sigJ",
+  "C", 
+  "G", 
+  "M", 
+  "Y", 
   "v0",
   "sigma",
   "rho",

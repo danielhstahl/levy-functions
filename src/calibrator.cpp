@@ -8,7 +8,7 @@
 #include "firefly.h"
 #include <chrono>
 const std::array<std::string, 9> possibleCalibrationParameters({
-    "lambda", "muJ", "sigJ", "sigma", "v0", "speed", "adaV", "rho", "delta"
+    "C", "G", "M", "sigma", "v0", "speed", "adaV", "rho", "Y"
 });
 
 template<typename Array>
@@ -144,51 +144,38 @@ int main(int argc, char* argv[]){
                 auto getArgOrConstantCurry=[&](const auto& key, const auto& args){
                     return getArgOrConstant(key, args, mapKeyToIndexVariable, mapKeyToExistsStatic, mapKeyToValueStatic);
                 };
-                auto cfI=cfLogGeneric(T);
-                auto cfBaseI=cfLogBase(T);
+                
                 auto cfHOC=[
                     getArgOrConstantCurry=std::move(getArgOrConstantCurry), 
-                    cfI=std::move(cfI),
-                    cfBaseI=std::move(cfBaseI),
-                    useNumericMethod=hasAllVariables(jsonVariable, "lambda", "delta")
+                    cfI=cfLogBase(T)
                 ](const auto& args){
                     auto getField=[&](const auto& key){
                         return getArgOrConstantCurry(key, args);
                     };
                     return [
-                        lambda=getField("lambda"),
-                        muJ=getField("muJ"),
-                        sigJ=getField("sigJ"),
+                        C=getField("C"), //this is more efficient...computes field only once per iteration
+                        G=getField("G"),
+                        M=getField("M"),
+                        Y=getField("Y"),
                         sigma=getField("sigma"),
                         v0=getField("v0"),
                         speed=getField("speed"),
                         adaV=getField("adaV"),
                         rho=getField("rho"),
-                        delta=getField("delta"),
-                        cfI=std::move(cfI),
-                        cfBaseI=std::move(cfBaseI),
-                        useNumericMethod
+                        cfI=std::move(cfI)
                     ](const auto& u){
-                        return useNumericMethod?cfI(
-                            lambda, 
-                            muJ, 
-                            sigJ, 
-                            sigma, 
-                            v0, 
-                            speed, 
-                            adaV, 
-                            rho,
-                            delta
-                        )(u):cfBaseI(
-                            lambda, 
-                            muJ, 
-                            sigJ, 
+                        return cfI(
+                            u,
+                            C, 
+                            G, 
+                            M, 
+                            Y, 
                             sigma, 
                             v0, 
                             speed, 
                             adaV, 
                             rho
-                        )(u);
+                        );
                     };
                 };
                 json_print_calibrated_params<swarm_utils::optparms, swarm_utils::fnval>(

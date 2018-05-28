@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <cmath>
-#include "cuckoo.h"
+#include "utils.h"
 #include "document.h" //rapidjson
 #include "writer.h" //rapidjson
 #include "stringbuffer.h" //rapidjson
@@ -68,18 +68,18 @@ constexpr bool hasAllVariables(const Json& json, Arr1&& arr){
 }
 template<typename Arr1, typename Json, typename ...Arrs>
 constexpr bool hasAllVariables(const Json& json, Arr1&& arr, Arrs&&... arrs){
-    return json.HasMember(arr)&&hasAllVariables(json, arrs...);
+    return hasAllVariables(json, std::move(arr))&&hasAllVariables(json, arrs...);
 }
 
 
 template<typename RpJson, typename Array1, typename Array2, typename Object>
-std::vector<cuckoo::upper_lower<double> > getConstraints(const RpJson& json, const Array1& possibleParameters, const Array2& fullModelConstraints, Object&& optionalConstraints ){
-    std::vector<cuckoo::upper_lower<double> > modelConstraints;
+std::vector<swarm_utils::upper_lower<double> > getConstraints(const RpJson& json, const Array1& possibleParameters, const Array2& fullModelConstraints, Object&& optionalConstraints ){
+    std::vector<swarm_utils::upper_lower<double> > modelConstraints;
     for(auto& v:possibleParameters){
         if(json.HasMember(v.c_str())){
             if(optionalConstraints.HasMember(v.c_str())){
                 const auto& constraint=optionalConstraints[v.c_str()];
-                modelConstraints.emplace_back(cuckoo::upper_lower<double>(constraint["lower"].GetDouble(), constraint["upper"].GetDouble()));
+                modelConstraints.emplace_back(swarm_utils::upper_lower<double>(constraint["lower"].GetDouble(), constraint["upper"].GetDouble()));
             }
             else{
                 modelConstraints.emplace_back(std::get<0>(fullModelConstraints.at(v)));

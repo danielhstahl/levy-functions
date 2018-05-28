@@ -5,6 +5,7 @@
 #include "get_cf.h"
 #include "parse_json.h"
 #include "cuckoo.h"
+#include "firefly.h"
 #include <chrono>
 const std::array<std::string, 9> possibleCalibrationParameters({
     "lambda", "muJ", "sigJ", "sigma", "v0", "speed", "adaV", "rho", "delta"
@@ -84,7 +85,7 @@ auto generateSplineCurves(
 
 template<typename CF, typename Array1, typename Array2, typename Array3>
 auto genericCallCalibrator_cuckoo(
-    CF&& logCF, const Array1& ul, const Array2& prices, const Array3& strikes, 
+    CF&& logCF, const Array1& ul, Array2&& prices, Array3&& strikes, 
     double S0, double r, double T
 ){
     const auto parameters=generateConstParameters(prices, strikes, S0);
@@ -107,19 +108,19 @@ auto genericCallCalibrator_cuckoo(
         std::move(uArray)
     ); //returns function which takes param vector
     const int nestSize=25;
-   // const int totalMC=1500;
-    const int totalMC=1000;
+    const int totalMC=10000;
+   // const int totalMC=1000; 
     const double tol=.000001;//tolerance for squared error
     return cuckoo::optimize(objFn, ul, nestSize, totalMC, tol, std::chrono::system_clock::now().time_since_epoch().count());
-}
+} 
 constexpr int splineChoice=0;
 constexpr int calibrateChoice=1;
-
 
 int main(int argc, char* argv[]){
     if(argc>2){
         auto parsedJson=parse_char(argv[2]);
         auto prices=get_prices_var(parsedJson);
+        const int n=prices.size();
         const auto T=get_ranged_variable(parsedJson, modelParams, "T");
         const auto r=get_ranged_variable(parsedJson, modelParams, "r");
         const auto S0=get_ranged_variable(parsedJson, modelParams, "S0");
@@ -143,39 +144,54 @@ int main(int argc, char* argv[]){
                 auto getArgOrConstantCurry=[&](const auto& key, const auto& args){
                     return getArgOrConstant(key, args, mapKeyToIndexVariable, mapKeyToExistsStatic, mapKeyToValueStatic);
                 };
-                auto cfLogI=cfLogGeneric(T);
-                auto cfLogBaseI=cfLogBase(T);
+                auto cfI=cfLogGeneric(T);
+                auto cfBaseI=cfLogBase(T);
                 auto cfHOC=[
                     getArgOrConstantCurry=std::move(getArgOrConstantCurry), 
-                    cfLogI=std::move(cfLogI),
-                    cfLogBaseI=std::move(cfLogBaseI),
+                    cfI=std::move(cfI),
+                    cfBaseI=std::move(cfBaseI),
                     useNumericMethod=hasAllVariables(jsonVariable, "lambda", "delta")
-                ](const auto& u, const auto& args){
+                ](const auto& args){
                     auto getField=[&](const auto& key){
                         return getArgOrConstantCurry(key, args);
                     };
-                    return useNumericMethod?cfLogI(
-                        getField("lambda"), 
-                        getField("muJ"), 
-                        getField("sigJ"), 
-                        getField("sigma"), 
-                        getField("v0"), 
-                        getField("speed"), 
-                        getField("adaV"), 
-                        getField("rho"),
-                        getField("delta")
-                    )(u):cfLogBaseI(
-                        getField("lambda"), 
-                        getField("muJ"), 
-                        getField("sigJ"), 
-                        getField("sigma"), 
-                        getField("v0"), 
-                        getField("speed"), 
-                        getField("adaV"), 
-                        getField("rho")
-                    )(u);
+                    return [
+                        lambda=getField("lambda"),
+                        muJ=getField("muJ"),
+                        sigJ=getField("sigJ"),
+                        sigma=getField("sigma"),
+                        v0=getField("v0"),
+                        speed=getField("speed"),
+                        adaV=getField("adaV"),
+                        rho=getField("rho"),
+                        delta=getField("delta"),
+                        cfI=std::move(cfI),
+                        cfBaseI=std::move(cfBaseI),
+                        useNumericMethod
+                    ](const auto& u){
+                        return useNumericMethod?cfI(
+                            lambda, 
+                            muJ, 
+                            sigJ, 
+                            sigma, 
+                            v0, 
+                            speed, 
+                            adaV, 
+                            rho,
+                            delta
+                        )(u):cfBaseI(
+                            lambda, 
+                            muJ, 
+                            sigJ, 
+                            sigma, 
+                            v0, 
+                            speed, 
+                            adaV, 
+                            rho
+                        )(u);
+                    };
                 };
-                json_print_calibrated_params<cuckoo::optparms, cuckoo::fnval>(
+                json_print_calibrated_params<swarm_utils::optparms, swarm_utils::fnval>(
                     mapKeyToIndexVariable, 
                     genericCallCalibrator_cuckoo(
                         std::move(cfHOC),                    
@@ -185,11 +201,11 @@ int main(int argc, char* argv[]){
                             modelParams, 
                             parsedJson["constraints"]
                         ),
-                        prices, 
-                        strikes,
+                        std::move(prices), 
+                        std::move(strikes),
                         S0, r, T
                     ), 
-                    prices.size()
+                    n
                 );          
             }
         }

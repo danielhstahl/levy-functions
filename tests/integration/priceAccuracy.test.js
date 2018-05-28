@@ -87,38 +87,6 @@ it('correctly returns merton price', (done)=>{
     })
 })
 
-it('correctly returns generic price', (done)=>{
-    //own MC
-    const parameters={
-        numU:8,
-        r:.03,
-        T:1.0,
-        S0:50,
-        sigma:.2, 
-        lambda:.5,
-        muJ:-.05,
-        sigJ:.1,
-        speed:.3,
-        v0:.9,
-        adaV:.2,
-        rho:-.5,
-        delta:.1,
-        k:[50]
-    }
-    const event=createEvent(parameters, {
-        optionType:'call',
-        sensitivity:'price',
-        algorithm:'fangoost'
-    })
-    return handler.calculator(event, {}, (err, val)=>{
-        const parsedVal=JSON.parse(val.body)
-        console.log(parsedVal[1].value)
-        expect(parsedVal[1].value).toBeGreaterThan(4.741957)
-        expect(parsedVal[1].value).toBeLessThan(4.816284)
-        done()
-    })
-})
-
 
 var start = process.hrtime();
 
@@ -161,57 +129,7 @@ it('calls calibrator handler and finishes in under 20 seconds', (done)=>{
         done()
     })
 }, 100000)
-/*
-it('correctly calls calibrator handler and matches call prices', (done)=>{
-    const parameters={
-        "numU":8,
-        "r":0.003,
-        "T":1,
-        "S0":178.46,
-        "variable":{
-            "sigma":0.4,
-            "v0":0.9,
-            "speed":0.5,
-            "adaV":0.4,
-            "rho":-0.4,
-            "lambda":0.1,
-            "muJ":2.5,
-            "sigJ":0.3,
-            "delta":1
-        },
-        constraints:{
 
-        },
-        "k":[95,130,150,160,165,170,175,185,190,195,200,210,240,250],
-        "prices":[85,51.5,35.38,28.3,25.2,22.27,19.45,14.77,12.75,11,9.35,6.9,2.55,1.88]
-    }
-    const event=createEvent(parameters, {calibration:'calibrate'})
-    handler.calibrator(event, {}, (err, val)=>{
-        console.log(val.body)
-        const parsedVal=JSON.parse(val.body)
-        const calculatorParameters={
-            ...parameters,
-            ...parsedVal
-        }
-        const calculatorEvent=createEvent(calculatorParameters, {
-            optionType:'call',
-            sensitivity:'price',
-            algorithm:'fangoost'
-        })
-        return handler.calculator(calculatorEvent, {}, (err, val)=>{
-            const parsedVal=JSON.parse(val.body)
-            const criteriaDiff=parameters.S0*.005
-            console.log(parsedVal)
-            console.log(parameters.prices)
-            parsedVal.filter((v, i)=>i!==0&&i!==(parsedVal.length-1)).map((v, i)=>{
-                const diff=Math.abs(v.value-parameters.prices[i])
-                expect(diff).toBeLessThan(criteriaDiff)
-            })
-            
-            done()
-        })
-    })
-}, 40000)*/
 
 it('correctly calls calibrator handler and matches call prices with fake data', (done)=>{
     const parameters={
@@ -227,7 +145,6 @@ it('correctly calls calibrator handler and matches call prices with fake data', 
         v0:.9,
         adaV:.2,
         rho:-.5,
-        delta:0,//if this is not zero, will take forever
         k:[95,130,150,160,165,170,175,185,190,195,200,210,240,250]
     }
     const event=createEvent(parameters, {
@@ -244,7 +161,6 @@ it('correctly calls calibrator handler and matches call prices with fake data', 
             "r":0.003,
             "T":1,
             "S0":178.46,
-            "delta":0,//if this is not zero, will take forever
             "variable":{
                 "sigma":0.4,
                 "v0":0.9,

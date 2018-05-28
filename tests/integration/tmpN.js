@@ -8,17 +8,16 @@ const parameters={
     "r":0.003,
     "T":1,
     "S0":178.46,
-    
+    "sigma":0.0,
+    "v0":1,
+    "speed":.1,
+    "adaV":0.0,
+    "rho":0.0,
     "variable":{
-        "sigma":0.4,
-        "v0":0.9,
-        "speed":0.5,
-        "adaV":0.4,
-        "rho":-0.4,
+        
         "C":0.1,
         "M":2.5,
         "G":4,
-        "v0":.9,
         "Y":1.3
     },
     constraints:{

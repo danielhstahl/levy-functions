@@ -35,10 +35,8 @@ const totalKeys=[
   "M", 
   "Y", 
   "v0",
-  "sigma",
-  "rho",
-  "adaV",
-  "speed"
+  "speed",
+  "delta"
 ]
 
 const calibratorRequiredKeys=body=>{

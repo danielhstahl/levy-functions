@@ -323,8 +323,8 @@ void get_density(const CF& cf, int numU, double xMax){
     );
 }
 
-auto get_cgmy_vol(double sigma, double c, double y, double m, double g, double t){
-    return sqrt(t*(sigma*sigma+c*tgamma(2.0-y)*(1.0/pow(m, 2.0-y)+1.0/pow(g, 2.0-y))));
+auto get_cgmy_vol( double c, double y, double m, double g, double t){
+    return sqrt(t*(c*tgamma(2.0-y)*(1.0/pow(m, 2.0-y)+1.0/pow(g, 2.0-y))));
 }
 
 int main(int argc, char* argv[]){
@@ -333,28 +333,24 @@ int main(int argc, char* argv[]){
         const auto T=get_ranged_variable(parsedJson, modelParams, "T");
         const auto r=get_ranged_variable(parsedJson, modelParams, "r");
         const auto S0=get_ranged_variable(parsedJson, modelParams, "S0");
-    
         const auto C=get_ranged_variable(parsedJson, modelParams, "C");
         const auto M=get_ranged_variable(parsedJson, modelParams, "M");
         const auto G=get_ranged_variable(parsedJson, modelParams, "G");
-        const auto Y=get_ranged_variable(parsedJson, modelParams, "Y");
-        const auto sigma=get_ranged_variable(parsedJson, modelParams, "sigma");
-        
+        const auto Y=get_ranged_variable(parsedJson, modelParams, "Y");        
         const int numU=pow(2, (int)get_ranged_variable(parsedJson, modelParams, "numU"));
         auto instantiatedCf=cfGeneric(
             r,
             T
         )(
-            C, G, M, Y, sigma,
+            C, G, M, Y, 
             get_ranged_variable(parsedJson, modelParams, "v0"),
             get_ranged_variable(parsedJson, modelParams, "speed"),
-            get_ranged_variable(parsedJson, modelParams, "adaV"),
-            get_ranged_variable(parsedJson, modelParams, "rho")
+            get_ranged_variable(parsedJson, modelParams, "delta")
         );
         /**NOTE that this is a big assumption about the
          * domain for these distributions.
          * Be careful!*/
-        double xMaxDensity=get_cgmy_vol(sigma, C, Y, M, G, T)*5.0;
+        double xMaxDensity=get_cgmy_vol( C, Y, M, G, T)*5.0;
         double xMaxOptions=xMaxDensity*2.0;
         int key=std::stoi(argv[1]);
         switch(key){

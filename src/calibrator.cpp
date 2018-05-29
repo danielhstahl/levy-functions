@@ -147,7 +147,7 @@ int main(int argc, char* argv[]){
                 
                 auto cfHOC=[
                     getArgOrConstantCurry=std::move(getArgOrConstantCurry), 
-                    cfI=cfLogBase(T)
+                    cfI=cfLogGeneric(T)
                 ](const auto& args){
                     auto getField=[&](const auto& key){
                         return getArgOrConstantCurry(key, args);
@@ -157,11 +157,9 @@ int main(int argc, char* argv[]){
                         G=getField("G"),
                         M=getField("M"),
                         Y=getField("Y"),
-                        sigma=getField("sigma"),
                         v0=getField("v0"),
                         speed=getField("speed"),
-                        adaV=getField("adaV"),
-                        rho=getField("rho"),
+                        delta=getField("delta"),
                         cfI=std::move(cfI)
                     ](const auto& u){
                         return cfI(
@@ -170,11 +168,8 @@ int main(int argc, char* argv[]){
                             G, 
                             M, 
                             Y, 
-                            sigma, 
                             v0, 
-                            speed, 
-                            adaV, 
-                            rho
+                            speed, delta
                         );
                     };
                 };

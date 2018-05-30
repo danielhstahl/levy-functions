@@ -69,7 +69,7 @@ auto cfLogGeneric(
             //const T& rho, const T& K, const T& H, const T& l
         auto beta=chfunctions::AlphaOrBeta_move(
             -chfunctions::cgmyLogRNCF(u, C, G, M, Y, 0.0, 0.0),
-            -(speed+delta*tgamma(1-Y)/(G*tgamma(-Y)),
+            -(speed+delta*tgamma(1-Y)/(G*tgamma(-Y))),
             0.0, 
             1.0
         );
@@ -84,7 +84,7 @@ auto cfLogGeneric(
                     const std::complex<double>& x1,  
                     const std::complex<double>& x2
                 ){
-                    auto cfPart=pow(G+u-x1*delta)-expCF;
+                    auto cfPart=pow(G+u-x1*delta, Y)-expCF;
                     return std::vector<std::complex<double> >({
                         beta(x1, cfPart),
                         alpha(x1, cfPart)
@@ -107,7 +107,7 @@ auto cfGeneric(
         double delta
     ){
         auto logCF=cfLogGeneric(T);
-        return [r, T, logCF=std::move(logCF)](const auto& u){
+        return [=, logCF=std::move(logCF)](const auto& u){
             return exp(r*u*T+logCF(u,C, G, M, Y, v0, speed, delta));
         };
     };

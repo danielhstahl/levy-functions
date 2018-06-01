@@ -116,3 +116,10 @@ module.exports.calibrator=(event, context, callback)=>{
   calibratorSpawn(calibratorKeys[calibration], event.body, callback)
 }
 module.exports.calculatorKeys=calculatorKeys
+module.exports.getOptionPrices=(event, context, callback)=>{
+  const {asOfDate, ticker}=event.pathParameters
+  //todo!  fix this to have a default of no as of date (ie, current)
+  const query=`https://query1.finance.yahoo.com/v7/finance/options/${ticker}/${asOfDate}`
+  
+
+}

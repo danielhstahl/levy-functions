@@ -128,16 +128,25 @@ it('correctly handles expiration dates', done=>{
 })
 
 it('correctly handles optionPrices', done=>{
-    const event=createEvent({}, {ticker:'AAPL', asOfDate:1531440000000})
-    handler.getOptionPrices(event, {}, (err, val)=>{
-        console.log(val.body)
+    const event=createEvent({}, {ticker:'AAPL'})
+    handler.getExpirationDates(event, {}, (err, val)=>{
+        //console.log(val.body)
         const parsedVal=JSON.parse(val.body)
         expect(parsedVal.S0).toBeDefined()
         //console.log(parsedVal.options.length)
-        expect(parsedVal.options).toBeDefined()
-        expect(parsedVal.options[0].strike).toBeDefined()
-        expect(parsedVal.options[0].price).toBeDefined()
-        expect(parsedVal.options[0].T).toBeDefined()
-        done()
+        expect(parsedVal.expirationDates).toBeDefined()
+        const nM=parsedVal.expirationDates.length-1
+        const event=createEvent({}, {ticker:'AAPL', asOfDate:parsedVal.expirationDates[nM]})
+        handler.getOptionPrices(event, {}, (err, val)=>{
+            console.log(val.body)
+            const parsedVal=JSON.parse(val.body)
+            expect(parsedVal.S0).toBeDefined()
+            //console.log(parsedVal.options.length)
+            expect(parsedVal.S0).toBeDefined()
+            expect(parsedVal.k).toBeDefined()
+            expect(parsedVal.T).toBeDefined()
+            done()
+        })
     })
+    
 })

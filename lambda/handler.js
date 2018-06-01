@@ -1,8 +1,6 @@
 'use strict'
 const {spawn} = require('child_process')
 const https = require('https')
-const gaussian=require('gaussian')
-const nr = require('newton-raphson-method')
 const ratioForUnixAndJSTimeStamp=1000
 const numMSInYears=24*60*60*365*ratioForUnixAndJSTimeStamp
 const yearsBetweenNowAndTimestamp=timeStamp=>(timeStamp*ratioForUnixAndJSTimeStamp-Date.now())/numMSInYears
@@ -107,16 +105,19 @@ module.exports.defaultParameters=(event, context, callback)=>{
   defaultParametersSpawn(callback)
 }
 
-module.exports.calibrator=(event, context, callback)=>{
+const calibrator=(event, context, callback)=>{
   const {calibration}=event.pathParameters
-  const keyResult=calibratorRequiredKeys(JSON.parse(event.body))
-  if(keyResult){
-    const err=`Requires additional keys!  Missing ${keyResult}`
-    return callback(null,  errMsg(err))
+  if(calibratorKeys[calibration]!==calibratorKeys.spline){
+    const keyResult=calibratorRequiredKeys(JSON.parse(event.body))
+    if(keyResult){
+      const err=`Requires additional keys!  Missing ${keyResult}`
+      return callback(null,  errMsg(err))
+    }
   }
   calibratorSpawn(calibratorKeys[calibration], event.body, callback)
 }
 module.exports.calculatorKeys=calculatorKeys
+module.exports.calibrator=calibrator
 
 
 
@@ -124,35 +125,12 @@ const minOpenInterest=5
 const liquidOptionPrices=({openInterest})=>openInterest>=minOpenInterest
 const getPriceFromBidAsk=({bid, ask})=>(bid+ask)*.5
 const getRelevantData=yahooData=>yahooData.optionChain.result[0]
-const getRelevantDataForArray=arr=>arr.map(getRelevantData)
-const distribution=gaussian(0, 1)
-const BS=({S0, strike, T, impliedVolatility, price})=>{
-  const sqrtT=impliedVolatility*Math.sqrt(T)
-  const logSK=Math.log(S0/strike)
-  console.log(impliedVolatility)
-  console.log(logSK)
-  return {
-    getCall:r=>{
-      const discount=Math.exp(-r*T)
-      const d1=(logSK+(r+impliedVolatility*impliedVolatility*T))/sqrtT
-      const d2=d1-sqrtT
-      //console.log(S0*distribution.cdf(d1)-strike*discount*distribution.cdf(d2))
-      //console.log(price)
-      return S0*distribution.cdf(d1)-strike*discount*distribution.cdf(d2)-price
-    },
-    getRho:r=>{
-      const discount=Math.exp(-r*T)
-      const d2=(logSK+(r-impliedVolatility*impliedVolatility*T))/sqrtT
-      return strike*T*discount*distribution.cdf(d2)
-    }
-  }
-}
-const getRFromBS=({S0, strike, T, impliedVolatility, price})=>{
-  const currBS=BS({S0, strike, T, impliedVolatility, price})
-  const initR=.01
-  return nr(currBS.getCall, currBS.getRho, initR, {verbose:true, maxIter:500})
-}
-
+//const getRelevantDataForArray=arr=>arr.map(getRelevantData)
+const getExpirationDates=relevantData=>({
+  S0:getPriceFromBidAsk(relevantData.quote), 
+  expirationDates:relevantData.expirationDates.map(v=>v*ratioForUnixAndJSTimeStamp)
+})
+/*
 const filterOptionData=relevantDataArray=>{
   const S0=getPriceFromBidAsk(relevantDataArray[0].quote)
   const options=relevantDataArray.reduce((aggr, {options})=>[
@@ -160,12 +138,10 @@ const filterOptionData=relevantDataArray=>{
     ...options.reduce(
         (aggr, {calls})=>[
             ...aggr, 
-            ...calls.map(({strike, openInterest, bid, ask, expiration, lastTradeDate, impliedVolatility})=>({
+            ...calls.map(({strike, openInterest, bid, ask, expiration, lastTradeDate})=>({
               strike,
-              S0,
               price:getPriceFromBidAsk({bid, ask}),
               openInterest,
-              impliedVolatility,
               timeSinceLastTrade:yearsBetweenNowAndTimestamp(lastTradeDate),
               T:yearsBetweenNowAndTimestamp(expiration),
               cohort:expiration
@@ -175,21 +151,22 @@ const filterOptionData=relevantDataArray=>{
   ], [])
   .filter(liquidOptionPrices)
   //console.log(options)
-  const mostRecentOptionByCohort=options.reduce((aggr, curr)=>{
-    if(curr.impliedVolatility>.0001){
-      if(!aggr[curr.cohort]||(
-        aggr[curr.cohort].timeSinceLastTrade<curr.timeSinceLastTrade&&
-        curr.impliedVolatility>.0001
-      )){
-        return Object.assign({[curr.cohort]:curr}, aggr)
-      }
-    }
-    return aggr
-  }, {})
- // console.log(mostRecentOptionByCohort)
-  const rByCohort=Object.entries(mostRecentOptionByCohort).reduce((aggr, [key, option])=>({[key]:getRFromBS(option)}), {})
-  const applyR=option=>Object.assign({r:rByCohort[option.cohort]}, option)
-  return {S0, options:options.map(applyR)}
+  return {S0, options}
+}*/
+const filterSingleMaturityData=relevantData=>{
+  const S0=getPriceFromBidAsk(relevantData.quote)
+  const T=yearsBetweenNowAndTimestamp(relevantData.options[0].expirationDate)
+  const options=relevantData.options[0].calls.filter(liquidOptionPrices).map(
+    ({strike, bid, ask})=>({
+        strike,
+        price:getPriceFromBidAsk({bid, ask})
+      })
+    )
+    .reduce((aggr, {strike, price})=>({
+      k:[...aggr.k, strike],
+      prices:[...aggr.prices, price]
+    }), {k:[], prices:[]})
+  return Object.assign({S0, T, r:.004}, options)//.004 is placeholder
 }
 const getDateQuery=date=>date?`?date=${date}`:''
 const getQuery=ticker=>asOfDate=>`https://query1.finance.yahoo.com/v7/finance/options/${ticker}${getDateQuery(asOfDate)}`
@@ -211,19 +188,30 @@ const getOptionsByDate=ticker=>{
   const queryHOC=getQuery(ticker)
   return ({expirationDates})=>Promise.all(expirationDates.map(date=>httpGet(queryHOC(date))))
 }
-//returns object with S0, array of objects with strike, time to maturity, and price
-//we WILL HAVE to update the cpp code to incorporate the effect.  But this will
-//resolve issue 7
-module.exports.getOptionPrices=(event, context, callback)=>{
+
+module.exports.getExpirationDates=(event, context, callback)=>{
   const {ticker}=event.pathParameters
-  //todo!  fix this to have a default of no as of date (ie, current)
   httpGet(getQuery(ticker)())
     .then(getRelevantData)
-    .then(getOptionsByDate(ticker))
-    .then(getRelevantDataForArray)
-    .then(filterOptionData)
+    .then(getExpirationDates)
     .then(data=>callback(null, msg(JSON.stringify(data))))
     .catch(err=>callback(null, errMsg(err.message)))
 }
+const createEvent=(data, parameters)=>({
+    body:JSON.stringify(data),
+    pathParameters:parameters
+})
+module.exports.getOptionPrices=(event, context, callback)=>{
+  const {ticker, asOfDate}=event.pathParameters
+  const eventObject={calibration:'spline'}
+  httpGet(getQuery(ticker)(asOfDate/ratioForUnixAndJSTimeStamp))
+    .then(getRelevantData)
+    .then(filterSingleMaturityData)
+    .then(data=>{
+      calibrator(createEvent(data, eventObject), {}, (_, spline)=>{
+        callback(null, msg(JSON.stringify(Object.assign({}, data, spline))))
+      }) 
+    })
+    .catch(err=>callback(null, errMsg(err.message)))
+}
 
-module.exports.BS=BS

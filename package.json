@@ -36,9 +36,7 @@
     "csvtojson": "^1.1.9",
     "es6-promisify": "^6.0.0",
     "fs-extra": "^5.0.0",
-    "gaussian": "^1.1.0",
     "js-yaml": "^3.11.0",
-    "newton-raphson-method": "^1.0.0",
     "unzip": "^0.1.11"
   }
 }

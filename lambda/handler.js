@@ -1,7 +1,9 @@
 'use strict'
 const {spawn} = require('child_process')
 const https = require('https')
-
+const ratioForUnixAndJSTimeStamp=1000
+const numMSInYears=24*60*60*365*ratioForUnixAndJSTimeStamp
+const yearsBetweenNowAndFutureTimestamp=futureTimeStamp=>(futureTimeStamp*ratioForUnixAndJSTimeStamp-Date.now())/numMSInYears
 const calculatorKeys={
   putpricecarrmadan:0,
   callpricecarrmadan:1,
@@ -115,36 +117,61 @@ module.exports.calibrator=(event, context, callback)=>{
 module.exports.calculatorKeys=calculatorKeys
 
 
-const removeIlliquidOptionPrices=optionData=>{
-  
+
+const minOpenInterest=5
+const liquidOptionPrices=({openInterest})=>openInterest>=minOpenInterest
+const getPriceFromBidAsk=({bid, ask})=>(bid+ask)*.5
+const getRelevantData=yahooData=>yahooData.optionChain.result[0]
+const getRelevantDataForArray=arr=>arr.map(getRelevantData)
+const filterOptionData=relevantDataArray=>{
+  const S0=getPriceFromBidAsk(relevantDataArray[0].quote)
+  const options=relevantDataArray.reduce((aggr, {options})=>[
+    ...aggr,
+    ...options.reduce(
+        (aggr, {calls})=>[
+          ...aggr, 
+          ...calls.map(({strike, openInterest, bid, ask, expiration})=>({
+            strike,
+            price:getPriceFromBidAsk({bid, ask}),
+            openInterest,
+            T:yearsBetweenNowAndFutureTimestamp(expiration)
+          }))
+        ]
+      , [])
+  ], [])
+  return {S0, options:options.filter(liquidOptionPrices)}
+}
+const getDateQuery=date=>date?`?date=${date}`:''
+const getQuery=ticker=>asOfDate=>`https://query1.finance.yahoo.com/v7/finance/options/${ticker}${getDateQuery(asOfDate)}`
+
+const httpGet=query=>new Promise((res, rej)=>{
+  https.get(query, resp => {
+    let data = '';
+    resp.on('data', chunk => {
+      data += chunk;
+    })
+    resp.on('end', () => {
+      res(JSON.parse(data))
+    })
+  }).on('error', err => {
+    rej(err)
+  })
+})
+const getOptionsByDate=ticker=>{
+  const queryHOC=getQuery(ticker)
+  return ({expirationDates})=>Promise.all(expirationDates.map(date=>httpGet(queryHOC(date))))
 }
 //returns object with S0, array of objects with strike, time to maturity, and price
 //we WILL HAVE to update the cpp code to incorporate the effect.  But this will
 //resolve issue 7
-const filterOptionData=data=>{
-  
-}
 module.exports.getOptionPrices=(event, context, callback)=>{
-  const {asOfDate, ticker}=event.pathParameters
+  const {ticker}=event.pathParameters
   //todo!  fix this to have a default of no as of date (ie, current)
-  const query=`https://query1.finance.yahoo.com/v7/finance/options/${ticker}/${asOfDate}`
-
- 
-  https.get(query, resp => {
-    let data = '';
-  
-    // A chunk of data has been recieved.
-    resp.on('data', chunk => {
-      data += chunk;
-    })
-  
-    // The whole response has been received. Print out the result.
-    resp.on('end', () => {
-      filterOptionData(JSON.parse(data))
-    })
-  
-  }).on('error', err => {
-   // console.log("Error: " + err.message);
-  });
-
+  httpGet(getQuery(ticker)())
+    .then(getRelevantData)
+    .then(getOptionsByDate(ticker))
+    .then(getRelevantDataForArray)
+    .then(filterOptionData)
+    .then(data=>callback(null, msg(JSON.stringify(data))))
+    .catch(err=>callback(null, errMsg(err.message)))
 }

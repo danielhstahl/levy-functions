@@ -114,3 +114,18 @@ it('correctly calls VaR', (done)=>{
         done()
     })
 })
+
+it('correctly handles optionPrices', done=>{
+    const event=createEvent({}, {ticker:'AAPL'})
+    handler.getOptionPrices(event, {}, (err, val)=>{
+        //console.log(val.body)
+        const parsedVal=JSON.parse(val.body)
+        expect(parsedVal.S0).toBeDefined()
+        console.log(parsedVal.options.length)
+        expect(parsedVal.options).toBeDefined()
+        expect(parsedVal.options[0].strike).toBeDefined()
+        expect(parsedVal.options[0].price).toBeDefined()
+        expect(parsedVal.options[0].T).toBeDefined()
+        done()
+    })
+})

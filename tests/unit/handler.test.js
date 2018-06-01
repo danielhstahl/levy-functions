@@ -114,14 +114,18 @@ it('correctly calls VaR', (done)=>{
         done()
     })
 })
-
+it('correctly calls BS', done=>{
+    console.log(handler.BS({S0:189.73, strike:170.0, T:.0173677, impliedVolatility:.489, price:19.9}).getCall(.055))
+    console.log(handler.BS({S0:189.73, strike:170.0, T:.0173677, impliedVolatility:.489, price:19.9}).getRho(.055))
+    done()
+})
 it('correctly handles optionPrices', done=>{
     const event=createEvent({}, {ticker:'AAPL'})
     handler.getOptionPrices(event, {}, (err, val)=>{
-        //console.log(val.body)
+        //onsole.log(val.body)
         const parsedVal=JSON.parse(val.body)
         expect(parsedVal.S0).toBeDefined()
-        console.log(parsedVal.options.length)
+        //console.log(parsedVal.options.length)
         expect(parsedVal.options).toBeDefined()
         expect(parsedVal.options[0].strike).toBeDefined()
         expect(parsedVal.options[0].price).toBeDefined()

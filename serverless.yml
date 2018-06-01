@@ -59,6 +59,8 @@ package:
   
    - bin/**
    - lambda/handler.js
+   - node_modules/newton-raphson-method/**
+   - node_modules/gaussian/**
 
 functions:
   calculator:

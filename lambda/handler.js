@@ -1,9 +1,11 @@
 'use strict'
 const {spawn} = require('child_process')
 const https = require('https')
+const gaussian=require('gaussian')
+const nr = require('newton-raphson-method')
 const ratioForUnixAndJSTimeStamp=1000
 const numMSInYears=24*60*60*365*ratioForUnixAndJSTimeStamp
-const yearsBetweenNowAndFutureTimestamp=futureTimeStamp=>(futureTimeStamp*ratioForUnixAndJSTimeStamp-Date.now())/numMSInYears
+const yearsBetweenNowAndTimestamp=timeStamp=>(timeStamp*ratioForUnixAndJSTimeStamp-Date.now())/numMSInYears
 const calculatorKeys={
   putpricecarrmadan:0,
   callpricecarrmadan:1,
@@ -123,23 +125,71 @@ const liquidOptionPrices=({openInterest})=>openInterest>=minOpenInterest
 const getPriceFromBidAsk=({bid, ask})=>(bid+ask)*.5
 const getRelevantData=yahooData=>yahooData.optionChain.result[0]
 const getRelevantDataForArray=arr=>arr.map(getRelevantData)
+const distribution=gaussian(0, 1)
+const BS=({S0, strike, T, impliedVolatility, price})=>{
+  const sqrtT=impliedVolatility*Math.sqrt(T)
+  const logSK=Math.log(S0/strike)
+  console.log(impliedVolatility)
+  console.log(logSK)
+  return {
+    getCall:r=>{
+      const discount=Math.exp(-r*T)
+      const d1=(logSK+(r+impliedVolatility*impliedVolatility*T))/sqrtT
+      const d2=d1-sqrtT
+      //console.log(S0*distribution.cdf(d1)-strike*discount*distribution.cdf(d2))
+      //console.log(price)
+      return S0*distribution.cdf(d1)-strike*discount*distribution.cdf(d2)-price
+    },
+    getRho:r=>{
+      const discount=Math.exp(-r*T)
+      const d2=(logSK+(r-impliedVolatility*impliedVolatility*T))/sqrtT
+      return strike*T*discount*distribution.cdf(d2)
+    }
+  }
+}
+const getRFromBS=({S0, strike, T, impliedVolatility, price})=>{
+  const currBS=BS({S0, strike, T, impliedVolatility, price})
+  const initR=.01
+  return nr(currBS.getCall, currBS.getRho, initR, {verbose:true, maxIter:500})
+}
+
 const filterOptionData=relevantDataArray=>{
   const S0=getPriceFromBidAsk(relevantDataArray[0].quote)
   const options=relevantDataArray.reduce((aggr, {options})=>[
     ...aggr,
     ...options.reduce(
         (aggr, {calls})=>[
-          ...aggr, 
-          ...calls.map(({strike, openInterest, bid, ask, expiration})=>({
-            strike,
-            price:getPriceFromBidAsk({bid, ask}),
-            openInterest,
-            T:yearsBetweenNowAndFutureTimestamp(expiration)
-          }))
-        ]
+            ...aggr, 
+            ...calls.map(({strike, openInterest, bid, ask, expiration, lastTradeDate, impliedVolatility})=>({
+              strike,
+              S0,
+              price:getPriceFromBidAsk({bid, ask}),
+              openInterest,
+              impliedVolatility,
+              timeSinceLastTrade:yearsBetweenNowAndTimestamp(lastTradeDate),
+              T:yearsBetweenNowAndTimestamp(expiration),
+              cohort:expiration
+            }))
+          ]
       , [])
   ], [])
-  return {S0, options:options.filter(liquidOptionPrices)}
+  .filter(liquidOptionPrices)
+  //console.log(options)
+  const mostRecentOptionByCohort=options.reduce((aggr, curr)=>{
+    if(curr.impliedVolatility>.0001){
+      if(!aggr[curr.cohort]||(
+        aggr[curr.cohort].timeSinceLastTrade<curr.timeSinceLastTrade&&
+        curr.impliedVolatility>.0001
+      )){
+        return Object.assign({[curr.cohort]:curr}, aggr)
+      }
+    }
+    return aggr
+  }, {})
+ // console.log(mostRecentOptionByCohort)
+  const rByCohort=Object.entries(mostRecentOptionByCohort).reduce((aggr, [key, option])=>({[key]:getRFromBS(option)}), {})
+  const applyR=option=>Object.assign({r:rByCohort[option.cohort]}, option)
+  return {S0, options:options.map(applyR)}
 }
 const getDateQuery=date=>date?`?date=${date}`:''
 const getQuery=ticker=>asOfDate=>`https://query1.finance.yahoo.com/v7/finance/options/${ticker}${getDateQuery(asOfDate)}`
@@ -175,3 +225,5 @@ module.exports.getOptionPrices=(event, context, callback)=>{
     .then(data=>callback(null, msg(JSON.stringify(data))))
     .catch(err=>callback(null, errMsg(err.message)))
 }
+
+module.exports.BS=BS

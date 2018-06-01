@@ -115,7 +115,9 @@ module.exports.calibrator=(event, context, callback)=>{
 module.exports.calculatorKeys=calculatorKeys
 
 
-const removeIlliquidOptionPrices
+const removeIlliquidOptionPrices=optionData=>{
+  
+}
 //returns object with S0, array of objects with strike, time to maturity, and price
 //we WILL HAVE to update the cpp code to incorporate the effect.  But this will
 //resolve issue 7

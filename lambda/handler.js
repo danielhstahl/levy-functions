@@ -1,6 +1,6 @@
 'use strict'
 const {spawn} = require('child_process')
-
+const https = require('https')
 
 const calculatorKeys={
   putpricecarrmadan:0,
@@ -82,10 +82,7 @@ const getParametersOrObject=parameters=>parameters||"{}"
 const spawnBinary=binary=>(functionalityIndicator, parms, callback)=>{
   genericSpawn(binary, [functionalityIndicator,getParametersOrObject(parms)], callback)
 }
-/*
-const spawnBinaryNoFunctionality=binary=>(parms, callback)=>{
-  genericSpawn(binary, [getParametersOrObject(parms)], callback)
-}*/
+
 const calculatorSpawn=spawnBinary('calculator')
 const calibratorSpawn=spawnBinary('calibrator')
 const defaultParametersSpawn=callback=>genericSpawn('defaultParameters', [], callback)
@@ -116,10 +113,36 @@ module.exports.calibrator=(event, context, callback)=>{
   calibratorSpawn(calibratorKeys[calibration], event.body, callback)
 }
 module.exports.calculatorKeys=calculatorKeys
+
+
+const removeIlliquidOptionPrices
+//returns object with S0, array of objects with strike, time to maturity, and price
+//we WILL HAVE to update the cpp code to incorporate the effect.  But this will
+//resolve issue 7
+const filterOptionData=data=>{
+  
+}
 module.exports.getOptionPrices=(event, context, callback)=>{
   const {asOfDate, ticker}=event.pathParameters
   //todo!  fix this to have a default of no as of date (ie, current)
   const query=`https://query1.finance.yahoo.com/v7/finance/options/${ticker}/${asOfDate}`
+
+ 
+  https.get(query, resp => {
+    let data = '';
   
+    // A chunk of data has been recieved.
+    resp.on('data', chunk => {
+      data += chunk;
+    })
+  
+    // The whole response has been received. Print out the result.
+    resp.on('end', () => {
+      filterOptionData(JSON.parse(data))
+    })
+  
+  }).on('error', err => {
+   // console.log("Error: " + err.message);
+  });
 
 }

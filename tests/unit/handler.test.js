@@ -7,8 +7,6 @@ const calibratorParams={
     "lambda":0,
     "muJ":2.5,
     "sigJ":0.3,
-    "q":5,
-    "delta":.5,
     "variable":{
         "sigma":0.4,
         "v0":0.9,
@@ -118,7 +116,7 @@ it('correctly calls VaR', (done)=>{
 it('correctly handles expiration dates', done=>{
     const event=createEvent({}, {ticker:'AAPL'})
     handler.getExpirationDates(event, {}, (err, val)=>{
-        console.log(val.body)
+       // console.log(val.body)
         const parsedVal=JSON.parse(val.body)
         expect(parsedVal.S0).toBeDefined()
         //console.log(parsedVal.options.length)
@@ -133,15 +131,12 @@ it('correctly handles optionPrices', done=>{
         //console.log(val.body)
         const parsedVal=JSON.parse(val.body)
         expect(parsedVal.S0).toBeDefined()
-        //console.log(parsedVal.options.length)
         expect(parsedVal.expirationDates).toBeDefined()
         const nM=parsedVal.expirationDates.length-1
         const event=createEvent({}, {ticker:'AAPL', asOfDate:parsedVal.expirationDates[nM]})
         handler.getOptionPrices(event, {}, (err, val)=>{
             console.log(val.body)
             const parsedVal=JSON.parse(val.body)
-            expect(parsedVal.S0).toBeDefined()
-            //console.log(parsedVal.options.length)
             expect(parsedVal.S0).toBeDefined()
             expect(parsedVal.k).toBeDefined()
             expect(parsedVal.T).toBeDefined()

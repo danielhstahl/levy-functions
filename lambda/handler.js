@@ -75,9 +75,9 @@ const genericSpawn=(binary, options, callback)=>{
   })
   model.on('close', code=>{
     if(modelErr){
-      return callback(null, errMsg(modelErr))
+      return callback(modelErr, null)
     }
-    return callback(null, msg(modelOutput))
+    return callback(null, modelOutput)
   })
 }
 const getParametersOrObject=parameters=>parameters||"{}"
@@ -89,20 +89,25 @@ const calculatorSpawn=spawnBinary('calculator')
 const calibratorSpawn=spawnBinary('calibrator')
 const defaultParametersSpawn=callback=>genericSpawn('defaultParameters', [], callback)
 
-
+const transformCallback=callback=>(err, res)=>{
+  if(err){
+    return callback(null, errMsg(err))
+  }
+  return callback(null, msg(res))
+}
 module.exports.calculator=(event, context, callback)=>{
   const {optionType, sensitivity, algorithm}=event.pathParameters
   const key=optionType+sensitivity+algorithm
   const index=calculatorKeys[key]
-  calculatorSpawn(index, event.body, callback)
+  calculatorSpawn(index, event.body, transformCallback(callback))
 }
 module.exports.density=(event, context, callback)=>{
   const {densityType}=event.pathParameters
   const key='density'+densityType
-  calculatorSpawn(calculatorKeys[key], event.body, callback)
+  calculatorSpawn(calculatorKeys[key], event.body, transformCallback(callback))
 }
 module.exports.defaultParameters=(event, context, callback)=>{
-  defaultParametersSpawn(callback)
+  defaultParametersSpawn(transformCallback(callback))
 }
 
 const calibrator=(event, context, callback)=>{
@@ -111,10 +116,10 @@ const calibrator=(event, context, callback)=>{
     const keyResult=calibratorRequiredKeys(JSON.parse(event.body))
     if(keyResult){
       const err=`Requires additional keys!  Missing ${keyResult}`
-      return callback(null,  errMsg(err))
+      return callback(null, errMsg(err))
     }
   }
-  calibratorSpawn(calibratorKeys[calibration], event.body, callback)
+  calibratorSpawn(calibratorKeys[calibration], event.body, transformCallback(callback))
 }
 module.exports.calculatorKeys=calculatorKeys
 module.exports.calibrator=calibrator
@@ -130,29 +135,7 @@ const getExpirationDates=relevantData=>({
   S0:getPriceFromBidAsk(relevantData.quote), 
   expirationDates:relevantData.expirationDates.map(v=>v*ratioForUnixAndJSTimeStamp)
 })
-/*
-const filterOptionData=relevantDataArray=>{
-  const S0=getPriceFromBidAsk(relevantDataArray[0].quote)
-  const options=relevantDataArray.reduce((aggr, {options})=>[
-    ...aggr,
-    ...options.reduce(
-        (aggr, {calls})=>[
-            ...aggr, 
-            ...calls.map(({strike, openInterest, bid, ask, expiration, lastTradeDate})=>({
-              strike,
-              price:getPriceFromBidAsk({bid, ask}),
-              openInterest,
-              timeSinceLastTrade:yearsBetweenNowAndTimestamp(lastTradeDate),
-              T:yearsBetweenNowAndTimestamp(expiration),
-              cohort:expiration
-            }))
-          ]
-      , [])
-  ], [])
-  .filter(liquidOptionPrices)
-  //console.log(options)
-  return {S0, options}
-}*/
+
 const filterSingleMaturityData=relevantData=>{
   const S0=getPriceFromBidAsk(relevantData.quote)
   const T=yearsBetweenNowAndTimestamp(relevantData.options[0].expirationDate)
@@ -184,10 +167,11 @@ const httpGet=query=>new Promise((res, rej)=>{
     rej(err)
   })
 })
+/*
 const getOptionsByDate=ticker=>{
   const queryHOC=getQuery(ticker)
   return ({expirationDates})=>Promise.all(expirationDates.map(date=>httpGet(queryHOC(date))))
-}
+}*/
 
 module.exports.getExpirationDates=(event, context, callback)=>{
   const {ticker}=event.pathParameters
@@ -203,14 +187,16 @@ const createEvent=(data, parameters)=>({
 })
 module.exports.getOptionPrices=(event, context, callback)=>{
   const {ticker, asOfDate}=event.pathParameters
-  const eventObject={calibration:'spline'}
   httpGet(getQuery(ticker)(asOfDate/ratioForUnixAndJSTimeStamp))
     .then(getRelevantData)
     .then(filterSingleMaturityData)
     .then(data=>{
-      calibrator(createEvent(data, eventObject), {}, (_, spline)=>{
-        callback(null, msg(JSON.stringify(Object.assign({}, data, spline))))
-      }) 
+      calibratorSpawn(calibratorKeys.spline, JSON.stringify(data), (err, spline)=>{
+        if(err){
+          return callback(null, errMsg(err))
+        }
+        return callback(null, msg(JSON.stringify(Object.assign({}, data, JSON.parse(spline)))))
+      })
     })
     .catch(err=>callback(null, errMsg(err.message)))
 }

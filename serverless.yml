@@ -93,6 +93,30 @@ functions:
           method: get
           cors: true
 
+  getExpirationDates:
+    handler: lambda/handler.getExpirationDates
+    events:
+      - http:
+          path: version/options/{ticker}/maturities
+          method: get
+          cors: true
+          request:
+            parameters:
+              paths:
+                ticker: true
+
+  getOptionPrices:
+    handler: lambda/handler.getOptionPrices
+    events:
+      - http:
+          path: version/options/{ticker}/prices/{asOfDate}
+          method: get
+          cors: true
+          request:
+            parameters:
+              paths:
+                ticker: true
+                asOfDate: true
 
   calibrator:
     memorySize: 1024 # optional, in MB, default is 1024

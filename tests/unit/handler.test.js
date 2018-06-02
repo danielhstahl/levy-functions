@@ -120,6 +120,7 @@ it('correctly handles expiration dates', done=>{
         const parsedVal=JSON.parse(val.body)
         expect(parsedVal.S0).toBeDefined()
         //console.log(parsedVal.options.length)
+        console.log(parsedVal)
         expect(parsedVal.expirationDates).toBeDefined()
         done()
     })
@@ -135,7 +136,7 @@ it('correctly handles optionPrices', done=>{
         const nM=parsedVal.expirationDates.length-1
         const event=createEvent({}, {ticker:'AAPL', asOfDate:parsedVal.expirationDates[nM]})
         handler.getOptionPrices(event, {}, (err, val)=>{
-            console.log(val.body)
+            //console.log(val.body)
             const parsedVal=JSON.parse(val.body)
             expect(parsedVal.S0).toBeDefined()
             expect(parsedVal.k).toBeDefined()

@@ -181,10 +181,7 @@ module.exports.getExpirationDates=(event, context, callback)=>{
     .then(data=>callback(null, msg(JSON.stringify(data))))
     .catch(err=>callback(null, errMsg(err.message)))
 }
-const createEvent=(data, parameters)=>({
-    body:JSON.stringify(data),
-    pathParameters:parameters
-})
+
 module.exports.getOptionPrices=(event, context, callback)=>{
   const {ticker, asOfDate}=event.pathParameters
   httpGet(getQuery(ticker)(asOfDate/ratioForUnixAndJSTimeStamp))

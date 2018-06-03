@@ -105,6 +105,7 @@ TEST_CASE("does key value pair with one key function", "parse_json"){
 TEST_CASE("does key value pair with multiple key function", "parse_json"){
     json_print_multiple_obj("hello", [](){std::cout<<"sup";}, "hello", [](){std::cout<<"sup";}, "hello", [](){std::cout<<"sup";});//should print {"hello":sup, "hello":sup, "hello":sup}
 }
+/*
 TEST_CASE("roughly the same cf", "cf"){
     double lambda=1.0;
     double muJ=0.0;
@@ -142,7 +143,8 @@ TEST_CASE("roughly the same cf for heston", "cf"){
     auto myResultN=cfGeneric(r, T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho, delta)(testU);
     REQUIRE(myResultA.real()==Approx(myResultN.real()).epsilon(.001));
     REQUIRE(myResultA.imag()==Approx(myResultN.imag()).epsilon(.001));
-}
+}*/
+/*
 TEST_CASE("test CIR", "cf"){
     auto rho1=1.0;
     auto k0=.05; //long run average of .05/.3
@@ -173,18 +175,18 @@ TEST_CASE("roughly the same cf for heston v2", "cf"){
     auto myResultN=cfGeneric(r, T)(lambda, muJ, sigJ, sigma, v0, speed, adaV, rho, delta)(testU);
     REQUIRE(myResultA.real()==Approx(myResultN.real()).epsilon(.001));
     REQUIRE(myResultA.imag()==Approx(myResultN.imag()).epsilon(.001));
-}
+}*/
 TEST_CASE("Returns true if variables exist", "parse_json"){
     auto parsedJson=parse_char((char*)"{\"hello\":5, \"world\":3}");
-    REQUIRE(hasAllVariablesAndNonZero(parsedJson, "hello", "world")==true);
+    REQUIRE(hasAllVariables(parsedJson, "hello", "world")==true);
 }
 TEST_CASE("Returns false if not variables exist but first variable exists", "parse_json"){
     auto parsedJson=parse_char((char*)"{\"hello\":5, \"world\":3}");
-    REQUIRE(hasAllVariablesAndNonZero(parsedJson, "hello", "hi")==false);
+    REQUIRE(hasAllVariables(parsedJson, "hello", "hi")==false);
 }
 TEST_CASE("Returns false if not variables exist but second variable exists", "parse_json"){
     auto parsedJson=parse_char((char*)"{\"hello\":5, \"world\":3}");
-    REQUIRE(hasAllVariablesAndNonZero(parsedJson, "hi", "hello")==false);
+    REQUIRE(hasAllVariables(parsedJson, "hi", "hello")==false);
 }/*
 TEST_CASE("Returns false if all variables exist and one is zero", "parse_json"){
     auto parsedJson=parse_char((char*)"{\"hello\":0, \"world\":3}");

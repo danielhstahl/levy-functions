@@ -7,8 +7,8 @@
 #include "cuckoo.h"
 #include "firefly.h"
 #include <chrono>
-const std::array<std::string, 9> possibleCalibrationParameters({
-    "lambda", "muJ", "sigJ", "sigma", "v0", "speed", "adaV", "rho", "delta"
+const std::array<std::string, 8> possibleCalibrationParameters({
+    "lambda", "muJ", "sigJ", "sigma", "v0", "speed", "adaV", "rho"
 });
 
 template<typename Array>

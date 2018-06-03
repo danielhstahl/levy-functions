@@ -126,11 +126,11 @@ module.exports.calibrator=calibrator
 
 
 
-const minOpenInterest=5
+const minOpenInterest=25
 const liquidOptionPrices=({openInterest})=>openInterest>=minOpenInterest
 const getPriceFromBidAsk=({bid, ask})=>(bid+ask)*.5
 const getRelevantData=yahooData=>yahooData.optionChain.result[0]
-//const getRelevantDataForArray=arr=>arr.map(getRelevantData)
+
 const getExpirationDates=relevantData=>({
   S0:getPriceFromBidAsk(relevantData.quote), 
   expirationDates:relevantData.expirationDates.map(v=>v*ratioForUnixAndJSTimeStamp)

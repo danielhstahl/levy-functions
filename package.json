@@ -4,7 +4,7 @@
   "description": "Lambda functions for Jump Diffusion process",
   "main": "index.js",
   "directories": {
-    "test": "test"
+    "test": "tests"
   },
   "scripts": {
     "test": "jest",
@@ -37,7 +37,6 @@
     "es6-promisify": "^6.0.0",
     "fs-extra": "^5.0.0",
     "js-yaml": "^3.11.0",
-    "request": "^2.85.0",
     "unzip": "^0.1.11"
   }
 }

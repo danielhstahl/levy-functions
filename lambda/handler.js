@@ -1,7 +1,9 @@
 'use strict'
 const {spawn} = require('child_process')
-
-
+const https = require('https')
+const ratioForUnixAndJSTimeStamp=1000
+const numMSInYears=24*60*60*365*ratioForUnixAndJSTimeStamp
+const yearsBetweenNowAndTimestamp=timeStamp=>(timeStamp*ratioForUnixAndJSTimeStamp-Date.now())/numMSInYears
 const calculatorKeys={
   putpricecarrmadan:0,
   callpricecarrmadan:1,
@@ -73,46 +75,126 @@ const genericSpawn=(binary, options, callback)=>{
   })
   model.on('close', code=>{
     if(modelErr){
-      return callback(null, errMsg(modelErr))
+      return callback(modelErr, null)
     }
-    return callback(null, msg(modelOutput))
+    return callback(null, modelOutput)
   })
 }
 const getParametersOrObject=parameters=>parameters||"{}"
 const spawnBinary=binary=>(functionalityIndicator, parms, callback)=>{
   genericSpawn(binary, [functionalityIndicator,getParametersOrObject(parms)], callback)
 }
-/*
-const spawnBinaryNoFunctionality=binary=>(parms, callback)=>{
-  genericSpawn(binary, [getParametersOrObject(parms)], callback)
-}*/
+
 const calculatorSpawn=spawnBinary('calculator')
 const calibratorSpawn=spawnBinary('calibrator')
 const defaultParametersSpawn=callback=>genericSpawn('defaultParameters', [], callback)
 
-
+const transformCallback=callback=>(err, res)=>{
+  if(err){
+    return callback(null, errMsg(err))
+  }
+  return callback(null, msg(res))
+}
 module.exports.calculator=(event, context, callback)=>{
   const {optionType, sensitivity, algorithm}=event.pathParameters
   const key=optionType+sensitivity+algorithm
   const index=calculatorKeys[key]
-  calculatorSpawn(index, event.body, callback)
+  calculatorSpawn(index, event.body, transformCallback(callback))
 }
 module.exports.density=(event, context, callback)=>{
   const {densityType}=event.pathParameters
   const key='density'+densityType
-  calculatorSpawn(calculatorKeys[key], event.body, callback)
+  calculatorSpawn(calculatorKeys[key], event.body, transformCallback(callback))
 }
 module.exports.defaultParameters=(event, context, callback)=>{
-  defaultParametersSpawn(callback)
+  defaultParametersSpawn(transformCallback(callback))
 }
 
-module.exports.calibrator=(event, context, callback)=>{
+const calibrator=(event, context, callback)=>{
   const {calibration}=event.pathParameters
-  const keyResult=calibratorRequiredKeys(JSON.parse(event.body))
-  if(keyResult){
-    const err=`Requires additional keys!  Missing ${keyResult}`
-    return callback(null,  errMsg(err))
+  if(calibratorKeys[calibration]!==calibratorKeys.spline){
+    const keyResult=calibratorRequiredKeys(JSON.parse(event.body))
+    if(keyResult){
+      const err=`Requires additional keys!  Missing ${keyResult}`
+      return callback(null, errMsg(err))
+    }
   }
-  calibratorSpawn(calibratorKeys[calibration], event.body, callback)
+  calibratorSpawn(calibratorKeys[calibration], event.body, transformCallback(callback))
 }
 module.exports.calculatorKeys=calculatorKeys
+module.exports.calibrator=calibrator
+
+
+
+const minOpenInterest=5
+const liquidOptionPrices=({openInterest})=>openInterest>=minOpenInterest
+const getPriceFromBidAsk=({bid, ask})=>(bid+ask)*.5
+const getRelevantData=yahooData=>yahooData.optionChain.result[0]
+//const getRelevantDataForArray=arr=>arr.map(getRelevantData)
+const getExpirationDates=relevantData=>({
+  S0:getPriceFromBidAsk(relevantData.quote), 
+  expirationDates:relevantData.expirationDates.map(v=>v*ratioForUnixAndJSTimeStamp)
+})
+
+const filterSingleMaturityData=relevantData=>{
+  const S0=getPriceFromBidAsk(relevantData.quote)
+  const T=yearsBetweenNowAndTimestamp(relevantData.options[0].expirationDate)
+  const options=relevantData.options[0].calls.filter(liquidOptionPrices).map(
+    ({strike, bid, ask})=>({
+        strike,
+        price:getPriceFromBidAsk({bid, ask})
+      })
+    )
+    .reduce((aggr, {strike, price})=>({
+      k:[...aggr.k, strike],
+      prices:[...aggr.prices, price]
+    }), {k:[], prices:[]})
+  return Object.assign({S0, T, r:.004}, options)//.004 is placeholder
+}
+const getDateQuery=date=>date?`?date=${date}`:''
+const getQuery=ticker=>asOfDate=>`https://query1.finance.yahoo.com/v7/finance/options/${ticker}${getDateQuery(asOfDate)}`
+
+const httpGet=query=>new Promise((res, rej)=>{
+  https.get(query, resp => {
+    let data = '';
+    resp.on('data', chunk => {
+      data += chunk;
+    })
+    resp.on('end', () => {
+      res(JSON.parse(data))
+    })
+  }).on('error', err => {
+    rej(err)
+  })
+})
+/*
+const getOptionsByDate=ticker=>{
+  const queryHOC=getQuery(ticker)
+  return ({expirationDates})=>Promise.all(expirationDates.map(date=>httpGet(queryHOC(date))))
+}*/
+
+module.exports.getExpirationDates=(event, context, callback)=>{
+  const {ticker}=event.pathParameters
+  httpGet(getQuery(ticker)())
+    .then(getRelevantData)
+    .then(getExpirationDates)
+    .then(data=>callback(null, msg(JSON.stringify(data))))
+    .catch(err=>callback(null, errMsg(err.message)))
+}
+
+module.exports.getOptionPrices=(event, context, callback)=>{
+  const {ticker, asOfDate}=event.pathParameters
+  httpGet(getQuery(ticker)(asOfDate/ratioForUnixAndJSTimeStamp))
+    .then(getRelevantData)
+    .then(filterSingleMaturityData)
+    .then(data=>{
+      calibratorSpawn(calibratorKeys.spline, JSON.stringify(data), (err, spline)=>{
+        if(err){
+          return callback(null, errMsg(err))
+        }
+        return callback(null, msg(JSON.stringify(Object.assign({}, data, JSON.parse(spline)))))
+      })
+    })
+    .catch(err=>callback(null, errMsg(err.message)))
+}
+

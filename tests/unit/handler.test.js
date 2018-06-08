@@ -136,7 +136,7 @@ it('correctly handles optionPrices', done=>{
         expect(parsedVal.expirationDates).toBeDefined()
         const nM=parsedVal.expirationDates.length-1
        // console.log(parsedVal)
-        const event=createEvent({}, {ticker:'AAPL', asOfDate:parsedVal.expirationDates[nM]})
+        const event=createEvent({}, {ticker:'AAPL', asOfDate:parsedVal.expirationDates[nM]}, {})
         handler.getOptionPrices(event, {}, (err, val)=>{
             console.log(val.body)
             const parsedVal=JSON.parse(val.body)
@@ -150,7 +150,7 @@ it('correctly handles optionPrices', done=>{
 })
 
 it('correctly handles optionPrices with new query params', done=>{
-    const event=createEvent({}, {ticker:'AAPL'})
+    const event=createEvent({}, {ticker:'AAPL'}, {})
     handler.getExpirationDates(event, {}, (err, val)=>{
         console.log(val.body)
         const parsedVal=JSON.parse(val.body)

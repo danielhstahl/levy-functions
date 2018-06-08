@@ -161,6 +161,7 @@ it('correctly handles optionPrices with new query params', done=>{
         {ticker:'AAPL', asOfDate:parsedVal.expirationDates[nM]}, 
         {minOpenInterest:200})
         handler.getOptionPrices(event, {}, (err, val)=>{
+            console.log(val.body)
             const parsedVal=JSON.parse(val.body)
             console.log(parsedVal)
             expect(parsedVal.S0).toBeDefined()

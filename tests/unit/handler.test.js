@@ -130,7 +130,7 @@ it('correctly handles expiration dates', done=>{
 it('correctly handles optionPrices', done=>{
     const event=createEvent({}, {ticker:'AAPL'})
     handler.getExpirationDates(event, {}, (err, val)=>{
-        //console.log(val.body)
+        console.log(val.body)
         const parsedVal=JSON.parse(val.body)
         expect(parsedVal.S0).toBeDefined()
         expect(parsedVal.expirationDates).toBeDefined()
@@ -151,7 +151,7 @@ it('correctly handles optionPrices', done=>{
 it('correctly handles optionPrices with new query params', done=>{
     const event=createEvent({}, {ticker:'AAPL'})
     handler.getExpirationDates(event, {}, (err, val)=>{
-        //console.log(val.body)
+        console.log(val.body)
         const parsedVal=JSON.parse(val.body)
         expect(parsedVal.S0).toBeDefined()
         expect(parsedVal.expirationDates).toBeDefined()

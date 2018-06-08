@@ -115,7 +115,7 @@ it('correctly calls VaR', (done)=>{
 })
 
 it('correctly handles expiration dates', done=>{
-    const event=createEvent({}, {ticker:'AAPL'})
+    const event=createEvent({}, {ticker:'AAPL'}, {})
     handler.getExpirationDates(event, {}, (err, val)=>{
        // console.log(val.body)
         const parsedVal=JSON.parse(val.body)
@@ -128,16 +128,17 @@ it('correctly handles expiration dates', done=>{
 })
 
 it('correctly handles optionPrices', done=>{
-    const event=createEvent({}, {ticker:'AAPL'})
+    const event=createEvent({}, {ticker:'AAPL'}, {})
     handler.getExpirationDates(event, {}, (err, val)=>{
         console.log(val.body)
         const parsedVal=JSON.parse(val.body)
         expect(parsedVal.S0).toBeDefined()
         expect(parsedVal.expirationDates).toBeDefined()
         const nM=parsedVal.expirationDates.length-1
-        console.log(parsedVal)
+       // console.log(parsedVal)
         const event=createEvent({}, {ticker:'AAPL', asOfDate:parsedVal.expirationDates[nM]})
         handler.getOptionPrices(event, {}, (err, val)=>{
+            console.log(val.body)
             const parsedVal=JSON.parse(val.body)
             expect(parsedVal.S0).toBeDefined()
             expect(parsedVal.k).toBeDefined()
@@ -156,14 +157,14 @@ it('correctly handles optionPrices with new query params', done=>{
         expect(parsedVal.S0).toBeDefined()
         expect(parsedVal.expirationDates).toBeDefined()
         const nM=parsedVal.expirationDates.length-1
-        console.log(parsedVal)
+        //console.log(parsedVal)
         const event=createEvent({}, 
         {ticker:'AAPL', asOfDate:parsedVal.expirationDates[nM]}, 
         {minOpenInterest:200})
         handler.getOptionPrices(event, {}, (err, val)=>{
             console.log(val.body)
             const parsedVal=JSON.parse(val.body)
-            console.log(parsedVal)
+            //console.log(parsedVal)
             expect(parsedVal.S0).toBeDefined()
             expect(parsedVal.k).toBeDefined()
             expect(parsedVal.T).toBeDefined()

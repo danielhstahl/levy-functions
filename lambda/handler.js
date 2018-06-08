@@ -124,9 +124,8 @@ const calibrator=(event, context, callback)=>{
 module.exports.calculatorKeys=calculatorKeys
 module.exports.calibrator=calibrator
 
-const minOpenInterest=300
-const minPercDiffBidAsk=.1
-const liquidOptionPrices=({openInterest, bid, ask})=> Math.abs(bid-ask)/ask<minPercDiffBidAsk && openInterest>=minOpenInterest
+
+const liquidOptionPrices=(minOpenInterest, minRelativeBidAskSpread)=>({openInterest, bid, ask})=> Math.abs(bid-ask)/ask<minRelativeBidAskSpread && openInterest>=minOpenInterest
 
 const getPriceFromBidAsk=({bid, ask})=>(bid+ask)*.5
 const getRelevantData=yahooData=>yahooData.optionChain.result[0]
@@ -136,10 +135,10 @@ const getExpirationDates=relevantData=>({
   expirationDates:relevantData.expirationDates.map(v=>v*ratioForUnixAndJSTimeStamp)
 })
 
-const filterSingleMaturityData=relevantData=>{
+const filterSingleMaturityData=filterLiquidFn=>relevantData=>{
   const S0=getPriceFromBidAsk(relevantData.quote)
   const T=yearsBetweenNowAndTimestamp(relevantData.options[0].expirationDate)
-  const options=relevantData.options[0].calls.filter(liquidOptionPrices).map(
+  const options=relevantData.options[0].calls.filter(filterLiquidFn).map(
     ({strike, bid, ask})=>({
         strike,
         price:getPriceFromBidAsk({bid, ask})
@@ -181,12 +180,16 @@ module.exports.getExpirationDates=(event, context, callback)=>{
     .then(data=>callback(null, msg(JSON.stringify(data))))
     .catch(err=>callback(null, errMsg(err.message)))
 }
-
+const defaultMinOpenInterest=25
+const defaultMinRelativeBidAskSpread=.1
 module.exports.getOptionPrices=(event, context, callback)=>{
   const {ticker, asOfDate}=event.pathParameters
+  const {minOpenInterest, minRelativeBidAskSpread}=event.queryStringParameters
+  const filterOptions=liquidOptionPrices(minOpenInterest||defaultMinOpenInterest, minRelativeBidAskSpread||defaultMinRelativeBidAskSpread)
+  const filterSingleMaturityDataInst=filterSingleMaturityData(filterOptions)
   httpGet(getQuery(ticker)(asOfDate/ratioForUnixAndJSTimeStamp))
     .then(getRelevantData)
-    .then(filterSingleMaturityData)
+    .then(filterSingleMaturityDataInst)
     .then(data=>{
       calibratorSpawn(calibratorKeys.spline, JSON.stringify(data), (err, spline)=>{
         if(err){

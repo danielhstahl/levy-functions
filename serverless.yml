@@ -117,6 +117,9 @@ functions:
               paths:
                 ticker: true
                 asOfDate: true
+              querystrings:
+                minOpenInterest: false
+                minRelativeBidAskSpread: false
 
   calibrator:
     memorySize: 3008 # optional, in MB, default is 1024

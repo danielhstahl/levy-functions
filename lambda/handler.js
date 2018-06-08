@@ -124,10 +124,10 @@ const calibrator=(event, context, callback)=>{
 module.exports.calculatorKeys=calculatorKeys
 module.exports.calibrator=calibrator
 
+const minOpenInterest=300
+const minPercDiffBidAsk=.1
+const liquidOptionPrices=({openInterest, bid, ask})=> Math.abs(bid-ask)/ask<minPercDiffBidAsk && openInterest>=minOpenInterest
 
-
-const minOpenInterest=25
-const liquidOptionPrices=({openInterest})=>openInterest>=minOpenInterest
 const getPriceFromBidAsk=({bid, ask})=>(bid+ask)*.5
 const getRelevantData=yahooData=>yahooData.optionChain.result[0]
 

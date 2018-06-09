@@ -66,6 +66,7 @@ const std::unordered_map<std::string, std::tuple<swarm_utils::upper_lower<double
     {"S0", std::make_tuple(swarm_utils::upper_lower<double>(0.0, 1000000.0), 50.0)},
     {"T", std::make_tuple(swarm_utils::upper_lower<double>(0.0, 1000000.0), .25)},
     {"numU", std::make_tuple(swarm_utils::upper_lower<double>(5, 10), 7)},
+    {"quantile", std::make_tuple(swarm_utils::upper_lower<double>(0, 1), .01)},
 });
 
 #endif

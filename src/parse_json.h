@@ -41,13 +41,6 @@ std::vector<double> get_prices_var(const rapidjson::Document& parms){
     return local_prices;
 }
 
-double get_quantile(const rapidjson::Document& parms){
-    double local_quantile;
-    if(parms.FindMember("quantile")!=parms.MemberEnd()){
-        local_quantile=between_values(parms["quantile"].GetDouble(), 0.0, 1.0);
-    }
-    return local_quantile;
-}
 constexpr int RANGE=0;
 constexpr int DEFAULTVALUE=1;
 template<typename CustomMap>

@@ -303,13 +303,13 @@ void fangoost_put_gamma(const CF& cf, Array&& strikes, int numU, double S0, doub
 /**const Number& alpha, const Number& prec, const Number& xMin, const Number& xMax, const Index& numU, CF&& cf*/
 template<typename CF>
 void get_var(const CF& cf, double quantile, int numU, double xMax){
-    auto prec=.0000001;
-    auto extremeVals=cfdistutilities::computeES(
+    const auto prec=.0000001;
+    const auto extremeVals=cfdistutilities::computeES(
         quantile, prec, -xMax, xMax, 
         numU, cf
     );
-    auto VaR=std::get<cfdistutilities::VAR>(extremeVals);
-    auto ES=std::get<cfdistutilities::ES>(extremeVals);
+    const auto VaR=std::get<cfdistutilities::VAR>(extremeVals);
+    const auto ES=std::get<cfdistutilities::ES>(extremeVals);
     json_print_var(VaR, ES);
 }
 template<typename CF>
@@ -338,7 +338,7 @@ int main(int argc, char* argv[]){
         const auto sigJ=get_ranged_variable(parsedJson, modelParams, "sigJ");
         const auto sigma=get_ranged_variable(parsedJson, modelParams, "sigma");
         const int numU=pow(2, (int)get_ranged_variable(parsedJson, modelParams, "numU"));
-        auto instantiatedCf=cf(
+        const auto instantiatedCf=cf(
             r,
             T
         )(
@@ -526,7 +526,7 @@ int main(int argc, char* argv[]){
             }
             case VaR: {
                 get_var(
-                    instantiatedCf, get_quantile(parsedJson), 
+                    instantiatedCf, get_ranged_variable(parsedJson, modelParams, "quantile"), 
                     numU, xMaxDensity
                 );
                 break;

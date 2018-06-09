@@ -85,9 +85,46 @@ it('correctly returns merton price', (done)=>{
         done()
     })
 })
+it('correctly returns VaR', (done)=>{
+    //https://github.com/phillyfan1138/levy-functions/issues/27
+    const r=.004
+    const T=.187689
+    const S0=191.96
+    const sigJ=.220094
+    const sigma=.3183
+    const muJ=-.302967
+    const lambda=.204516
+    const speed=2.6726
+    const v0=.237187
+    const rho=-.182754
+    const adaV=0
+    
+    const parameters={
+        numU:8,
+        r,
+        T,
+        S0,
+        sigma, 
+        lambda,
+        muJ,
+        sigJ,
+        speed,
+        v0,
+        adaV,
+        rho,
+        quantile:.01
+    }
+    const event=createEvent(parameters, {
+        densityType:'var'
+    })
+    return handler.density(event, {}, (err, val)=>{
+        console.log(val.body)
+        const parsedVal=JSON.parse(val.body)
+        expect(parsedVal.VaR).toBeCloseTo(.261503, 3)
+        done()
+    })
+})
 
-
-var start = process.hrtime();
 
 it('calls calibrator handler and finishes in under 20 seconds', (done)=>{
     const parameters={

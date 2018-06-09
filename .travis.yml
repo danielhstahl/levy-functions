@@ -4,7 +4,11 @@ node_js:
 - stable
 cache:
   directories:
-    - node_modules
+  - node_modules
+env:
+  matrix:
+  #quandl key
+  - secure: JP+ELzMKF7V1zTb+xMRdHL+cWo4jRrlsdtHOskddRvPPHAbYlW3DkpORtL7hX+mWD8PJQJH1np2hfilleD9SH4vzchtW9Y1w+zzcEnRxep+KOqaJZeBH0ssj66SHUgbPZOuAW+4jgo4+f7hSdxbTtZSfAAwM5fcWcaxL5u9MGmhhk4leRgMeYy7RFrtlD8FTS4h3X8VMt/RQAWA7fu8H2MswU3qBJtZeylJiRtQsf9Rs7ScdnODtalU2E0LdDzbUuyyRWniH9HW6krfaNy7ac9DR5LcVAROQU8Pq0edIzyQtVigfxJsEyyO5uPGrDhKP0Ix7IjtY2gmKFbh4vEQG7tW+phWJ6xvvJI2AzpdP2hQEtBqHVU3x8uB7g38oLExP/J54ZR8kegqi++YZHftT64qLrRRX6NhjoVhaQXXWC4jEI2DHpUMcZ/O7Jei8Nka05g3eKhDSwYpUDeizWZtGFUEruXv7J/7uQnCq19l4poXzI04SWAqlE1u+FscZ7J232C7b+ut3dby7eRW4LG1SDGh6ydhlWmNmoDXUGezU56GO6miyXxBADXQvqApGA6AdLETIvlF6CluyfKjm3KiHSS5LOUR9n8DM++uyf4dwwbWtnP7RhhP97nRbG6knOwaRbwy0jEfAcBgQMdtjkiXfkA2cjfwyLWkcD92Vt6DSyf4=
 addons:
   apt:
     sources:
@@ -16,7 +20,6 @@ before_install:
   g++ /usr/bin/g++-5
 - g++ -v
 - eval CC=gcc-5 && CXX=g++-5
-#- sudo apt-get install zip gzip tar
 - "./compileAndPackage.sh"
 - mkdir deploy
 - cp ./src/calculator ./deploy
@@ -24,8 +27,6 @@ before_install:
 - cp ./src/defaultParameters ./deploy
 script:
 - npm test
-
-
 before_deploy:
 - npm install -g serverless
 - node ./scripts/mergeHandler
@@ -33,22 +34,18 @@ before_deploy:
 - cd releases
 - sls deploy
 - cd ..
-
 deploy:
   provider: releases
   api_key:
     secure: SPpN18d7GEkPOrVn8Amzw3oWipBr8ESPFzLxkLjLleiuZS3JZRxh1zxozScuHZQVPgi8upjcI+EWa1VAXQjiIZd6+ArlmdgdilDoVYe4SkT6CEtxAZIOEzjWM2Gw6MBIlMbBCdccprMNQyFoT/5GGFA9yZ5lWyHDkURP9Ylv7eawmPV+9oQWIFTo9PvivR9Lsd+N5CwUbUyRCJ5Y8LvNRLWXMheik30wTEIkvqwDgrinbLqJq6C7x5+YMonODkqlueYxwn2XGoy/MfdbgiOjjIv1hDjuUdmvxShT8EdZBtCALAdyp1auTYW0Vi2HYnYg1QNkX6kc5Ut6tu02N83fteTfq0NW2yUZd87S+1p2MFJoLG0RgmRuAkIEm7MTcRXaBGbBAvWvjh2uJlrhGpcXLcNLjiKowX2Yv1N64YrszWqz9M6/F7/NwDt/vbsqzg6Pl0SDpNa8ABe2DeR91MvtBUNZyUAPoC2fSntT+BRRul4zbnw7Z9/KqBvu5gNhSe6kq4+bxzRyhv2QUaljtwSZNIqf6uDLpK2Rc8IxctNbLRzqX9U6lXaZSCs8Uv5nHFtY359y8CdTXsUHcKpebIsdMLzx2/IJV4W7teGJZG5BgrwDsB0uPGGJK53zY+Vm8qp390eSldPtREkVmSXowZx9ygawNHMI5BiNwfXXoM7x/pU=
   file_glob: true
-  file: 
-    - "./deploy/calculator"
-    - "./deploy/calibrator"
-    - "./deploy/defaultParameters"
-    - "./lambda/handler.js"
-    - "./serverless.yml"
+  file:
+  - "./deploy/calculator"
+  - "./deploy/calibrator"
+  - "./deploy/defaultParameters"
+  - "./lambda/handler.js"
+  - "./serverless.yml"
   skip_cleanup: true
   on:
     repo: phillyfan1138/levy-functions
     tags: true
-
-
-

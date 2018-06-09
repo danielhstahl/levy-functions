@@ -33,4 +33,5 @@ src/calibrator
 bin
 *.log
 *.tex
+secrets.yml
 *.gz

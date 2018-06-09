@@ -1,5 +1,6 @@
 'use strict'
 const {spawn} = require('child_process')
+const spline=require('cubic-spline')
 const https = require('https')
 const ratioForUnixAndJSTimeStamp=1000
 const numMSInYears=24*60*60*365*ratioForUnixAndJSTimeStamp
@@ -95,6 +96,9 @@ const transformCallback=callback=>(err, res)=>{
   }
   return callback(null, msg(res))
 }
+
+
+
 module.exports.calculator=(event, context, callback)=>{
   const {optionType, sensitivity, algorithm}=event.pathParameters
   const key=optionType+sensitivity+algorithm
@@ -137,7 +141,7 @@ const getExpirationDates=relevantData=>({
 
 const filterSingleMaturityData=filterLiquidFn=>relevantData=>{
   const S0=getPriceFromBidAsk(relevantData.quote)
-  const T=yearsBetweenNowAndTimestamp(relevantData.options[0].expirationDate)
+  //const T=yearsBetweenNowAndTimestamp(relevantData.options[0].expirationDate)
   const options=relevantData.options[0].calls.filter(filterLiquidFn).map(
     ({strike, bid, ask})=>({
         strike,
@@ -148,7 +152,7 @@ const filterSingleMaturityData=filterLiquidFn=>relevantData=>{
       k:[...aggr.k, strike],
       prices:[...aggr.prices, price]
     }), {k:[], prices:[]})
-  return Object.assign({S0, T, r:.004}, options)//.004 is placeholder
+  return Object.assign({S0}, options)//.004 is placeholder
 }
 const getDateQuery=date=>date?`?date=${date}`:''
 const getQuery=ticker=>asOfDate=>`https://query1.finance.yahoo.com/v7/finance/options/${ticker}${getDateQuery(asOfDate)}`
@@ -166,12 +170,30 @@ const httpGet=query=>new Promise((res, rej)=>{
     rej(err)
   })
 })
-/*
-const getOptionsByDate=ticker=>{
-  const queryHOC=getQuery(ticker)
-  return ({expirationDates})=>Promise.all(expirationDates.map(date=>httpGet(queryHOC(date))))
-}*/
 
+
+const getAnnualCurve=data=>data.dataset.data[0]
+const getIntegerArrayBetweenToPoints=(min, max)=>{
+  let arr=[]
+  for(let i=min; i<=max; ++i){
+    arr.push(i)
+  }
+  return arr
+}
+const yearsToMuturityForSpline=getIntegerArrayBetweenToPoints(0, 30)
+const instantiateSpline=maturityInYears=>annualCurve=>{
+  annualCurve[0]=0
+  const updateAnnualCurve=annualCurve.map((v, index)=>v*yearsToMuturityForSpline[index])
+  return spline(maturityInYears, yearsToMuturityForSpline, updateAnnualCurve)/maturityInYears
+}
+const convertPercentToNumber=val=>val*.01
+const getZeroCurve=maturityInYears=>{
+  const url=`https://www.quandl.com/api/v3/datasets/FED/SVENY.json?rows=1&api_key=${process.env.QUANDL_KEY}`
+  return httpGet(url)
+    .then(getAnnualCurve)
+    .then(instantiateSpline(maturityInYears))
+    .then(convertPercentToNumber)
+}
 module.exports.getExpirationDates=(event, context, callback)=>{
   const {ticker}=event.pathParameters
   httpGet(getQuery(ticker)())
@@ -187,17 +209,22 @@ module.exports.getOptionPrices=(event, context, callback)=>{
   const {minOpenInterest, minRelativeBidAskSpread}=event.queryStringParameters
   const filterOptions=liquidOptionPrices(minOpenInterest||defaultMinOpenInterest, minRelativeBidAskSpread||defaultMinRelativeBidAskSpread)
   const filterSingleMaturityDataInst=filterSingleMaturityData(filterOptions)
-  httpGet(getQuery(ticker)(asOfDate/ratioForUnixAndJSTimeStamp))
-    .then(getRelevantData)
-    .then(filterSingleMaturityDataInst)
-    .then(data=>{
-      calibratorSpawn(calibratorKeys.spline, JSON.stringify(data), (err, spline)=>{
-        if(err){
-          return callback(null, errMsg(err))
-        }
-        return callback(null, msg(JSON.stringify(Object.assign({}, data, JSON.parse(spline)))))
-      })
+  const yahooT=asOfDate/ratioForUnixAndJSTimeStamp
+  const T=yearsBetweenNowAndTimestamp(yahooT)
+  Promise.all([
+    httpGet(getQuery(ticker)(yahooT))
+      .then(getRelevantData)
+      .then(filterSingleMaturityDataInst),
+    getZeroCurve(T)
+  ])
+  .then(([optionData, r])=>{
+    const data={...optionData, r, T}
+    calibratorSpawn(calibratorKeys.spline, JSON.stringify(data), (err, spline)=>{
+      if(err){
+        return callback(null, errMsg(err))
+      }
+      return callback(null, msg(JSON.stringify(Object.assign({}, data, JSON.parse(spline)))))
     })
-    .catch(err=>callback(null, errMsg(err.message)))
+  }).catch(err=>callback(null, errMsg(err.message)))
 }
 

@@ -20,6 +20,9 @@ service: levy-functions
 provider:
   name: aws
   runtime: nodejs8.10
+  environment:
+    QUANDL_KEY: ${file(./secrets.yml):dev.QUANDL_KEY}
+      #"${self:custom.secrets.QUANDL_KEY}"
 
 # you can overwrite defaults here
 #  stage: dev
@@ -56,9 +59,11 @@ provider:
 
 package:
   include:
-  
    - bin/**
    - lambda/handler.js
+   - node_modules/cubic-spline/**
+  exclude:
+    - secrets.yml
 
 functions:
   calculator:

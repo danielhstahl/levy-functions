@@ -8,9 +8,9 @@
   },
   "scripts": {
     "test": "jest",
-    "mergeReleases": "node ./scripts/mergeHandler",
-    "release": "node ./scripts/mergeHandler && ./scripts/tagAndRelease.sh",
-    "devServer": "node ./mockServer/server"
+    "devServer": "node ./mockServer/server",
+    "release-overwrite":"./scripts/replace.sh",
+    "release-new":"./scripts/newversion.sh"
   },
   "repository": {
     "type": "git",

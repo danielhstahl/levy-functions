@@ -31,6 +31,8 @@ before_deploy:
 - npm install -g serverless
 - node ./scripts/mergeHandler
 - node ./scripts/mergeYml
+- mkdir ./releases/node_modules
+- cp -r ./node_modules/cubic-spline ./releases/node_modules
 - cd releases
 - sls deploy
 - cd ..

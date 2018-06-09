@@ -7,20 +7,21 @@
 #include "neldermead.h"
 #include "cuckoo.h"
 #include <chrono>
+#include "utils.h"
 
 const std::array<std::string, 9> possibleParameters({
     "C", "G", "M", "Y", "sigma", "v0", "speed", "adaV", "rho"
 });
-const std::unordered_map<std::string, cuckoo::upper_lower<double> > fullModelConstraints({
-    {"C", cuckoo::upper_lower<double>(0.0, 2.0)}, //c
-    {"G", cuckoo::upper_lower<double>(0.0, 10)}, //g
-    {"M", cuckoo::upper_lower<double>(0.0, 10)}, //m
-    {"Y", cuckoo::upper_lower<double>(-3.0, 2.0)}, //y
-    {"sigma", cuckoo::upper_lower<double>(0.0, 1.0)}, //sigma
-    {"v0", cuckoo::upper_lower<double>(0.2, 1.8)}, //v0
-    {"speed", cuckoo::upper_lower<double>(0.0, 1.0)}, //speed
-    {"adaV", cuckoo::upper_lower<double>(0.0, 1.0)}, //adaV,
-    {"rho", cuckoo::upper_lower<double>(-1.0, 1.0)} //rho
+const std::unordered_map<std::string, swarm_utils::upper_lower<double> > fullModelConstraints({
+    {"C", swarm_utils::upper_lower<double>(0.0, 2.0)}, //c
+    {"G", swarm_utils::upper_lower<double>(0.0, 10)}, //g
+    {"M", swarm_utils::upper_lower<double>(0.0, 10)}, //m
+    {"Y", swarm_utils::upper_lower<double>(-3.0, 2.0)}, //y
+    {"sigma", swarm_utils::upper_lower<double>(0.0, 1.0)}, //sigma
+    {"v0", swarm_utils::upper_lower<double>(0.2, 1.8)}, //v0
+    {"speed", swarm_utils::upper_lower<double>(0.0, 1.0)}, //speed
+    {"adaV", swarm_utils::upper_lower<double>(0.0, 1.0)}, //adaV,
+    {"rho", swarm_utils::upper_lower<double>(-1.0, 1.0)} //rho
 });
 
 template<typename Array>
@@ -96,7 +97,7 @@ int main(int argc, char* argv[]){
         auto getArgOrConstantCurry=[&](const auto& key, const auto& args){
             return getArgOrConstant(key, args, parsedJson, mapKeyToIndex);
         };
-        json_print_calibrated_params<cuckoo::optparms, cuckoo::fnval>(
+        json_print_calibrated_params<swarm_utils::optparms, swarm_utils::fnval>(
             mapKeyToIndex, 
             genericCallCalibrator_cuckoo(
                 [&](const auto& args){

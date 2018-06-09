@@ -30,3 +30,8 @@ releases
 src/calculator
 src/calibrator
 bin
+src/defaultParameters
+secrets.yml
+*.log
+*.gz
+*.tex

@@ -6,6 +6,7 @@
 #include "stringbuffer.h" //rapidjson
 #include <deque>
 #include <unordered_map>
+#include "utils.h"
 
 struct option_variables{
     int numU=6;//gets raised to power of 2: 2^numU
@@ -90,8 +91,8 @@ int updateIndex(const JsonParm& parms, const std::string& key, int index, std::u
 
 
 template<typename RpJson, typename Array1, typename Array2>
-std::vector<cuckoo::upper_lower<double> > getConstraints(const RpJson& json, const Array1& possibleParameters, const Array2& fullModelConstraints){
-    std::vector<cuckoo::upper_lower<double> > modelConstraints;
+std::vector<swarm_utils::upper_lower<double> > getConstraints(const RpJson& json, const Array1& possibleParameters, const Array2& fullModelConstraints){
+    std::vector<swarm_utils::upper_lower<double> > modelConstraints;
     for(auto& v:possibleParameters){
         if(json.HasMember(v.c_str())){
             modelConstraints.push_back(fullModelConstraints.at(v));

@@ -45,7 +45,7 @@ deploy:
   - "./deploy/calculator"
   - "./deploy/calibrator"
   - "./deploy/defaultParameters"
-  - "./lambda/handler.js"
+  - "./lambda/*"
   - "./serverless.yml"
   skip_cleanup: true
   on:

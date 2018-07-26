@@ -69,7 +69,7 @@ const getZeroCurve=maturityInYears=>{
     .then(instantiateSpline(maturityInYears))
     .then(convertPercentToNumber)
 }
-module.exports.getExpirationDates=(event, context, callback)=>{
+module.exports.getExpirationDates=(event, _, callback)=>{
   const {ticker}=event.pathParameters
   httpGet(getQuery(ticker)())
     .then(getRelevantData)
@@ -80,7 +80,7 @@ module.exports.getExpirationDates=(event, context, callback)=>{
 const defaultMinOpenInterest=25
 const defaultMinRelativeBidAskSpread=.1
 
-module.exports.getOptionPrices=(event, context, callback)=>{
+module.exports.getOptionPrices=(event, _, callback)=>{
   const {ticker, asOfDate}=event.pathParameters
   const {minOpenInterest, minRelativeBidAskSpread}=event.queryStringParameters
   const filterOptions=liquidOptionPrices(minOpenInterest||defaultMinOpenInterest, minRelativeBidAskSpread||defaultMinRelativeBidAskSpread)
